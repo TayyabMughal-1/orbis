@@ -1,0 +1,198 @@
+import { Minus, Plus, Star } from 'lucide-react'
+import type { ReactNode } from 'react'
+import type { Rating } from '../../types'
+
+// Small shared pieces: quantity control, skeletons, pills, empty and
+// error states. Kept together because none of them is big enough to earn
+// a file, and every page uses at least two.
+
+export function QuantityStepper({
+  value,
+  max,
+  onChange,
+  size = 'md',
+}: {
+  value: number
+  max: number
+  onChange: (next: number) => void
+  size?: 'sm' | 'md'
+}) {
+  const dim = size === 'sm' ? 'h-7 w-7' : 'h-9 w-9'
+  const box = size === 'sm' ? 'text-[12px]' : 'text-[14px]'
+
+  return (
+    <div className="inline-flex items-center rounded-full border border-white/15 bg-white/5">
+      <button
+        type="button"
+        aria-label="Decrease quantity"
+        onClick={() => onChange(value - 1)}
+        className={`${dim} flex items-center justify-center rounded-full text-cream/70 transition-colors hover:text-cream disabled:opacity-30`}
+        disabled={value <= 1}
+      >
+        <Minus size={14} strokeWidth={2} />
+      </button>
+      <span className={`${box} w-8 text-center font-mono tabular-nums text-cream`}>{value}</span>
+      <button
+        type="button"
+        aria-label="Increase quantity"
+        onClick={() => onChange(value + 1)}
+        className={`${dim} flex items-center justify-center rounded-full text-cream/70 transition-colors hover:text-cream disabled:opacity-30`}
+        disabled={value >= max}
+      >
+        <Plus size={14} strokeWidth={2} />
+      </button>
+    </div>
+  )
+}
+
+/**
+ * Star rating. Half-star precision via a clipped overlay rather than a
+ * separate half-star glyph, so 4.7 actually looks like 4.7.
+ *
+ * The number and the count sit next to the stars deliberately: stars
+ * alone tell a shopper almost nothing without the sample size.
+ */
+export function Stars({
+  rating,
+  size = 12,
+  showCount = true,
+  className = '',
+}: {
+  rating: Rating | null
+  size?: number
+  showCount?: boolean
+  className?: string
+}) {
+  if (!rating) return null
+  const pct = Math.max(0, Math.min(100, (rating.average / 5) * 100))
+
+  return (
+    <span className={`inline-flex items-center gap-1.5 ${className}`}>
+      <span
+        className="relative inline-flex"
+        role="img"
+        aria-label={`Rated ${rating.average} out of 5 from ${rating.count} reviews`}
+      >
+        <span className="flex gap-[1px]">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Star key={i} size={size} className="text-cream/20" fill="currentColor" strokeWidth={0} />
+          ))}
+        </span>
+        <span
+          className="absolute inset-0 flex gap-[1px] overflow-hidden"
+          style={{ width: `${pct}%` }}
+          aria-hidden="true"
+        >
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Star key={i} size={size} className="flex-none text-neon" fill="currentColor" strokeWidth={0} />
+          ))}
+        </span>
+      </span>
+      <span className="font-mono text-[10px] text-cream/60">
+        {rating.average.toFixed(1)}
+        {showCount && <span className="text-cream/35"> ({rating.count})</span>}
+      </span>
+    </span>
+  )
+}
+
+export function Pill({ children, tone = 'default' }: { children: ReactNode; tone?: 'default' | 'neon' | 'warn' }) {
+  const tones = {
+    default: 'border-white/15 bg-white/5 text-cream/70',
+    neon: 'border-neon/40 bg-neon/10 text-neon',
+    warn: 'border-amber-400/40 bg-amber-400/10 text-amber-200',
+  }
+  return (
+    <span
+      className={`inline-flex items-center rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide ${tones[tone]}`}
+    >
+      {children}
+    </span>
+  )
+}
+
+export function CardSkeleton() {
+  return (
+    <div className="liquid-glass shimmer rounded-[24px] p-4">
+      <div className="aspect-square w-full rounded-[18px] bg-white/5" />
+      <div className="mt-4 h-3 w-2/3 rounded bg-white/10" />
+      <div className="mt-2 h-3 w-1/3 rounded bg-white/5" />
+    </div>
+  )
+}
+
+export function ProductGridSkeleton({ count = 6 }: { count?: number }) {
+  return (
+    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: count }, (_, i) => (
+        <CardSkeleton key={i} />
+      ))}
+    </div>
+  )
+}
+
+export function EmptyState({
+  title,
+  body,
+  action,
+}: {
+  title: string
+  body: string
+  action?: ReactNode
+}) {
+  return (
+    <div className="rounded-[20px] border border-white/10 bg-white/[0.02] px-6 py-14 text-center">
+      <h3 className="font-grotesk text-[16px] uppercase text-cream">{title}</h3>
+      <p className="mx-auto mt-3 max-w-md font-mono text-[12px] leading-relaxed text-cream/60">{body}</p>
+      {action && <div className="mt-6">{action}</div>}
+    </div>
+  )
+}
+
+export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  return (
+    <div className="rounded-[20px] border border-red-400/25 bg-red-500/5 px-6 py-10 text-center">
+      <p className="font-mono text-[12px] leading-relaxed text-red-200">{message}</p>
+      {onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-4 font-mono text-[11px] uppercase text-neon underline underline-offset-4"
+        >
+          Try again
+        </button>
+      )}
+    </div>
+  )
+}
+
+export function SectionHeading({
+  eyebrow,
+  title,
+  script,
+  children,
+}: {
+  eyebrow?: string
+  title: ReactNode
+  script?: string
+  children?: ReactNode
+}) {
+  return (
+    <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+      <div className="relative">
+        {eyebrow && (
+          <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-cream/50">{eyebrow}</div>
+        )}
+        <h2 className="font-grotesk text-[30px] uppercase leading-[1.05] text-cream sm:text-[40px] lg:text-[52px]">
+          {title}
+        </h2>
+        {script && (
+          <span className="pointer-events-none absolute -bottom-6 right-0 -rotate-1 font-condiment text-[30px] normal-case text-neon opacity-90 mix-blend-exclusion sm:text-[40px]">
+            {script}
+          </span>
+        )}
+      </div>
+      {children}
+    </div>
+  )
+}

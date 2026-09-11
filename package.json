@@ -1,0 +1,42 @@
+{
+  "name": "orbis-store",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "api:build": "esbuild server/src/index.ts --bundle --platform=node --format=cjs --target=node20 --packages=external --outfile=server/dist/index.cjs --log-level=warning",
+    "api": "npm run api:build && node server/dist/index.cjs",
+    "api:dev": "npm run api:build && node --watch server/dist/index.cjs",
+    "api:check": "tsc -p server/tsconfig.json --noEmit",
+    "api:reset": "node -e \"require('fs').rmSync('server/data',{recursive:true,force:true})\"",
+    "dev:all": "concurrently -n api,web -c cyan,magenta \"npm run api:dev\" \"cross-env VITE_API_URL=/api vite\"",
+    "build:live": "cross-env VITE_API_URL=/api npm run build"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.22.2",
+    "lucide-react": "^0.454.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.6"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.25",
+    "@types/node": "^22.20.2",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "concurrently": "^10.0.5",
+    "cross-env": "^10.1.0",
+    "esbuild": "^0.28.2",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}

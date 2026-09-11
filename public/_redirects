@@ -1,0 +1,4 @@
+# Every storefront route is client-rendered, so any path that is not a
+# real file must serve index.html. Without this, a hard refresh on
+# /ae/product/halo-pendant 404s on most static hosts.
+/*    /index.html   200

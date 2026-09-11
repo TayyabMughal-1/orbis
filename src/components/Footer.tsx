@@ -1,0 +1,149 @@
+import { Link } from 'react-router-dom'
+import { Mail, Phone } from 'lucide-react'
+import { CATEGORIES } from '../api/db'
+import Newsletter from './Newsletter'
+import { useRegion } from '../regions/RegionContext'
+import { REGION_LIST } from '../regions/config'
+
+/**
+ * The footer is where a storefront proves it is a real business in a
+ * real market: the trading entity, its registration, the local support
+ * line, the returns window and the payment methods that market accepts.
+ * All three differ, and all three come from the region config.
+ */
+export default function Footer() {
+  const { config, href, setRegion, region } = useRegion()
+
+  return (
+    <footer className="border-t border-white/10 bg-background">
+      <div className="mx-auto max-w-[1600px] px-4 py-14 sm:px-6 lg:px-10">
+        <div className="grid grid-cols-2 gap-10 lg:grid-cols-5">
+          <div className="col-span-2 lg:col-span-2">
+            <div className="font-grotesk text-[20px] uppercase text-cream">
+              Orbis <span className="text-cream/55">Store</span>
+            </div>
+            <p className="mt-3 max-w-xs font-mono text-[12px] leading-relaxed text-cream/55">
+              Collectible Orbis figures, plus the homeware, lighting, apparel and prints that go with
+              them. Shipping across {config.country} from our local warehouse.
+            </p>
+
+            <div className="mt-6 space-y-2">
+              <a
+                href={`mailto:${config.support.email}`}
+                className="flex items-center gap-2 font-mono text-[12px] text-cream/70 hover:text-neon"
+              >
+                <Mail size={13} /> {config.support.email}
+              </a>
+              <a
+                href={`tel:${config.support.phone.replace(/[^\d+]/g, '')}`}
+                className="flex items-center gap-2 font-mono text-[12px] text-cream/70 hover:text-neon"
+              >
+                <Phone size={13} /> {config.support.phone}
+              </a>
+              <div className="font-mono text-[11px] text-cream/40">{config.support.hours}</div>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-grotesk text-[12px] uppercase tracking-wide text-cream">Shop</h3>
+            <ul className="mt-4 space-y-2">
+              <li>
+                <Link to={href('/shop')} className="font-mono text-[12px] text-cream/60 hover:text-neon">
+                  All products
+                </Link>
+              </li>
+              {CATEGORIES.map((cat) => (
+                <li key={cat.id}>
+                  <Link
+                    to={href(`/shop/${cat.id}`)}
+                    className="font-mono text-[12px] text-cream/60 hover:text-neon"
+                  >
+                    {cat.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-grotesk text-[12px] uppercase tracking-wide text-cream">
+              Delivery &amp; returns
+            </h3>
+            <ul className="mt-4 space-y-2 font-mono text-[12px] text-cream/60">
+              <li>{config.policy.returnsDays}-day returns</li>
+              <li>{config.policy.warrantyMonths}-month warranty</li>
+              <li>{config.taxNote}</li>
+              <li>
+                <Link to={href('/orders')} className="hover:text-neon">
+                  Track an order
+                </Link>
+              </li>
+              <li>
+                <Link to={href('/help')} className="hover:text-neon">
+                  Delivery &amp; returns FAQ
+                </Link>
+              </li>
+            </ul>
+            <p className="mt-4 font-mono text-[11px] leading-relaxed text-cream/40">
+              {config.policy.dutiesNote}
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-grotesk text-[12px] uppercase tracking-wide text-cream">We accept</h3>
+            <ul className="mt-4 space-y-2">
+              {config.paymentMethods.map((method) => (
+                <li key={method.id} className="font-mono text-[12px] text-cream/60">
+                  {method.label}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        {/* newsletter */}
+        <div className="mt-12 border-t border-white/10 pt-10">
+          <div className="max-w-md">
+            <Newsletter />
+          </div>
+        </div>
+
+        {/* the three storefronts, always reachable */}
+        <div className="mt-12 flex flex-wrap items-center gap-2 border-t border-white/10 pt-8">
+          <span className="mr-2 font-mono text-[10px] uppercase tracking-[0.2em] text-cream/40">
+            Other stores
+          </span>
+          {REGION_LIST.map((r) => (
+            <button
+              key={r.code}
+              type="button"
+              onClick={() => setRegion(r.code)}
+              disabled={r.code === region}
+              className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase transition-colors ${
+                r.code === region
+                  ? 'border-neon/40 bg-neon/10 text-neon'
+                  : 'border-white/15 text-cream/60 hover:border-white/35 hover:text-cream'
+              }`}
+            >
+              <span aria-hidden="true">{r.flag}</span> {r.country} · {r.currency.code}
+            </button>
+          ))}
+        </div>
+
+        <div className="mt-8 flex flex-col gap-2 font-mono text-[11px] leading-relaxed text-cream/40 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="text-cream/55">{config.entity.name}</div>
+            {config.entity.addressLines.map((line) => (
+              <div key={line}>{line}</div>
+            ))}
+            <div className="mt-1">{config.entity.registration}</div>
+          </div>
+          <div className="sm:text-right">
+            <div>© {new Date().getFullYear()} Orbis Store</div>
+            <div>Prices shown in {config.currency.code}</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  )
+}

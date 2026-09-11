@@ -1,0 +1,383 @@
+import express, { type NextFunction, type Request, type Response } from 'express'
+import cors from 'cors'
+import { ApiError, badRequest, tooMany } from './errors'
+import { db, DB_PATH } from './db'
+import {
+  createOrder,
+  getOrder,
+  getProductBySlug,
+  getRelated,
+  getPromo,
+  listOrdersByEmail,
+  listProducts,
+  stats,
+} from './repo'
+import { assertInStock, priceOrder } from './service'
+import { authorizePayment } from './payments'
+import { asAddress, asCartLines, asEmail, asOptionalString, asRegion, asString } from './validate'
+import { REGIONS } from '../../src/regions/config'
+import type { Category } from '../../src/types'
+
+// ---------------------------------------------------------------------
+// The Orbis API.
+//
+// Every route the storefront needs and nothing it does not. The client
+// (src/api/client.ts) speaks exactly these shapes, so pointing the app
+// at this server is a one-line environment change.
+// ---------------------------------------------------------------------
+
+const PORT = Number(process.env.PORT ?? 8787)
+
+const app = express()
+
+app.disable('x-powered-by')
+app.use(express.json({ limit: '64kb' }))
+
+// Set TRUST_PROXY when this runs behind nginx, a load balancer or a CDN
+// (1 = one hop). Without it every customer looks like the proxy and the
+// rate limiter throttles them collectively. With it set when there is no
+// proxy, a client could forge X-Forwarded-For and dodge the limiter —
+// which is why it is off unless you say otherwise.
+if (process.env.TRUST_PROXY) {
+  const hops = Number(process.env.TRUST_PROXY)
+  app.set('trust proxy', Number.isFinite(hops) ? hops : process.env.TRUST_PROXY)
+}
+
+const IS_PRODUCTION = process.env.NODE_ENV === 'production'
+
+// Hosts allowed to call the API from a browser. In production this is
+// the only list that counts — set CORS_ORIGINS to your storefront's
+// real origin(s), comma separated.
+const ALLOWED_ORIGINS = (process.env.CORS_ORIGINS ?? '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
+
+const LOCALHOST = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/
+
+function originAllowed(origin: string): boolean {
+  if (ALLOWED_ORIGINS.includes(origin)) return true
+  // Outside production, any local port is fine — Vite's dev server and
+  // its preview server pick different ones, and both proxy /api here.
+  return !IS_PRODUCTION && LOCALHOST.test(origin)
+}
+
+const refusedOrigins = new Set<string>()
+
+app.use(
+  cors({
+    origin(origin, callback) {
+      // Browsers omit Origin on same-origin GETs but DO send it on
+      // same-origin POSTs, so a request arriving through the dev proxy
+      // still lands here with the storefront's own origin.
+      if (!origin || originAllowed(origin)) return callback(null, true)
+
+      // Reply without CORS headers rather than throwing. Throwing turns
+      // an ordinary policy decision into a 500 and buries the real
+      // reason in a stack trace.
+      if (!refusedOrigins.has(origin)) {
+        refusedOrigins.add(origin)
+        console.warn(`[api] refusing browser requests from ${origin} (set CORS_ORIGINS to allow it)`)
+      }
+      callback(null, false)
+    },
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type', 'Idempotency-Key'],
+    maxAge: 86400,
+  }),
+)
+
+/** Wraps a handler so a thrown ApiError reaches the error middleware. */
+const route =
+  (handler: (req: Request, res: Response) => unknown) =>
+  (req: Request, res: Response, next: NextFunction) => {
+    try {
+      Promise.resolve(handler(req, res)).catch(next)
+    } catch (err) {
+      next(err)
+    }
+  }
+
+// ------------------------------------------------------- rate limiting
+//
+// Per-IP counters held in memory. Fine for one instance; move to Redis
+// the moment there are two, or each will only see a third of the traffic
+// and the limits will be three times looser than intended.
+
+const RATE_LIMIT_ON = process.env.RATE_LIMIT !== 'off'
+
+/** Orders per IP per hour. Generous — a family or an office shares one. */
+const ORDER_LIMIT = Number(process.env.ORDER_RATE_LIMIT ?? 30)
+
+type Bucket = { count: number; resetAt: number }
+const buckets = new Map<string, Bucket>()
+
+function limit(key: string, max: number, windowMs: number): void {
+  if (!RATE_LIMIT_ON) return
+
+  const now = Date.now()
+  const bucket = buckets.get(key)
+
+  if (!bucket || bucket.resetAt < now) {
+    buckets.set(key, { count: 1, resetAt: now + windowMs })
+    return
+  }
+  bucket.count += 1
+  if (bucket.count > max) {
+    throw tooMany('Too many attempts. Please wait a moment and try again.')
+  }
+}
+
+// Keeps the map from growing without bound on a long-lived process.
+setInterval(() => {
+  const now = Date.now()
+  for (const [key, bucket] of buckets) if (bucket.resetAt < now) buckets.delete(key)
+}, 60_000).unref()
+
+const clientKey = (req: Request) => req.ip ?? req.socket.remoteAddress ?? 'unknown'
+
+// -------------------------------------------------------------- routes
+
+app.get(
+  '/api/health',
+  route((_req, res) => {
+    res.json({ ok: true, database: DB_PATH, ...stats() })
+  }),
+)
+
+/**
+ * Country lookup for first-time visitors.
+ *
+ * It reads whatever geo header the CDN in front of this server already
+ * set. That keeps visitor IPs out of third-party lookup services, and
+ * costs nothing — the edge resolved it before the request arrived.
+ */
+app.get(
+  '/api/geo',
+  route((req, res) => {
+    const header =
+      req.get('cf-ipcountry') ??
+      req.get('x-vercel-ip-country') ??
+      req.get('cloudfront-viewer-country') ??
+      req.get('x-country-code') ??
+      null
+
+    const country = header && header !== 'XX' ? header.toUpperCase() : null
+    res.set('Cache-Control', 'no-store')
+    res.json({ country })
+  }),
+)
+
+app.get(
+  '/api/products',
+  route((req, res) => {
+    const region = asRegion(req.query.region)
+    const category = (req.query.category as string | undefined) ?? 'all'
+    const sort = (req.query.sort as string | undefined) ?? 'featured'
+    const limitParam = req.query.limit ? Number(req.query.limit) : undefined
+
+    if (limitParam !== undefined && (!Number.isInteger(limitParam) || limitParam < 1 || limitParam > 100)) {
+      throw badRequest('invalid_limit', '"limit" must be a whole number between 1 and 100.')
+    }
+
+    const products = listProducts({
+      region,
+      category: category as Category | 'all',
+      search: (req.query.search as string | undefined) ?? undefined,
+      sort: sort as 'featured' | 'price-asc' | 'price-desc' | 'name',
+      inStockOnly: req.query.inStockOnly === 'true' || req.query.inStockOnly === '1',
+      limit: limitParam,
+    })
+
+    // Catalogue data is safe to cache briefly at the edge; stock is the
+    // only volatile part and checkout re-checks it anyway.
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(products)
+  }),
+)
+
+app.get(
+  '/api/products/:slug',
+  route((req, res) => {
+    const product = getProductBySlug(asString(req.params.slug, 'slug', 120))
+    res.set('Cache-Control', 'public, max-age=30')
+    res.json(product)
+  }),
+)
+
+app.get(
+  '/api/products/:slug/related',
+  route((req, res) => {
+    const region = asRegion(req.query.region)
+    res.set('Cache-Control', 'public, max-age=60')
+    res.json(getRelated(asString(req.params.slug, 'slug', 120), region))
+  }),
+)
+
+app.post(
+  '/api/promos/validate',
+  route((req, res) => {
+    limit(`promo:${clientKey(req)}`, 30, 60_000)
+
+    const region = asRegion(req.body?.region)
+    const code = asString(req.body?.code, 'code', 40).toUpperCase()
+    const subtotal = Number(req.body?.subtotal ?? 0)
+
+    if (!Number.isInteger(subtotal) || subtotal < 0) {
+      throw badRequest('invalid_subtotal', '"subtotal" must be a whole number of minor units.')
+    }
+
+    const promo = getPromo(code)
+    if (!promo) throw badRequest('promo_invalid', `"${code}" is not a code we recognise.`)
+    if (!promo.regions.includes(region)) {
+      throw badRequest(
+        'promo_region',
+        `"${code}" is not valid in the ${REGIONS[region].country} store.`,
+      )
+    }
+    if (subtotal < promo.minSubtotal[region]) {
+      throw badRequest('promo_minimum', `"${code}" needs a larger order to apply.`)
+    }
+
+    res.json({ code: promo.code, label: promo.label, percentOff: promo.percentOff })
+  }),
+)
+
+app.post(
+  '/api/quote',
+  route((req, res) => {
+    const region = asRegion(req.body?.region)
+    const lines = asCartLines(req.body?.lines)
+
+    const quote = priceOrder({
+      region,
+      lines,
+      shippingId: asOptionalString(req.body?.shippingId, 'shippingId', 60) || undefined,
+      paymentMethodId: asOptionalString(req.body?.paymentMethodId, 'paymentMethodId', 60) || undefined,
+      promoCode: asOptionalString(req.body?.promoCode, 'promoCode', 40) || null,
+      subRegion: asOptionalString(req.body?.subRegion, 'subRegion', 100) || undefined,
+    })
+
+    const { priced: _priced, ...body } = quote
+    res.set('Cache-Control', 'no-store')
+    res.json(body)
+  }),
+)
+
+app.post(
+  '/api/orders',
+  route(async (req, res) => {
+    limit(`order:${clientKey(req)}`, ORDER_LIMIT, 60 * 60_000)
+
+    const region = asRegion(req.body?.region)
+    const lines = asCartLines(req.body?.lines)
+    const address = asAddress(req.body?.address, region)
+    const paymentMethodId = asString(req.body?.paymentMethodId, 'paymentMethodId', 60)
+
+    const config = REGIONS[region]
+    const method = config.paymentMethods.find((m) => m.id === paymentMethodId)
+    if (!method) {
+      throw badRequest(
+        'payment_invalid',
+        `${paymentMethodId} is not accepted in the ${config.country} store.`,
+      )
+    }
+
+    // Price it again from scratch. Whatever the browser believed the
+    // total was is irrelevant.
+    const quote = priceOrder({
+      region,
+      lines,
+      shippingId: asOptionalString(req.body?.shippingId, 'shippingId', 60) || undefined,
+      paymentMethodId,
+      promoCode: asOptionalString(req.body?.promoCode, 'promoCode', 40) || null,
+      subRegion: address.region,
+    })
+
+    assertInStock(quote.priced, region)
+
+    const payment = await authorizePayment({
+      region,
+      methodId: paymentMethodId,
+      amount: quote.totals.total,
+      currency: quote.totals.currency,
+      orderEmail: address.email,
+    })
+
+    const idempotencyKey = req.get('idempotency-key') ?? null
+
+    const order = createOrder({
+      region,
+      email: address.email,
+      address,
+      shipping: quote.selectedShipping,
+      paymentMethodId: method.id,
+      paymentMethodLabel: method.label,
+      paymentStatus: payment.status,
+      paymentReference: payment.reference,
+      promoCode: quote.promo?.code ?? null,
+      lines: quote.priced.map(({ stock: _stock, ...line }) => line),
+      totals: quote.totals,
+      idempotencyKey,
+    })
+
+    res.status(201).json({ ...order, paymentInstructions: payment.instructions })
+  }),
+)
+
+app.get(
+  '/api/orders/:number',
+  route((req, res) => {
+    limit(`lookup:${clientKey(req)}`, 40, 60_000)
+    res.set('Cache-Control', 'no-store')
+    res.json(getOrder(asString(req.params.number, 'number', 40)))
+  }),
+)
+
+app.get(
+  '/api/orders',
+  route((req, res) => {
+    // Listing requires an email. Without it this would hand any caller
+    // the entire order book.
+    const region = asRegion(req.query.region)
+    const email = asEmail(req.query.email)
+    limit(`orders:${clientKey(req)}`, 30, 60_000)
+    res.set('Cache-Control', 'no-store')
+    res.json(listOrdersByEmail(region, email))
+  }),
+)
+
+// ----------------------------------------------------------- fallbacks
+
+app.use('/api', (_req, res) => {
+  res.status(404).json({ error: { code: 'not_found', message: 'No such endpoint.' } })
+})
+
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  if (err instanceof ApiError) {
+    res.status(err.status).json({ error: { code: err.code, message: err.message } })
+    return
+  }
+  // Never leak an internal message to a customer.
+  console.error('[api] unhandled error:', err)
+  res.status(500).json({
+    error: { code: 'server_error', message: 'Something went wrong on our side. Please try again.' },
+  })
+})
+
+// -------------------------------------------------------------- start
+
+db() // open, migrate and seed before accepting traffic
+
+const server = app.listen(PORT, () => {
+  const counts = stats()
+  console.log(`[api] listening on http://localhost:${PORT}`)
+  console.log(`[api] database ${DB_PATH}`)
+  console.log(`[api] ${counts.products} products, ${counts.variants} variants, ${counts.orders} orders`)
+})
+
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.on(signal, () => {
+    server.close(() => process.exit(0))
+  })
+}

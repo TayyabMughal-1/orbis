@@ -1,0 +1,9 @@
+# The frontend build never imports from server/ — the dependency runs the
+# other way (the API imports pricing and region config out of src/). Keeping
+# it out of the Vercel upload makes deploys smaller and avoids any confusion
+# about whether the Express app runs there. It does not — see README.
+server
+
+# Local-only
+.env
+*.local

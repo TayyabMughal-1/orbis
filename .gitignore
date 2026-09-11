@@ -1,0 +1,10 @@
+node_modules
+dist
+.DS_Store
+*.local
+.env
+*.tsbuildinfo
+
+# API build output and its SQLite database (data is not source)
+server/dist
+server/data

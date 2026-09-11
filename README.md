@@ -234,21 +234,58 @@ United Arab Emirates number. Example: 50 123 4567*).
 
 ## Deploying
 
-**Storefront.** A static bundle, but **every route must serve `index.html`** or a
-hard refresh on `/ae/product/halo-pendant` will 404. Configs for two common hosts
-are included: `public/_redirects` (Netlify) and `vercel.json` (Vercel). For nginx:
+### Vercel
+
+`vercel.json` is set up for it — framework `vite`, build `npm run build`, output
+`dist`, and a catch-all rewrite so a hard refresh on `/ae/product/halo-pendant`
+serves the app instead of a 404. Vercel checks the filesystem before applying
+rewrites, so real files (`/assets/*`, `/sitemap.xml`, `/robots.txt`) are still
+served directly.
+
+Import the repo and deploy — no dashboard configuration needed. Two things to
+get right:
+
+- **Root Directory** must be the folder holding `package.json`. If you pushed the
+  parent folder rather than this one, set it in Project → Settings → General.
+- **Do not set `VITE_API_URL`** unless you have actually hosted the API somewhere
+  (see below). Left unset, the storefront runs on its built-in catalogue and
+  everything works — browsing, cart, checkout, order confirmation — with orders
+  kept in the browser. Set it to a URL nothing answers and the shop will load
+  with an empty catalogue.
+
+Worth setting: `VITE_SITE_URL=https://your-domain.com`, so canonicals, hreflang
+and the sitemap point at the real domain rather than the placeholder.
+
+### Other static hosts
+
+`public/_redirects` covers Netlify. For nginx:
 
 ```nginx
 location / { try_files $uri $uri/ /index.html; }
 ```
 
-Build it with the API URL baked in: `VITE_API_URL=/api npm run build`, or
-`npm run build:live` for the same thing.
+### The API
 
-**API.** `npm run api:build` produces `server/dist/index.cjs`; run it with plain
-`node`. Set `NODE_ENV=production`, `CORS_ORIGINS` to your storefront's origin,
-`ORBIS_DB` to a path on a mounted volume, and `TRUST_PROXY=1` if anything sits in
-front of it. See `.env.example` for the full list.
+`npm run api:build` produces `server/dist/index.cjs`; run it with plain `node`.
+Set `NODE_ENV=production`, `CORS_ORIGINS` to your storefront's origin, `ORBIS_DB`
+to a path on a mounted volume, and `TRUST_PROXY=1` if anything sits in front of
+it. See `.env.example` for the full list.
+
+> **It will not run on Vercel as it stands, and the reason is the database.**
+> Vercel's serverless filesystem is ephemeral and read-only, so a SQLite file
+> there would lose every order between requests. Two honest options:
+>
+> 1. **Host the API where it has a disk** — Railway, Render, Fly.io or any VPS.
+>    Deploy `server/`, give it a volume for `ORBIS_DB`, then point the storefront
+>    at it with `VITE_API_URL=https://api.your-domain.com` and add your Vercel
+>    domain to `CORS_ORIGINS`.
+> 2. **Swap SQLite for a hosted Postgres** (Neon, Supabase, Vercel Postgres) and
+>    port the API to serverless functions. `server/src/repo.ts` holds every SQL
+>    statement in the service, so this is a one-file rewrite — the route handlers
+>    never see SQL.
+>
+> Until then, deploying the storefront alone to Vercel gives you a complete,
+> working shop on the built-in catalogue.
 
 To run the three stores on separate domains instead of paths, point each at the
 same build and rewrite `/` to `/us`, `/ae` or `/pk` at the edge — the router
