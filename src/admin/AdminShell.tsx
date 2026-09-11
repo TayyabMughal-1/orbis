@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { Lock, LogOut, Package, Percent, Settings, ShoppingBag } from 'lucide-react'
-import { adminApi, getToken } from '../api/admin'
+import { adminApi, apiReachable, getToken } from '../api/admin'
 import { errorMessage } from '../api/client'
 
 // ---------------------------------------------------------------------
@@ -38,6 +38,19 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [apiDown, setApiDown] = useState(false)
+
+  // Check before anyone types. A dashboard that rejects a correct
+  // password because nothing is listening is a miserable ten minutes.
+  useEffect(() => {
+    let alive = true
+    apiReachable().then((ok) => {
+      if (alive) setApiDown(!ok)
+    })
+    return () => {
+      alive = false
+    }
+  }, [])
 
   async function submit(event: FormEvent) {
     event.preventDefault()
@@ -87,6 +100,15 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
             className="w-full bg-transparent py-3 font-mono text-[13px] text-cream outline-none"
           />
         </div>
+
+        {apiDown && (
+          <p className="mt-3 rounded-[10px] border border-amber-400/35 bg-amber-400/10 p-3 font-mono text-[11px] leading-relaxed text-amber-100">
+            The API is not running, so signing in cannot work yet. Start it with{' '}
+            <code className="text-amber-200">npm run dev:all</code> (or{' '}
+            <code className="text-amber-200">npm run api</code> in a second terminal), then reload
+            this page.
+          </p>
+        )}
 
         {error && (
           <p className="mt-3 rounded-[10px] border border-red-400/30 bg-red-500/10 p-3 font-mono text-[11px] leading-relaxed text-red-200">

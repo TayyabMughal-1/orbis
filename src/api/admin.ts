@@ -98,13 +98,47 @@ async function request<T>(
     | null
 
   if (!response.ok) {
-    throw new ApiError(
-      body?.error?.code ?? `http_${response.status}`,
-      body?.error?.message ?? 'That did not work. Please try again.',
-    )
+    // A JSON error from our own API is always the most useful thing to
+    // show, so prefer it.
+    if (body?.error?.message) {
+      throw new ApiError(body.error.code ?? `http_${response.status}`, body.error.message)
+    }
+
+    // No JSON body means the request never reached the API — typically a
+    // dev-server proxy returning its own HTML error page because nothing
+    // is listening on the other end. "That did not work" is useless
+    // there; say what is actually wrong and what to do about it.
+    // Our API always answers with a JSON error, so a 5xx carrying no
+    // JSON at all cannot have come from it — it is the proxy in front
+    // reporting that nothing is listening. Vite's dev server uses 500
+    // for that, others use 502/504; the cause is the same.
+    if (response.status >= 500) {
+      throw new ApiError(
+        'api_unreachable',
+        'The API is not responding. Start it with `npm run dev:all` (or `npm run api`), then try again.',
+      )
+    }
+
+    throw new ApiError(`http_${response.status}`, `The API returned an error (HTTP ${response.status}).`)
   }
 
   return body as T
+}
+
+/**
+ * Is the API actually up?
+ *
+ * The login screen asks before the operator types anything, so "nothing
+ * is running" is spotted up front rather than being mistaken for a
+ * rejected password.
+ */
+export async function apiReachable(): Promise<boolean> {
+  try {
+    const res = await fetch(`${API_URL}/health`)
+    return res.ok
+  } catch {
+    return false
+  }
 }
 
 const json = (method: string, data?: unknown) => ({
