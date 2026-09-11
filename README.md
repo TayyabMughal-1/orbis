@@ -128,8 +128,14 @@ delivery prices and tax rate.
 
 ```bash
 npm run admin:hash -- "a long passphrase"   # prints ADMIN_PASSWORD_HASH=...
-# put that in .env, restart the API, then open /admin
+#   1. paste that line into .env in the project root
+#   2. npm run dev:all
+#   3. open http://localhost:5173/admin
 ```
+
+The API reads `.env` itself (via Node's `--env-file-if-exists`), so there is no
+dotenv dependency and nothing to import. In production, set the variables the way
+your host does it instead.
 
 **It is off until `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH` is set on the API.**
 A deployment that forgets is locked, not wide open. Login is throttled to eight
