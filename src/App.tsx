@@ -22,6 +22,10 @@ import OrderLookup from './pages/OrderLookup'
 import Help from './pages/Help'
 import NotFound from './pages/NotFound'
 
+import AdminShell from './admin/AdminShell'
+import { AdminProductEditor, AdminProductList } from './admin/AdminProducts'
+import { AdminOrders, AdminPromos, AdminSettings } from './admin/AdminRest'
+
 // ---------------------------------------------------------------------
 // Routing
 //
@@ -98,6 +102,17 @@ export default function App() {
     <>
       <ScrollToTop />
       <Routes>
+        {/* The dashboard sits outside the storefront entirely: no region
+            prefix, no cart, no region chrome. It is a different app that
+            happens to share a bundle. */}
+        <Route path="/admin" element={<AdminShell />}>
+          <Route index element={<AdminProductList />} />
+          <Route path="products/:slug" element={<AdminProductEditor />} />
+          <Route path="promos" element={<AdminPromos />} />
+          <Route path="orders" element={<AdminOrders />} />
+          <Route path="settings" element={<AdminSettings />} />
+        </Route>
+
         <Route path="/" element={<RegionGate />} />
         <Route path="/:region" element={<StoreLayout />}>
           <Route index element={<Home />} />

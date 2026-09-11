@@ -15,6 +15,9 @@ import {
 import { assertInStock, priceOrder } from './service'
 import { authorizePayment } from './payments'
 import { asAddress, asCartLines, asEmail, asOptionalString, asRegion, asString } from './validate'
+import { admin } from './admin'
+import { adminEnabled } from './auth'
+import { publicSettings, resolveRegionConfig } from './adminRepo'
 import { REGIONS } from '../../src/regions/config'
 import type { Category } from '../../src/types'
 
@@ -168,6 +171,27 @@ app.get(
   }),
 )
 
+/**
+ * The editable slice of a region's configuration.
+ *
+ * The storefront merges this over its built-in defaults, so copy and
+ * delivery prices changed in the dashboard show up without a rebuild.
+ * Everything here is public by design — it is what the shop already
+ * displays.
+ */
+app.get(
+  '/api/settings',
+  route((req, res) => {
+    const region = asRegion(req.query.region)
+    // Revalidate every time rather than caching for a window. An
+    // operator who changes the banner and then reloads the shop must see
+    // it — waiting out a cache looks like the save silently failed. The
+    // payload is tiny and unchanged responses come back as a 304.
+    res.set('Cache-Control', 'no-cache')
+    res.json(publicSettings(region))
+  }),
+)
+
 app.get(
   '/api/products',
   route((req, res) => {
@@ -274,7 +298,7 @@ app.post(
     const address = asAddress(req.body?.address, region)
     const paymentMethodId = asString(req.body?.paymentMethodId, 'paymentMethodId', 60)
 
-    const config = REGIONS[region]
+    const config = resolveRegionConfig(region)
     const method = config.paymentMethods.find((m) => m.id === paymentMethodId)
     if (!method) {
       throw badRequest(
@@ -347,6 +371,10 @@ app.get(
   }),
 )
 
+// ------------------------------------------------------------- admin
+
+app.use('/api/admin', admin)
+
 // ----------------------------------------------------------- fallbacks
 
 app.use('/api', (_req, res) => {
@@ -374,6 +402,11 @@ const server = app.listen(PORT, () => {
   console.log(`[api] listening on http://localhost:${PORT}`)
   console.log(`[api] database ${DB_PATH}`)
   console.log(`[api] ${counts.products} products, ${counts.variants} variants, ${counts.orders} orders`)
+  console.log(
+    adminEnabled()
+      ? '[api] admin dashboard enabled at /api/admin'
+      : '[api] admin dashboard DISABLED — set ADMIN_PASSWORD to switch it on',
+  )
 })
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {

@@ -100,6 +100,9 @@ server/src/
 | POST | `/api/orders` | place an order (honours `Idempotency-Key`) |
 | GET  | `/api/orders/:number` | one order |
 | GET  | `/api/orders?region=&email=` | a customer's orders |
+| GET  | `/api/settings?region=` | the editable copy and delivery prices for a store |
+| POST | `/api/admin/login` | exchange the password for a token |
+| *    | `/api/admin/*` | products, promos, orders and settings — all require the token |
 
 Four rules the service actually enforces, rather than merely intending to:
 
@@ -116,6 +119,43 @@ Four rules the service actually enforces, rather than merely intending to:
   The checkout page generates one per attempt.
 - **Listing orders needs an email.** Without that guard the endpoint would hand
   any caller the entire order book.
+
+### The dashboard
+
+`/admin` is a working back office: add and edit products, set prices and stock
+per region, run promo codes, fulfil orders, and change each store's copy,
+delivery prices and tax rate.
+
+```bash
+npm run admin:hash -- "a long passphrase"   # prints ADMIN_PASSWORD_HASH=...
+# put that in .env, restart the API, then open /admin
+```
+
+**It is off until `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH` is set on the API.**
+A deployment that forgets is locked, not wide open. Login is throttled to eight
+attempts per IP per fifteen minutes and issues a signed token that lasts twelve
+hours; there is no session table, so a restart does not sign you out.
+
+| Screen | What it does |
+| --- | --- |
+| **Products** | Create, edit and delete products. Each variant carries a price and a stock count for all three stores, typed the way a customer reads them. |
+| **Promo codes** | Percentage off, which stores it works in, minimum spend per store, live or paused. |
+| **Orders** | Every order with its lines and totals. Move fulfilment and payment status. |
+| **Store settings** | Per store: promo strip, hero eyebrow, support details, delivery options and prices, and the tax rate. |
+
+Two things worth understanding:
+
+- **Settings change what customers are charged, not just what they read.** The
+  tax rate and delivery prices set here are what `POST /api/quote` and
+  `POST /api/orders` price against — the server resolves them before doing any
+  maths, so a stale browser tab cannot check out at yesterday's rate.
+- **Anything left blank follows the default** in `src/regions/config.ts`. The
+  overrides are a patch, not a copy, so fields added to the config later appear
+  without touching the database.
+
+It is one shared password with no per-user accounts and no audit trail. That is
+the right size for a single operator; if more than one person needs access, or
+you need to know who changed a price, replace it with real accounts.
 
 ### Data
 

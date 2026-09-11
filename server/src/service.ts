@@ -1,6 +1,7 @@
 import { badRequest, conflict } from './errors'
 import { getPromo, getVariantsByIds } from './repo'
-import { REGIONS, type RegionCode } from '../../src/regions/config'
+import { type RegionCode } from '../../src/regions/config'
+import { resolveRegionConfig } from './adminRepo'
 import { computeTotals, shippingQuotesFor } from '../../src/lib/pricing'
 import type { CartLine, OrderLineSnapshot, OrderTotals, ShippingQuote } from '../../src/types'
 
@@ -40,7 +41,9 @@ export type QuoteResult = {
 }
 
 export function priceOrder(input: QuoteInput): QuoteResult {
-  const config = REGIONS[input.region]
+  // Resolved, not raw: a tax rate or delivery price changed in the
+  // dashboard has to change what the customer is actually charged.
+  const config = resolveRegionConfig(input.region)
 
   const variantIds = input.lines.map((l) => l.variantId)
   const found = getVariantsByIds(variantIds)
@@ -124,7 +127,7 @@ export function priceOrder(input: QuoteInput): QuoteResult {
  * rollback.
  */
 export function assertInStock(priced: PricedLine[], region: RegionCode): void {
-  const country = REGIONS[region].country
+  const country = resolveRegionConfig(region).country
   for (const line of priced) {
     if (line.quantity > line.stock) {
       throw conflict(

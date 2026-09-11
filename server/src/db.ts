@@ -130,6 +130,15 @@ function migrate(conn: DatabaseSync): void {
       line_total    INTEGER NOT NULL
     );
 
+    -- Editable storefront copy and per-region overrides, set from the
+    -- admin dashboard. A plain key/value table because the shape of what
+    -- is editable changes far more often than the schema should.
+    CREATE TABLE IF NOT EXISTS settings (
+      key        TEXT PRIMARY KEY,
+      value      TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
+
     CREATE INDEX IF NOT EXISTS idx_products_category ON products(category);
     CREATE INDEX IF NOT EXISTS idx_variants_product  ON variants(product_id);
     CREATE INDEX IF NOT EXISTS idx_stock_region      ON stock(region);

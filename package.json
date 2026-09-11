@@ -13,7 +13,8 @@
     "api:check": "tsc -p server/tsconfig.json --noEmit",
     "api:reset": "node -e \"require('fs').rmSync('server/data',{recursive:true,force:true})\"",
     "dev:all": "concurrently -n api,web -c cyan,magenta \"npm run api:dev\" \"cross-env VITE_API_URL=/api vite\"",
-    "build:live": "cross-env VITE_API_URL=/api npm run build"
+    "build:live": "cross-env VITE_API_URL=/api npm run build",
+    "admin:hash": "node server/hash-password.mjs"
   },
   "dependencies": {
     "cors": "^2.8.6",
