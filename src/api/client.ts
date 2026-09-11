@@ -76,6 +76,17 @@ async function http<T>(path: string, init?: RequestInit): Promise<T> {
     )
   }
 
+  // A 200 that is not JSON means VITE_API_URL points somewhere that is
+  // not this API — typically a static host answering every path with
+  // index.html. Returning null here would leave the shop looking empty
+  // with nothing explaining why, so fail loudly instead.
+  if (body === null) {
+    throw new ApiError(
+      'api_missing',
+      'The store could not be loaded. VITE_API_URL does not appear to point at the Orbis API.',
+    )
+  }
+
   return body as T
 }
 

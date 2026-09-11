@@ -119,6 +119,16 @@ async function request<T>(
       )
     }
 
+    // 405 means something answered but will not accept a POST — a static
+    // host serving the SPA fallback for /api/*. In other words: this
+    // deployment has no API behind it at all.
+    if (response.status === 405 || response.status === 501) {
+      throw new ApiError(
+        'api_missing',
+        'There is no API at this address. The dashboard needs the backend deployed and VITE_API_URL pointing at it — see the README.',
+      )
+    }
+
     throw new ApiError(`http_${response.status}`, `The API returned an error (HTTP ${response.status}).`)
   }
 
@@ -135,11 +145,21 @@ async function request<T>(
 export async function apiReachable(): Promise<boolean> {
   try {
     const res = await fetch(`${API_URL}/health`)
-    return res.ok
+    if (!res.ok) return false
+
+    // A 200 is not enough. A static host rewrites unmatched paths to
+    // index.html, so /api/health answers 200 with HTML and looks alive.
+    // Only a JSON body carrying our own ok flag proves the API is there.
+    const data = (await res.json().catch(() => null)) as { ok?: boolean } | null
+    return data?.ok === true
   } catch {
     return false
   }
 }
+
+/** True when the app is running from a developer's machine. */
+export const isLocalhost =
+  typeof window !== 'undefined' && /^(localhost|127\.0\.0\.1|\[::1\])$/.test(window.location.hostname)
 
 const json = (method: string, data?: unknown) => ({
   method,

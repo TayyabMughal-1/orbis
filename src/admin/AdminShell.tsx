@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { Lock, LogOut, Package, Percent, Settings, ShoppingBag } from 'lucide-react'
-import { adminApi, apiReachable, getToken } from '../api/admin'
+import { adminApi, apiReachable, getToken, isLocalhost } from '../api/admin'
 import { errorMessage } from '../api/client'
 
 // ---------------------------------------------------------------------
@@ -103,10 +103,22 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
 
         {apiDown && (
           <p className="mt-3 rounded-[10px] border border-amber-400/35 bg-amber-400/10 p-3 font-mono text-[11px] leading-relaxed text-amber-100">
-            The API is not running, so signing in cannot work yet. Start it with{' '}
-            <code className="text-amber-200">npm run dev:all</code> (or{' '}
-            <code className="text-amber-200">npm run api</code> in a second terminal), then reload
-            this page.
+            {isLocalhost ? (
+              <>
+                The API is not running, so signing in cannot work yet. Start it with{' '}
+                <code className="text-amber-200">npm run dev:all</code> (or{' '}
+                <code className="text-amber-200">npm run api</code> in a second terminal), then
+                reload this page.
+              </>
+            ) : (
+              <>
+                This deployment has no API behind it, so the dashboard cannot work here. The
+                storefront runs on its built-in catalogue, but products, orders and settings need
+                the backend hosted somewhere with a database — then set{' '}
+                <code className="text-amber-200">VITE_API_URL</code> to its address and rebuild. The
+                README covers both options.
+              </>
+            )}
           </p>
         )}
 
