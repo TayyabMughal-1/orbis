@@ -409,6 +409,30 @@ const server = app.listen(PORT, () => {
   )
 })
 
+/**
+ * A busy port is the single most common way to fail to start this, and
+ * Node's default is an unhandled 'error' event and twenty lines of
+ * stack. Say what happened and what to do instead.
+ */
+server.on('error', (err: NodeJS.ErrnoException) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`
+[api] Port ${PORT} is already in use.`)
+    console.error('[api] Another copy of the API is probably already running.')
+    console.error('[api] Either use the one that is running, stop it, or start this one')
+    console.error(`[api] on a different port:  PORT=${PORT + 1} npm run api
+`)
+    process.exit(1)
+  }
+  if (err.code === 'EACCES') {
+    console.error(`
+[api] Not allowed to listen on port ${PORT}. Pick a port above 1024.
+`)
+    process.exit(1)
+  }
+  throw err
+})
+
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
   process.on(signal, () => {
     server.close(() => process.exit(0))
