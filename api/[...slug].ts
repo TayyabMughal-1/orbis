@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http'
-import { app, ensureReady } from '../server/src/app'
+import { app, ensureReady } from '../server/src/app.js'
 
 // ---------------------------------------------------------------------
 // Vercel serverless entry point.
