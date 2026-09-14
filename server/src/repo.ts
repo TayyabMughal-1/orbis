@@ -1,6 +1,6 @@
-import { conflict, notFound } from './errors'
-import { orders, products, promos, type OrderDoc, type ProductDoc } from './mongo'
-import type { RegionCode } from '../../src/regions/config'
+import { conflict, notFound } from './errors.js'
+import { orders, products, promos, type OrderDoc, type ProductDoc } from './mongo.js'
+import type { RegionCode } from '../../src/regions/config.js'
 import type {
   Address,
   Category,
@@ -12,7 +12,7 @@ import type {
   Promo,
   ShippingQuote,
   Variant,
-} from '../../src/types'
+} from '../../src/types.js'
 
 // ---------------------------------------------------------------------
 // Reads.
@@ -200,7 +200,7 @@ export async function createOrder(input: NewOrder): Promise<Order> {
     if (existing) return toOrder(existing)
   }
 
-  const { getClient } = await import('./mongo')
+  const { getClient } = await import('./mongo.js')
   const session = getClient().startSession()
   const number = generateOrderNumber(input.region)
 
