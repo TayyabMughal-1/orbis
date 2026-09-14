@@ -1,6 +1,6 @@
-import { badRequest } from './errors'
-import { REGIONS, isRegionCode, type RegionCode } from '../../src/regions/config'
-import type { Address, CartLine } from '../../src/types'
+import { badRequest } from './errors.js'
+import { REGIONS, isRegionCode, type RegionCode } from '../../src/regions/config.js'
+import type { Address, CartLine } from '../../src/types.js'
 
 // ---------------------------------------------------------------------
 // Request validation, by hand.
