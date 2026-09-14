@@ -1,5 +1,5 @@
-import { REGIONS, type RegionCode } from '../../src/regions/config'
-import { badRequest } from './errors'
+import { REGIONS, type RegionCode } from '../../src/regions/config.js'
+import { badRequest } from './errors.js'
 
 // ---------------------------------------------------------------------
 // Payments.
