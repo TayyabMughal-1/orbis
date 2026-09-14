@@ -1,7 +1,7 @@
 import express, { type NextFunction, type Request, type Response } from 'express'
 import cors from 'cors'
-import { ApiError, badRequest, tooMany } from './errors'
-import { connect, ping, stats as dbStats } from './mongo'
+import { ApiError, badRequest, tooMany } from './errors.js'
+import { connect, ping, stats as dbStats } from './mongo.js'
 import {
   createOrder,
   getOrder,
@@ -10,15 +10,15 @@ import {
   getPromo,
   listOrdersByEmail,
   listProducts,
-} from './repo'
-import { assertInStock, priceOrder } from './service'
-import { authorizePayment } from './payments'
-import { asAddress, asCartLines, asEmail, asOptionalString, asRegion, asString } from './validate'
-import { admin } from './admin'
-import { adminEnabled } from './auth'
-import { publicSettings, resolveRegionConfig } from './adminRepo'
-import { REGIONS } from '../../src/regions/config'
-import type { Category } from '../../src/types'
+} from './repo.js'
+import { assertInStock, priceOrder } from './service.js'
+import { authorizePayment } from './payments.js'
+import { asAddress, asCartLines, asEmail, asOptionalString, asRegion, asString } from './validate.js'
+import { admin } from './admin.js'
+import { adminEnabled } from './auth.js'
+import { publicSettings, resolveRegionConfig } from './adminRepo.js'
+import { REGIONS } from '../../src/regions/config.js'
+import type { Category } from '../../src/types.js'
 
 // ---------------------------------------------------------------------
 // The Orbis API.

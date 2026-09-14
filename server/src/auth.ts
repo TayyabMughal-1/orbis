@@ -1,6 +1,6 @@
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
 import type { NextFunction, Request, Response } from 'express'
-import { ApiError } from './errors'
+import { ApiError } from './errors.js'
 
 // ---------------------------------------------------------------------
 // Admin authentication.

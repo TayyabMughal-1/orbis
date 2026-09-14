@@ -1,8 +1,8 @@
-import { badRequest, conflict, notFound } from './errors'
-import { getOrder, getProductBySlug, toOrder } from './repo'
-import { orders, products, promos, settings, type ProductDoc } from './mongo'
-import { REGIONS, REGION_CODES, type RegionCode, type RegionConfig } from '../../src/regions/config'
-import type { Order, Product, Promo } from '../../src/types'
+import { badRequest, conflict, notFound } from './errors.js'
+import { getOrder, getProductBySlug, toOrder } from './repo.js'
+import { orders, products, promos, settings, type ProductDoc } from './mongo.js'
+import { REGIONS, REGION_CODES, type RegionCode, type RegionConfig } from '../../src/regions/config.js'
+import type { Order, Product, Promo } from '../../src/types.js'
 
 // ---------------------------------------------------------------------
 // Writes.

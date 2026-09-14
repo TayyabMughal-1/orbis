@@ -1,6 +1,6 @@
 import { Router, type Request, type Response, type NextFunction } from 'express'
-import { ApiError, badRequest } from './errors'
-import { adminEnabled, checkPassword, issueToken, requireAdmin } from './auth'
+import { ApiError, badRequest } from './errors.js'
+import { adminEnabled, checkPassword, issueToken, requireAdmin } from './auth.js'
 import {
   deleteProduct,
   deletePromo,
@@ -14,11 +14,11 @@ import {
   type ProductInput,
   type PromoInput,
   type RegionSettings,
-} from './adminRepo'
-import { getProductBySlug, listProducts } from './repo'
-import { stats } from './mongo'
-import { REGION_CODES, isRegionCode, type RegionCode } from '../../src/regions/config'
-import { asRegion, asString } from './validate'
+} from './adminRepo.js'
+import { getProductBySlug, listProducts } from './repo.js'
+import { stats } from './mongo.js'
+import { REGION_CODES, isRegionCode, type RegionCode } from '../../src/regions/config.js'
+import { asRegion, asString } from './validate.js'
 
 // ---------------------------------------------------------------------
 // The admin API.

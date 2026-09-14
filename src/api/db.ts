@@ -1,4 +1,4 @@
-import type { Category, PriceByRegion, Product, Promo, StockByRegion, Variant } from '../types'
+import type { Category, PriceByRegion, Product, Promo, StockByRegion, Variant } from '../types.js'
 
 // ---------------------------------------------------------------------
 // The seed catalogue for Orbis Store.

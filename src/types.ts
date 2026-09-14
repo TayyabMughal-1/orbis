@@ -2,7 +2,7 @@
 // Everything monetary is an integer in the currency's *minor unit*
 // (US cents, AED fils, PKR rupees) — never a float. See lib/money.ts.
 
-import type { RegionCode } from './regions/config'
+import type { RegionCode } from './regions/config.js'
 
 export type PriceByRegion = Record<RegionCode, number>
 export type StockByRegion = Record<RegionCode, number>
