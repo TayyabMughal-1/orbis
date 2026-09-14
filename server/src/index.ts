@@ -1,5 +1,5 @@
 import { app, ensureReady, adminEnabled } from './app'
-import { stats } from './mongo'
+import { databaseName, stats } from './mongo'
 
 // ---------------------------------------------------------------------
 // Local / container entry point.
@@ -36,7 +36,7 @@ async function main() {
 
   const server = app.listen(PORT, () => {
     console.log(`[api] listening on http://localhost:${PORT}`)
-    console.log(`[api] mongodb database "${process.env.MONGODB_DB ?? 'orbis'}"`)
+    console.log(`[api] mongodb database "${databaseName(process.env.MONGODB_URI ?? '')}"`)
     console.log(`[api] ${counts.products} products, ${counts.variants} variants, ${counts.orders} orders`)
     console.log(
       adminEnabled()

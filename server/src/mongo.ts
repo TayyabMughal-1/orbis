@@ -96,7 +96,24 @@ export type SettingsDoc = {
 
 // ------------------------------------------------------------ connect
 
-const DB_NAME = process.env.MONGODB_DB ?? 'orbis'
+/**
+ * Which database inside the cluster, taken from the path of MONGODB_URI
+ * (`…mongodb.net/orbis?…`) so that one variable carries both where the
+ * cluster is and which database to open on it.
+ *
+ * Parsed with a regex rather than `new URL`, which rejects the seed-list
+ * form (`mongodb://a:b@h1:1,h2:2/orbis`) that a replica set produces.
+ *
+ * The driver would answer this itself via `client.db()`, but it falls
+ * back to "test" when the URI names no database — silently writing the
+ * catalogue somewhere nobody looks. Hence the explicit fallback chain:
+ * the URI, then MONGODB_DB, then "orbis".
+ */
+export function databaseName(uri: string): string {
+  const named = /^mongodb(?:\+srv)?:\/\/[^/]*\/([^/?]+)/.exec(uri)?.[1]
+  if (named) return decodeURIComponent(named)
+  return process.env.MONGODB_DB ?? 'orbis'
+}
 
 type Cached = { client: MongoClient; db: Db; ready: Promise<void> }
 
@@ -137,7 +154,8 @@ export function getClient(): MongoClient {
 export async function connect(): Promise<void> {
   if (globalThis.__orbisMongo) return globalThis.__orbisMongo.ready
 
-  const client = new MongoClient(connectionString(), {
+  const uri = connectionString()
+  const client = new MongoClient(uri, {
     // Serverless: keep the pool small, fail fast rather than hanging a
     // request for 30 seconds when the cluster is unreachable.
     maxPoolSize: 10,
@@ -145,14 +163,16 @@ export async function connect(): Promise<void> {
     serverSelectionTimeoutMS: 8000,
   })
 
+  const db = client.db(databaseName(uri))
+
   const ready = (async () => {
     await client.connect()
-    const db = client.db(DB_NAME)
+    console.log(`[db] mongodb is connected ("${db.databaseName}")`)
     await createIndexes(db)
     await seed(db)
   })()
 
-  globalThis.__orbisMongo = { client, db: client.db(DB_NAME), ready }
+  globalThis.__orbisMongo = { client, db, ready }
 
   try {
     await ready

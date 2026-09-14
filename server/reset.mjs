@@ -11,10 +11,20 @@ if (!uri) {
   process.exit(1)
 }
 
+// Same resolution as databaseName() in src/mongo.ts — the database comes
+// from the path of MONGODB_URI. Duplicated rather than imported because
+// this script runs as plain Node, with no build step to pull in the TS.
+// Dropping collections from the wrong database is not a mistake worth
+// risking, so the two must agree.
+const dbName =
+  /^mongodb(?:\+srv)?:\/\/[^/]*\/([^/?]+)/.exec(uri)?.[1] ?? process.env.MONGODB_DB ?? 'orbis'
+
 const withOrders = process.argv.includes('--orders')
 const client = new MongoClient(uri)
 await client.connect()
-const db = client.db(process.env.MONGODB_DB ?? 'orbis')
+const db = client.db(decodeURIComponent(dbName))
+
+console.log(`resetting database "${db.databaseName}"\n`)
 
 const names = ['products', 'promos', 'settings', ...(withOrders ? ['orders'] : [])]
 for (const name of names) {

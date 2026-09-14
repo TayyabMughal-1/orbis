@@ -363,14 +363,18 @@ In Project → Settings → Environment Variables:
 
 | Variable | Value | |
 | --- | --- | --- |
-| `MONGODB_URI` | your Atlas connection string | **required** |
+| `MONGODB_URI` | your Atlas connection string, database included: `...mongodb.net/orbis?...` | **required** |
 | `ADMIN_PASSWORD_HASH` | output of `npm run admin:hash -- "your passphrase"` | required for `/admin` |
 | `VITE_SITE_URL` | `https://your-domain.com` | canonicals, hreflang, sitemap |
-| `MONGODB_DB` | database name, default `orbis` | optional |
 | `CORS_ORIGINS` | only if the API is called cross-origin | optional |
 
 `VITE_SITE_URL` is read at **build** time, so changing it needs a redeploy.
 `MONGODB_URI` and `ADMIN_PASSWORD_HASH` are read at request time.
+
+Which database inside the cluster comes from the path of `MONGODB_URI`, so one
+variable carries both. Name it explicitly: given no path the driver falls back to
+`test` and would seed the catalogue somewhere nobody looks, so the API resolves
+`orbis` instead. `MONGODB_DB` still overrides a pathless URI.
 
 Set `ADMIN_PASSWORD_HASH` rather than `ADMIN_PASSWORD` — the hash is what the
 server compares against, and the plaintext then exists nowhere. Without either,
