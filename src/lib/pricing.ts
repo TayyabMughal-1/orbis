@@ -1,6 +1,6 @@
-import { taxRateFor, type RegionConfig, type ShippingTier } from '../regions/config'
-import type { OrderTotals, ShippingQuote } from '../types'
-import { applyRate, taxWithin } from './money'
+import { taxRateFor, type RegionConfig, type ShippingTier } from '../regions/config.js'
+import type { OrderTotals, ShippingQuote } from '../types.js'
+import { applyRate, taxWithin } from './money.js'
 
 // ---------------------------------------------------------------------
 // One place where an order's numbers are decided. The checkout screen
