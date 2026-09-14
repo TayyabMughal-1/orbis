@@ -5,6 +5,8 @@ dist
 .env
 *.tsbuildinfo
 
-# API build output and its SQLite database (data is not source)
+# API build output
 server/dist
-server/data
+
+# MongoDB binaries downloaded by npm run db:dev
+.cache

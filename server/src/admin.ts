@@ -15,7 +15,8 @@ import {
   type PromoInput,
   type RegionSettings,
 } from './adminRepo'
-import { getProductBySlug, listProducts, stats } from './repo'
+import { getProductBySlug, listProducts } from './repo'
+import { stats } from './mongo'
 import { REGION_CODES, isRegionCode, type RegionCode } from '../../src/regions/config'
 import { asRegion, asString } from './validate'
 
@@ -91,7 +92,7 @@ admin.use(requireAdmin)
 
 admin.get(
   '/session',
-  route((_req, res) => res.json({ ok: true, ...stats() })),
+  route(async (_req, res) => res.json({ ok: true, ...(await stats()) })),
 )
 
 // ------------------------------------------------------------ products
@@ -163,35 +164,35 @@ function asProductInput(body: unknown): ProductInput {
 
 admin.get(
   '/products',
-  route((_req, res) => {
+  route(async (_req, res) => {
     // Admin sees every product, in every region, regardless of stock.
-    res.json(listProducts({ region: 'us' }))
+    res.json(await listProducts({ region: 'us' }))
   }),
 )
 
 admin.get(
   '/products/:slug',
-  route((req, res) => res.json(getProductBySlug(asString(req.params.slug, 'slug', 120)))),
+  route(async (req, res) => res.json(await getProductBySlug(asString(req.params.slug, 'slug', 120)))),
 )
 
 admin.post(
   '/products',
-  route((req, res) => res.status(201).json(saveProduct(asProductInput(req.body)))),
+  route(async (req, res) => res.status(201).json(await saveProduct(asProductInput(req.body)))),
 )
 
 admin.put(
   '/products/:id',
-  route((req, res) => {
+  route(async (req, res) => {
     const input = asProductInput(req.body)
     input.id = asString(req.params.id, 'id', 80)
-    res.json(saveProduct(input))
+    res.json(await saveProduct(input))
   }),
 )
 
 admin.delete(
   '/products/:id',
-  route((req, res) => {
-    deleteProduct(asString(req.params.id, 'id', 80))
+  route(async (req, res) => {
+    await deleteProduct(asString(req.params.id, 'id', 80))
     res.json({ ok: true })
   }),
 )
@@ -220,18 +221,18 @@ function asPromoInput(body: unknown): PromoInput {
 
 admin.get(
   '/promos',
-  route((_req, res) => res.json(listPromos())),
+  route(async (_req, res) => res.json(await listPromos())),
 )
 
 admin.post(
   '/promos',
-  route((req, res) => res.json(savePromo(asPromoInput(req.body)))),
+  route(async (req, res) => res.json(await savePromo(asPromoInput(req.body)))),
 )
 
 admin.delete(
   '/promos/:code',
-  route((req, res) => {
-    deletePromo(asString(req.params.code, 'code', 40))
+  route(async (req, res) => {
+    await deletePromo(asString(req.params.code, 'code', 40))
     res.json({ ok: true })
   }),
 )
@@ -240,18 +241,18 @@ admin.delete(
 
 admin.get(
   '/orders',
-  route((req, res) => {
+  route(async (req, res) => {
     const limit = Math.min(200, Math.max(1, Number(req.query.limit) || 100))
-    res.json(listAllOrders(limit))
+    res.json(await listAllOrders(limit))
   }),
 )
 
 admin.patch(
   '/orders/:number',
-  route((req, res) => {
+  route(async (req, res) => {
     const number = asString(req.params.number, 'number', 40)
     res.json(
-      updateOrder(number, {
+      await updateOrder(number, {
         status: typeof req.body?.status === 'string' ? req.body.status : undefined,
         paymentStatus:
           typeof req.body?.paymentStatus === 'string' ? req.body.paymentStatus : undefined,
@@ -294,12 +295,12 @@ function asSettings(body: unknown): RegionSettings {
 
 admin.get(
   '/settings/:region',
-  route((req, res) => res.json(getSettings(asRegion(req.params.region, 'region')))),
+  route(async (req, res) => res.json(await getSettings(asRegion(req.params.region, 'region')))),
 )
 
 admin.put(
   '/settings/:region',
-  route((req, res) =>
-    res.json(putSettings(asRegion(req.params.region, 'region'), asSettings(req.body))),
+  route(async (req, res) =>
+    res.json(await putSettings(asRegion(req.params.region, 'region'), asSettings(req.body))),
   ),
 )

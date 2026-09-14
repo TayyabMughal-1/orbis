@@ -1,0 +1,37 @@
+import type { IncomingMessage, ServerResponse } from 'node:http'
+import { app, ensureReady } from '../server/src/app'
+
+// ---------------------------------------------------------------------
+// Vercel serverless entry point.
+//
+// The catch-all filename means this one function handles every /api/*
+// path, and Vercel leaves req.url as the original path — so the Express
+// routes, which are all declared with their /api prefix, match without
+// any rewriting.
+//
+// ensureReady() connects to MongoDB on the first request into a cold
+// container and caches the client on globalThis, so warm invocations
+// reuse it instead of opening a connection per request.
+// ---------------------------------------------------------------------
+
+export default async function handler(req: IncomingMessage, res: ServerResponse) {
+  try {
+    await ensureReady()
+  } catch (err) {
+    res.statusCode = 503
+    res.setHeader('Content-Type', 'application/json')
+    res.end(
+      JSON.stringify({
+        error: {
+          code: 'db_unavailable',
+          message:
+            'The API could not reach its database. Check MONGODB_URI and that Atlas allows connections from anywhere (0.0.0.0/0), which is what serverless needs.',
+        },
+      }),
+    )
+    if (err instanceof Error) console.error('[api] mongo connect failed:', err.message)
+    return
+  }
+
+  return app(req as never, res as never)
+}

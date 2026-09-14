@@ -40,13 +40,13 @@ export type QuoteResult = {
   priced: PricedLine[]
 }
 
-export function priceOrder(input: QuoteInput): QuoteResult {
+export async function priceOrder(input: QuoteInput): Promise<QuoteResult> {
   // Resolved, not raw: a tax rate or delivery price changed in the
   // dashboard has to change what the customer is actually charged.
-  const config = resolveRegionConfig(input.region)
+  const config = await resolveRegionConfig(input.region)
 
   const variantIds = input.lines.map((l) => l.variantId)
-  const found = getVariantsByIds(variantIds)
+  const found = await getVariantsByIds(variantIds)
 
   const priced: PricedLine[] = []
   for (const line of input.lines) {
@@ -79,7 +79,7 @@ export function priceOrder(input: QuoteInput): QuoteResult {
   let promo: QuoteResult['promo'] = null
   let promoError: string | null = null
   if (input.promoCode) {
-    const record = getPromo(input.promoCode)
+    const record = await getPromo(input.promoCode)
     const normalized = input.promoCode.trim().toUpperCase()
     if (!record) {
       promoError = `"${normalized}" is not a code we recognise.`
@@ -126,8 +126,8 @@ export function priceOrder(input: QuoteInput): QuoteResult {
  * exists so the common case fails with a useful message instead of a
  * rollback.
  */
-export function assertInStock(priced: PricedLine[], region: RegionCode): void {
-  const country = resolveRegionConfig(region).country
+export async function assertInStock(priced: PricedLine[], region: RegionCode): Promise<void> {
+  const country = (await resolveRegionConfig(region)).country
   for (const line of priced) {
     if (line.quantity > line.stock) {
       throw conflict(

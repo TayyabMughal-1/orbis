@@ -73,24 +73,49 @@ dismiss, they are not asked again.
 
 ## The backend
 
-`server/` is an Express + SQLite service. SQLite comes from `node:sqlite`, built
-into Node 22.5+, so there is no native module to compile and nothing extra to
-install.
+`server/` is an Express + MongoDB service. MongoDB was chosen because the whole
+thing has to run on Vercel: a serverless function has no filesystem worth
+keeping, so the database has to live somewhere else. Atlas' free tier is enough.
 
 ```
 server/src/
-  index.ts      routes, CORS, rate limiting, error mapping
-  db.ts         schema, migrations, first-run seed
-  repo.ts       every SQL statement in the service
+  app.ts        the Express app — routes, CORS, rate limiting, error mapping
+  index.ts      local entry point: connect, then listen on a port
+  mongo.ts      connection caching, indexes, first-run seed
+  repo.ts       reads
+  adminRepo.ts  writes, behind the admin token
   service.ts    pricing an order (shares src/lib/pricing.ts with the web app)
   payments.ts   the gateway seam
   validate.ts   request validation
   errors.ts     one error type, mapped to HTTP status
+
+api/
+  [...slug].ts  the same app, as one Vercel serverless function
 ```
+
+`app.ts` holds the app and never calls `listen()`. `index.ts` listens; the Vercel
+function does not. That split is the only reason the same API can run both as a
+long-lived process and as a function, with no branching inside the routes.
+
+Two details exist purely because of serverless:
+
+- **The client is cached on `globalThis`.** Vercel freezes a container between
+  invocations rather than destroying it, so a warm request reuses the existing
+  connection. Without this, a burst of traffic opens a connection per request and
+  exhausts the Atlas pool.
+- **Seeding uses `$setOnInsert`, never `$set`.** Several cold starts can race on
+  a fresh database, and the loser must not overwrite stock the winner has already
+  sold from.
+
+Stock is decremented inside a transaction, and the guard is in the update filter
+itself — a variant only matches while it still holds enough stock. Two people
+buying the last item cannot both succeed: the loser's update matches nothing and
+the whole transaction is abandoned. This needs a replica set, which every Atlas
+cluster is, including the free one.
 
 | Method | Path | |
 | --- | --- | --- |
-| GET  | `/api/health` | counts and database path |
+| GET  | `/api/health` | counts, and whether the database answers |
 | GET  | `/api/geo` | country from the CDN's geo header |
 | GET  | `/api/products` | `region`, `category`, `sort`, `search`, `inStockOnly`, `limit` |
 | GET  | `/api/products/:slug` | one product |
@@ -165,12 +190,15 @@ you need to know who changed a price, replace it with real accounts.
 
 ### Data
 
-The first boot seeds the database from `src/api/db.ts` and then leaves it alone —
-editing that file will not silently rewrite live stock or prices. `npm run
-api:reset` deletes the database and re-seeds from scratch.
+The first connection seeds the database from `src/api/db.ts` and then leaves it
+alone — editing that file will not silently rewrite live stock or prices. To
+re-seed, drop the `products` collection in Atlas and restart.
 
-The catalogue lives in SQLite from then on. Prices and stock are per-region rows,
-so a market can be repriced or restocked without touching the others.
+The catalogue lives in MongoDB from then on. Variants are embedded inside their
+product, which is the natural shape here: they are never queried on their own,
+and it makes the stock decrement one atomic update on one document rather than a
+join. Prices and stock are keyed by region, so a market can be repriced or
+restocked without touching the others.
 
 ### Payments
 
@@ -280,58 +308,106 @@ United Arab Emirates number. Example: 50 123 4567*).
 
 ## Deploying
 
-### Vercel
+Everything — storefront, API and admin dashboard — runs on Vercel as one
+project. The only thing hosted elsewhere is the database.
 
-`vercel.json` is set up for it — framework `vite`, build `npm run build`, output
-`dist`, and a catch-all rewrite so a hard refresh on `/ae/product/halo-pendant`
-serves the app instead of a 404. Vercel checks the filesystem before applying
-rewrites, so real files (`/assets/*`, `/sitemap.xml`, `/robots.txt`) are still
-served directly.
+### Running it locally
 
-Import the repo and deploy — no dashboard configuration needed. Two things to
-get right:
+The API needs a MongoDB. Either point `MONGODB_URI` at the same Atlas cluster
+you deploy against, or run a throwaway one:
 
-- **Root Directory** must be the folder holding `package.json`. If you pushed the
-  parent folder rather than this one, set it in Project → Settings → General.
-- **Do not set `VITE_API_URL`** unless you have actually hosted the API somewhere
-  (see below). Left unset, the storefront runs on its built-in catalogue and
-  everything works — browsing, cart, checkout, order confirmation — with orders
-  kept in the browser. Set it to a URL nothing answers and the shop will load
-  with an empty catalogue.
+```bash
+npm run db:dev        # prints a MONGODB_URI — leave it running
+```
 
-Worth setting: `VITE_SITE_URL=https://your-domain.com`, so canonicals, hreflang
-and the sitemap point at the real domain rather than the placeholder.
+Then, in another terminal, with that URI in the environment:
 
-### Other static hosts
+```bash
+npm run dev:all       # API on :8787, storefront on :5173 proxying /api
+```
+
+The in-memory database is wiped when you stop it, and it downloads a MongoDB
+binary the first time you use it. `npm run dev` on its own skips the API
+entirely and runs the storefront against the catalogue bundled into
+`src/api/db.ts` — enough for design work, and it needs no database at all.
+
+### 1. A database
+
+[MongoDB Atlas](https://www.mongodb.com/atlas) free tier is enough.
+
+1. Create a cluster.
+2. **Database Access** → add a user, copy the password.
+3. **Network Access** → allow `0.0.0.0/0`.
+4. **Connect → Drivers** → copy the connection string, paste the password in.
+
+Step 3 looks alarming and is not optional: serverless functions get a different
+outbound IP on every cold start, so there is no address to allow-list. The
+database is still protected by the user, the password and TLS.
+
+If the password contains `@ : / ? # [ ] %`, percent-encode it or the URI will not
+parse.
+
+### 2. The project
+
+Import the repo and deploy. `vercel.json` handles the rest — framework `vite`,
+build `npm run build:live`, output `dist`, `api/[...slug].ts` as the function,
+and a rewrite that sends everything *except* `/api/*` to `index.html` so a hard
+refresh on `/ae/product/halo-pendant` serves the app rather than a 404.
+
+**Root Directory** must be the folder holding `package.json`. If you pushed the
+parent folder rather than this one, set it in Project → Settings → General.
+
+### 3. Environment variables
+
+In Project → Settings → Environment Variables:
+
+| Variable | Value | |
+| --- | --- | --- |
+| `MONGODB_URI` | your Atlas connection string | **required** |
+| `ADMIN_PASSWORD_HASH` | output of `npm run admin:hash -- "your passphrase"` | required for `/admin` |
+| `VITE_SITE_URL` | `https://your-domain.com` | canonicals, hreflang, sitemap |
+| `MONGODB_DB` | database name, default `orbis` | optional |
+| `CORS_ORIGINS` | only if the API is called cross-origin | optional |
+
+`VITE_SITE_URL` is read at **build** time, so changing it needs a redeploy.
+`MONGODB_URI` and `ADMIN_PASSWORD_HASH` are read at request time.
+
+Set `ADMIN_PASSWORD_HASH` rather than `ADMIN_PASSWORD` — the hash is what the
+server compares against, and the plaintext then exists nowhere. Without either,
+`/admin` stays locked: a deployment that forgets is locked, not wide open.
+
+### What happens on the first request
+
+A cold container connects, creates indexes, seeds the catalogue if the database
+is empty, and caches the client. That first request is slower; the rest reuse the
+connection. Seeding never overwrites an existing document, so this is safe on
+every cold start and safe when several race.
+
+### If something is wrong
+
+- **`/api/health` returns 503 `db_not_configured`** — `MONGODB_URI` is not set on
+  the environment you are looking at. Vercel keeps Production, Preview and
+  Development separate; set it on all three.
+- **503 `db_unavailable`** — the URI is set but the cluster refused. Almost
+  always the password, or Network Access not allowing `0.0.0.0/0`.
+- **The shop loads with no products** — the build ran without `VITE_API_URL`.
+  `vercel.json` sets it via `npm run build:live`; if you overrode the build
+  command in the dashboard, that is why.
+- **`/admin` says the password is wrong** — `ADMIN_PASSWORD_HASH` is missing or
+  was pasted with the `ADMIN_PASSWORD_HASH=` prefix included in the value.
+
+### Running it anywhere else
+
+`npm run api:build` produces `server/dist/index.cjs`; run it with plain `node`.
+Set `NODE_ENV=production`, `CORS_ORIGINS` to your storefront's origin,
+`MONGODB_URI`, and `TRUST_PROXY=1` if anything sits in front of it. The same
+database works for both — nothing about the API assumes serverless.
 
 `public/_redirects` covers Netlify. For nginx:
 
 ```nginx
 location / { try_files $uri $uri/ /index.html; }
 ```
-
-### The API
-
-`npm run api:build` produces `server/dist/index.cjs`; run it with plain `node`.
-Set `NODE_ENV=production`, `CORS_ORIGINS` to your storefront's origin, `ORBIS_DB`
-to a path on a mounted volume, and `TRUST_PROXY=1` if anything sits in front of
-it. See `.env.example` for the full list.
-
-> **It will not run on Vercel as it stands, and the reason is the database.**
-> Vercel's serverless filesystem is ephemeral and read-only, so a SQLite file
-> there would lose every order between requests. Two honest options:
->
-> 1. **Host the API where it has a disk** — Railway, Render, Fly.io or any VPS.
->    Deploy `server/`, give it a volume for `ORBIS_DB`, then point the storefront
->    at it with `VITE_API_URL=https://api.your-domain.com` and add your Vercel
->    domain to `CORS_ORIGINS`.
-> 2. **Swap SQLite for a hosted Postgres** (Neon, Supabase, Vercel Postgres) and
->    port the API to serverless functions. `server/src/repo.ts` holds every SQL
->    statement in the service, so this is a one-file rewrite — the route handlers
->    never see SQL.
->
-> Until then, deploying the storefront alone to Vercel gives you a complete,
-> working shop on the built-in catalogue.
 
 To run the three stores on separate domains instead of paths, point each at the
 same build and rewrite `/` to `/us`, `/ae` or `/pk` at the edge — the router

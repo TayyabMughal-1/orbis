@@ -1,9 +1,12 @@
-# The frontend build never imports from server/ — the dependency runs the
-# other way (the API imports pricing and region config out of src/). Keeping
-# it out of the Vercel upload makes deploys smaller and avoids any confusion
-# about whether the Express app runs there. It does not — see README.
-server
+# server/ is NOT ignored: api/[...slug].ts imports the Express app out of
+# server/src/app.ts, so the whole API is bundled into the serverless
+# function. Excluding it would break the build.
 
 # Local-only
 .env
 *.local
+
+# The SQLite era left a data directory behind on some machines; it is
+# never used now and must not be uploaded.
+server/data
+server/dist

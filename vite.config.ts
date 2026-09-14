@@ -102,6 +102,26 @@ function seoFiles(): Plugin {
   }
 }
 
+// ---------------------------------------------------------------------
+// Where the built storefront looks for the API.
+//
+// On Vercel the API is a serverless function on the same origin, so the
+// bundle has to be built pointing at /api. Deciding that here rather
+// than in the build command means it cannot be lost by someone changing
+// the build command in the Vercel dashboard — the most common way to
+// end up with a shop that loads with an empty catalogue.
+//
+// ORBIS_SAME_ORIGIN_API does the same thing locally. It carries "1"
+// rather than "/api" on purpose: Git Bash on Windows rewrites anything
+// that looks like an absolute POSIX path in an argument, so
+// `VITE_API_URL=/api npm run build` silently becomes
+// `VITE_API_URL=C:/Program Files/Git/api`. A value of "1" survives.
+// ---------------------------------------------------------------------
+
+if (!process.env.VITE_API_URL && (process.env.VERCEL || process.env.ORBIS_SAME_ORIGIN_API)) {
+  process.env.VITE_API_URL = '/api'
+}
+
 const API_TARGET = process.env.API_TARGET ?? 'http://localhost:8787'
 
 // Proxying /api keeps the storefront same-origin in development, so
