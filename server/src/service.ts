@@ -1,9 +1,9 @@
-import { badRequest, conflict } from './errors'
-import { getPromo, getVariantsByIds } from './repo'
-import { type RegionCode } from '../../src/regions/config'
-import { resolveRegionConfig } from './adminRepo'
-import { computeTotals, shippingQuotesFor } from '../../src/lib/pricing'
-import type { CartLine, OrderLineSnapshot, OrderTotals, ShippingQuote } from '../../src/types'
+import { badRequest, conflict } from './errors.js'
+import { getPromo, getVariantsByIds } from './repo.js'
+import { type RegionCode } from '../../src/regions/config.js'
+import { resolveRegionConfig } from './adminRepo.js'
+import { computeTotals, shippingQuotesFor } from '../../src/lib/pricing.js'
+import type { CartLine, OrderLineSnapshot, OrderTotals, ShippingQuote } from '../../src/types.js'
 
 // ---------------------------------------------------------------------
 // Pricing an order.
