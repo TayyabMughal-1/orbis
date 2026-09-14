@@ -1,8 +1,8 @@
 import { MongoClient, type Collection, type Db } from 'mongodb'
-import { PRODUCTS, PROMOS } from '../../src/api/db'
-import type { Address, MediaItem, OrderTotals, ShippingQuote, VariantOptions } from '../../src/types'
-import type { RegionCode } from '../../src/regions/config'
-import { ApiError } from './errors'
+import { PRODUCTS, PROMOS } from '../../src/api/db.js'
+import type { Address, MediaItem, OrderTotals, ShippingQuote, VariantOptions } from '../../src/types.js'
+import type { RegionCode } from '../../src/regions/config.js'
+import { ApiError } from './errors.js'
 
 // ---------------------------------------------------------------------
 // MongoDB.
