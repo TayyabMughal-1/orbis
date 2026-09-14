@@ -1,5 +1,5 @@
-import { app, ensureReady, adminEnabled } from './app'
-import { stats } from './mongo'
+import { app, ensureReady, adminEnabled } from './app.js'
+import { stats } from './mongo.js'
 
 // ---------------------------------------------------------------------
 // Local / container entry point.
