@@ -24,6 +24,19 @@ if (!DATABASE_URL) {
   console.error('\nDATABASE_URL is not set. Put your Supabase connection string in .env first.\n')
   process.exit(1)
 }
+
+// The dashboard hands out the URI with a placeholder where the password
+// goes. Left in, it fails as an ordinary authentication error several
+// seconds later, which reads like a wrong password rather than a
+// forgotten edit.
+if (/\[YOUR-PASSWORD\]|\[your-password\]/.test(DATABASE_URL)) {
+  console.error('\nDATABASE_URL still has the [YOUR-PASSWORD] placeholder in it.')
+  console.error('Replace it (brackets included) with your Supabase database password.')
+  console.error('Settings -> Database -> Reset database password, if you do not have it.')
+  console.error('\nIf the password contains @ : / ? # [ ] % it must be percent-encoded —')
+  console.error('an unencoded @ is what broke the previous database connection.\n')
+  process.exit(1)
+}
 if (!ADMIN_EMAIL || !ADMIN_PASSWORD) {
   console.error('\nADMIN_EMAIL and ADMIN_PASSWORD must be set in .env.\n')
   process.exit(1)
