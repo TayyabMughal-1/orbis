@@ -1,6 +1,6 @@
 import { Router, type Request, type Response, type NextFunction } from 'express'
 import { ApiError, badRequest } from './errors.js'
-import { adminEnabled, checkPassword, issueToken, requireAdmin } from './auth.js'
+import { adminEnabled, authenticate, issueToken, recordLogin, requireAdmin } from './auth.js'
 import {
   deleteProduct,
   deletePromo,
@@ -16,7 +16,7 @@ import {
   type RegionSettings,
 } from './adminRepo.js'
 import { getProductBySlug, listProducts } from './repo.js'
-import { stats } from './mongo.js'
+import { stats } from './db.js'
 import { REGION_CODES, isRegionCode, type RegionCode } from '../../src/regions/config.js'
 import { asRegion, asString } from './validate.js'
 
@@ -64,26 +64,40 @@ function throttleLogin(key: string): void {
 
 admin.post(
   '/login',
-  route((req, res) => {
+  route(async (req, res) => {
     if (!adminEnabled()) {
       throw new ApiError(
         503,
         'admin_disabled',
-        'Admin access is switched off because no ADMIN_PASSWORD is set on the server.',
+        'Admin access is switched off because no ADMIN_EMAIL and ADMIN_PASSWORD are set on the server.',
       )
     }
 
     const key = req.ip ?? 'unknown'
     throttleLogin(key)
 
+    const email = typeof req.body?.email === 'string' ? req.body.email : ''
     const password = typeof req.body?.password === 'string' ? req.body.password : ''
-    if (!checkPassword(password)) {
-      throw new ApiError(401, 'bad_credentials', 'That password is not right.')
+
+    const user = await authenticate(email, password)
+    if (!user) {
+      // One message for a wrong email and a wrong password alike, so the
+      // response cannot be used to work out which addresses have accounts.
+      throw new ApiError(401, 'bad_credentials', 'That email and password do not match.')
+    }
+    if (user.role !== 'ADMIN') {
+      throw new ApiError(403, 'forbidden', 'Your account does not have admin access.')
     }
 
     attempts.delete(key)
-    const { token, expiresAt } = issueToken()
-    res.json({ token, expiresAt })
+    await recordLogin(user)
+
+    const { token, expiresAt } = issueToken(user)
+    res.json({
+      token,
+      expiresAt,
+      user: { email: user.email, name: user.name, role: user.role },
+    })
   }),
 )
 
@@ -92,7 +106,7 @@ admin.use(requireAdmin)
 
 admin.get(
   '/session',
-  route(async (_req, res) => res.json({ ok: true, ...(await stats()) })),
+  route(async (req, res) => res.json({ ok: true, user: req.admin, ...(await stats()) })),
 )
 
 // ------------------------------------------------------------ products

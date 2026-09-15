@@ -3,35 +3,42 @@
 // Orders are left alone unless you pass --orders. Deleting the record of
 // what people bought should never be a side effect of "reset the demo
 // data", so it is opt-in.
-import { MongoClient } from 'mongodb'
+//
+// Users are never touched: losing the admin account to a data reset
+// would lock you out of the dashboard.
+import pg from 'pg'
 
-const uri = process.env.MONGODB_URI
-if (!uri) {
-  console.error('MONGODB_URI is not set. See .env.example.')
+const connectionString = process.env.DATABASE_URL
+if (!connectionString) {
+  console.error('DATABASE_URL is not set. See .env.example.')
   process.exit(1)
 }
 
-// Same resolution as databaseName() in src/mongo.ts — the database comes
-// from the path of MONGODB_URI. Duplicated rather than imported because
-// this script runs as plain Node, with no build step to pull in the TS.
-// Dropping collections from the wrong database is not a mistake worth
-// risking, so the two must agree.
-const dbName =
-  /^mongodb(?:\+srv)?:\/\/[^/]*\/([^/?]+)/.exec(uri)?.[1] ?? process.env.MONGODB_DB ?? 'orbis'
-
 const withOrders = process.argv.includes('--orders')
-const client = new MongoClient(uri)
+
+const client = new pg.Client({
+  connectionString,
+  ssl: /\blocalhost\b|\b127\.0\.0\.1\b/.test(connectionString) ? undefined : { rejectUnauthorized: false },
+})
 await client.connect()
-const db = client.db(decodeURIComponent(dbName))
 
-console.log(`resetting database "${db.databaseName}"\n`)
+const { rows } = await client.query('SELECT current_database() AS db')
+console.log(`resetting database "${rows[0].db}"\n`)
 
-const names = ['products', 'promos', 'settings', ...(withOrders ? ['orders'] : [])]
-for (const name of names) {
-  const dropped = await db.collection(name).drop().then(() => true, () => false)
-  console.log(`${dropped ? 'dropped ' : 'not there'}  ${name}`)
+// products cascades to variants and variant_regions; orders cascades to
+// order_lines. Both are declared ON DELETE CASCADE in schema.sql.
+const tables = ['products', 'promos', 'settings', ...(withOrders ? ['orders'] : [])]
+
+for (const table of tables) {
+  try {
+    const result = await client.query(`DELETE FROM ${table}`)
+    console.log(`cleared   ${table} (${result.rowCount} rows)`)
+  } catch (err) {
+    console.log(`not there ${table}`)
+    void err
+  }
 }
 
 if (!withOrders) console.log('\norders kept — pass --orders to drop those too')
 console.log('next start will re-seed the catalogue')
-await client.close()
+await client.end()

@@ -1,6 +1,6 @@
 import { badRequest, conflict, notFound } from './errors.js'
-import { getOrder, getProductBySlug, toOrder } from './repo.js'
-import { orders, products, promos, settings, type ProductDoc } from './mongo.js'
+import { getOrder, getProductBySlug, toOrder, ORDER_SELECT, type OrderRow } from './repo.js'
+import { query, transaction } from './db.js'
 import { REGIONS, REGION_CODES, type RegionCode, type RegionConfig } from '../../src/regions/config.js'
 import type { Order, Product, Promo } from '../../src/types.js'
 
@@ -62,47 +62,92 @@ export async function saveProduct(input: ProductInput): Promise<Product> {
 
   const id = input.id?.trim() || slug
 
-  const clash = await products().findOne({ slug, _id: { $ne: id } }, { projection: { _id: 1 } })
-  if (clash) throw conflict('slug_taken', `Another product already uses the URL "${slug}".`)
-
-  const doc: Omit<ProductDoc, '_id'> = {
+  const clash = await query<{ id: string }>('SELECT id FROM products WHERE slug = $1 AND id <> $2', [
     slug,
-    name: input.name,
-    tagline: input.tagline,
-    description: input.description,
-    highlights: input.highlights,
-    rating: input.rating,
-    category: input.category,
-    badges: input.badges,
-    media: input.media as ProductDoc['media'],
-    specs: input.specs,
-    featured: input.featured,
-    weightGrams: input.weightGrams,
-    variants: input.variants.map((v) => ({
-      id: v.id?.trim() || `${id}-${slugify(v.sku || v.label)}`,
-      sku: v.sku,
-      label: v.label,
-      options: v.options ?? {},
-      price: Object.fromEntries(
-        REGION_CODES.map((r) => [r, Math.round(v.price[r] ?? 0)]),
-      ) as Record<RegionCode, number>,
-      compareAt: v.compareAt ?? null,
-      stock: Object.fromEntries(
-        REGION_CODES.map((r) => [r, Math.max(0, Math.round(v.stock[r] ?? 0))]),
-      ) as Record<RegionCode, number>,
-    })),
-  }
+    id,
+  ])
+  if (clash.rowCount) throw conflict('slug_taken', `Another product already uses the URL "${slug}".`)
 
-  // Replacing the whole document means a variant left out of the payload
-  // is gone — along with its stock counts in every region.
-  await products().updateOne({ _id: id }, { $set: doc }, { upsert: true })
+  // Variant ids are derived once, up front: the delete below and the
+  // inserts after it must agree on exactly which variants survive.
+  const keep = input.variants.map((v) => v.id?.trim() || `${id}-${slugify(v.sku || v.label)}`)
+
+  await transaction(async (client) => {
+    await client.query(
+      `INSERT INTO products (id, slug, name, tagline, description, highlights,
+                             rating_average, rating_count, category, badges,
+                             media, specs, featured, weight_grams)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+       ON CONFLICT (id) DO UPDATE SET
+         slug = EXCLUDED.slug, name = EXCLUDED.name, tagline = EXCLUDED.tagline,
+         description = EXCLUDED.description, highlights = EXCLUDED.highlights,
+         rating_average = EXCLUDED.rating_average, rating_count = EXCLUDED.rating_count,
+         category = EXCLUDED.category, badges = EXCLUDED.badges, media = EXCLUDED.media,
+         specs = EXCLUDED.specs, featured = EXCLUDED.featured,
+         weight_grams = EXCLUDED.weight_grams`,
+      [
+        id,
+        slug,
+        input.name,
+        input.tagline,
+        input.description,
+        input.highlights,
+        input.rating?.average ?? null,
+        input.rating?.count ?? null,
+        input.category,
+        input.badges,
+        JSON.stringify(input.media ?? []),
+        JSON.stringify(input.specs ?? []),
+        input.featured,
+        input.weightGrams,
+      ],
+    )
+
+    // Replacing the whole product means a variant left out of the payload
+    // is gone, along with its stock counts in every region. Deleting the
+    // variant rows cascades to variant_regions. order_lines hold their own
+    // snapshot and are deliberately not foreign-keyed to variants, so past
+    // orders survive a product being reshaped or deleted.
+    await client.query('DELETE FROM variants WHERE product_id = $1 AND NOT (id = ANY($2))', [
+      id,
+      keep,
+    ])
+
+    for (const [index, v] of input.variants.entries()) {
+      const variantId = keep[index]
+      await client.query(
+        `INSERT INTO variants (id, product_id, sku, label, options, position)
+         VALUES ($1,$2,$3,$4,$5,$6)
+         ON CONFLICT (id) DO UPDATE SET
+           product_id = EXCLUDED.product_id, sku = EXCLUDED.sku, label = EXCLUDED.label,
+           options = EXCLUDED.options, position = EXCLUDED.position`,
+        [variantId, id, v.sku, v.label, JSON.stringify(v.options ?? {}), index],
+      )
+
+      for (const r of REGION_CODES) {
+        await client.query(
+          `INSERT INTO variant_regions (variant_id, region, price, compare_at, stock)
+           VALUES ($1,$2,$3,$4,$5)
+           ON CONFLICT (variant_id, region) DO UPDATE SET
+             price = EXCLUDED.price, compare_at = EXCLUDED.compare_at, stock = EXCLUDED.stock`,
+          [
+            variantId,
+            r,
+            Math.round(v.price[r] ?? 0),
+            v.compareAt?.[r] ?? null,
+            Math.max(0, Math.round(v.stock[r] ?? 0)),
+          ],
+        )
+      }
+    }
+  })
 
   return getProductBySlug(slug)
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  const result = await products().deleteOne({ _id: id })
-  if (result.deletedCount === 0) throw notFound('not_found', 'No product with that id.')
+  const result = await query('DELETE FROM products WHERE id = $1', [id])
+  if (result.rowCount === 0) throw notFound('not_found', 'No product with that id.')
 }
 
 // -------------------------------------------------------------- promos
@@ -128,45 +173,58 @@ export async function savePromo(input: PromoInput): Promise<Promo & { active: bo
     throw badRequest('no_regions', 'Choose at least one store for this code to work in.')
   }
 
-  await promos().updateOne(
-    { _id: code },
-    {
-      $set: {
-        label: input.label,
-        percentOff: Math.round(input.percentOff),
-        regions: input.regions,
-        minSubtotal: input.minSubtotal,
-        active: input.active,
-      },
-    },
-    { upsert: true },
+  await query(
+    `INSERT INTO promos (code, label, percent_off, regions, min_subtotal, active)
+     VALUES ($1,$2,$3,$4,$5,$6)
+     ON CONFLICT (code) DO UPDATE SET
+       label = EXCLUDED.label, percent_off = EXCLUDED.percent_off,
+       regions = EXCLUDED.regions, min_subtotal = EXCLUDED.min_subtotal,
+       active = EXCLUDED.active`,
+    [
+      code,
+      input.label,
+      Math.round(input.percentOff),
+      input.regions,
+      JSON.stringify(input.minSubtotal),
+      input.active,
+    ],
   )
 
   return (await listPromos()).find((p) => p.code === code)!
 }
 
 export async function listPromos(): Promise<(Promo & { active: boolean })[]> {
-  const docs = await promos().find().sort({ _id: 1 }).toArray()
-  return docs.map((d) => ({
-    code: d._id,
+  const { rows } = await query<{
+    code: string
+    label: string
+    percent_off: number
+    regions: string[]
+    min_subtotal: Record<RegionCode, number>
+    active: boolean
+  }>('SELECT * FROM promos ORDER BY code')
+
+  return rows.map((d) => ({
+    code: d.code,
     label: d.label,
-    percentOff: d.percentOff,
-    regions: d.regions,
-    minSubtotal: d.minSubtotal,
+    percentOff: d.percent_off,
+    regions: d.regions as RegionCode[],
+    minSubtotal: d.min_subtotal,
     active: d.active !== false,
   }))
 }
 
 export async function deletePromo(code: string): Promise<void> {
-  const result = await promos().deleteOne({ _id: code.toUpperCase() })
-  if (result.deletedCount === 0) throw notFound('not_found', 'No promo code by that name.')
+  const result = await query('DELETE FROM promos WHERE code = $1', [code.toUpperCase()])
+  if (result.rowCount === 0) throw notFound('not_found', 'No promo code by that name.')
 }
 
 // -------------------------------------------------------------- orders
 
 export async function listAllOrders(limit = 100): Promise<Order[]> {
-  const docs = await orders().find().sort({ placedAt: -1 }).limit(limit).toArray()
-  return docs.map(toOrder)
+  const { rows } = await query<OrderRow>(`${ORDER_SELECT} ORDER BY o.placed_at DESC LIMIT $1`, [
+    limit,
+  ])
+  return rows.map(toOrder)
 }
 
 const ORDER_STATUSES = ['confirmed', 'processing', 'shipped'] as const
@@ -191,12 +249,19 @@ export async function updateOrder(
     )
   }
 
-  const set: Record<string, string> = {}
-  if (patch.status) set.status = patch.status
-  if (patch.paymentStatus) set.paymentStatus = patch.paymentStatus
+  const sets: string[] = []
+  const params: unknown[] = [number.trim().toUpperCase()]
+  if (patch.status) {
+    params.push(patch.status)
+    sets.push(`status = $${params.length}`)
+  }
+  if (patch.paymentStatus) {
+    params.push(patch.paymentStatus)
+    sets.push(`payment_status = $${params.length}`)
+  }
 
-  if (Object.keys(set).length) {
-    await orders().updateOne({ _id: number.trim().toUpperCase() }, { $set: set })
+  if (sets.length) {
+    await query(`UPDATE orders SET ${sets.join(', ')} WHERE number = $1`, params)
   }
 
   return getOrder(number)
@@ -216,8 +281,11 @@ export type RegionSettings = {
 }
 
 export async function getSettings(region: RegionCode): Promise<RegionSettings> {
-  const doc = await settings().findOne({ _id: `region:${region}` })
-  return (doc?.value as RegionSettings) ?? {}
+  const { rows } = await query<{ value: RegionSettings }>(
+    'SELECT value FROM settings WHERE id = $1',
+    [`region:${region}`],
+  )
+  return rows[0]?.value ?? {}
 }
 
 export async function putSettings(
@@ -231,10 +299,10 @@ export async function putSettings(
     if (tier.amount < 0) throw badRequest('invalid_shipping', 'Delivery prices cannot be negative.')
   }
 
-  await settings().updateOne(
-    { _id: `region:${region}` },
-    { $set: { value, updatedAt: new Date().toISOString() } },
-    { upsert: true },
+  await query(
+    `INSERT INTO settings (id, value, updated_at) VALUES ($1,$2,now())
+     ON CONFLICT (id) DO UPDATE SET value = EXCLUDED.value, updated_at = now()`,
+    [`region:${region}`, JSON.stringify(value)],
   )
 
   return value

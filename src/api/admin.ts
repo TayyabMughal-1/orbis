@@ -193,21 +193,28 @@ export type ProductPayload = Omit<Product, 'rating'> & {
   rating: { average: number; count: number } | null
 }
 
+/** Who is signed in. The role is carried in the token, not looked up. */
+export type AdminUser = { email: string; name: string; role: 'ADMIN' | 'STAFF' }
+
 // ------------------------------------------------------------- the api
 
 export const adminApi = {
-  async login(password: string): Promise<void> {
-    const result = await request<{ token: string; expiresAt: number }>(
+  async login(email: string, password: string): Promise<AdminUser> {
+    const result = await request<{ token: string; expiresAt: number; user: AdminUser }>(
       '/admin/login',
-      json('POST', { password }),
+      json('POST', { email, password }),
       { rawAuthErrors: true },
     )
     setToken(result.token, result.expiresAt)
+    return result.user
   },
 
   logout: clearToken,
 
-  session: () => request<{ ok: true; products: number; variants: number; orders: number }>('/admin/session'),
+  session: () =>
+    request<{ ok: true; user: AdminUser; products: number; variants: number; orders: number }>(
+      '/admin/session',
+    ),
 
   listProducts: () => request<Product[]>('/admin/products'),
   getProduct: (slug: string) => request<Product>(`/admin/products/${encodeURIComponent(slug)}`),

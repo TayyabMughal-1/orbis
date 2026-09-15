@@ -9,8 +9,8 @@ import { app, ensureReady } from '../server/src/app.js'
 // routes, which are all declared with their /api prefix, match without
 // any rewriting.
 //
-// ensureReady() connects to MongoDB on the first request into a cold
-// container and caches the client on globalThis, so warm invocations
+// ensureReady() connects to Postgres on the first request into a cold
+// container and caches the pool on globalThis, so warm invocations
 // reuse it instead of opening a connection per request.
 // ---------------------------------------------------------------------
 
@@ -25,11 +25,11 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
         error: {
           code: 'db_unavailable',
           message:
-            'The API could not reach its database. Check MONGODB_URI and that Atlas allows connections from anywhere (0.0.0.0/0), which is what serverless needs.',
+            'The API could not reach its database. Check DATABASE_URL, and that the Supabase project is not paused.',
         },
       }),
     )
-    if (err instanceof Error) console.error('[api] mongo connect failed:', err.message)
+    if (err instanceof Error) console.error('[api] postgres connect failed:', err.message)
     return
   }
 

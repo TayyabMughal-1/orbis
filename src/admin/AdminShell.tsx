@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { Lock, LogOut, Package, Percent, Settings, ShoppingBag } from 'lucide-react'
+import { AtSign, Lock, LogOut, Package, Percent, Settings, ShoppingBag } from 'lucide-react'
 import { adminApi, apiReachable, getToken, isLocalhost } from '../api/admin'
 import { errorMessage } from '../api/client'
 
@@ -35,6 +35,7 @@ export default function AdminShell() {
 // --------------------------------------------------------------- login
 
 function Login({ onSignedIn }: { onSignedIn: () => void }) {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -57,10 +58,12 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
     setBusy(true)
     setError(null)
     try {
-      await adminApi.login(password)
+      await adminApi.login(email, password)
       onSignedIn()
     } catch (err) {
       setError(errorMessage(err))
+      // Keep the email — retyping it after a typo in the password is
+      // pure friction, and it is not the half worth clearing.
       setPassword('')
     } finally {
       setBusy(false)
@@ -80,6 +83,28 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
         </div>
 
         <label
+          htmlFor="admin-email"
+          className="mb-2 block font-mono text-[10px] uppercase tracking-wide text-cream/50"
+        >
+          Email
+        </label>
+        <div className="mb-4 flex items-center gap-2 rounded-[12px] border border-white/15 bg-white/5 px-3 focus-within:border-white/40">
+          <AtSign size={14} className="flex-none text-cream/45" />
+          <input
+            id="admin-email"
+            type="email"
+            autoFocus
+            autoComplete="username"
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value)
+              setError(null)
+            }}
+            className="w-full bg-transparent py-3 font-mono text-[13px] text-cream outline-none"
+          />
+        </div>
+
+        <label
           htmlFor="admin-password"
           className="mb-2 block font-mono text-[10px] uppercase tracking-wide text-cream/50"
         >
@@ -90,7 +115,6 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
           <input
             id="admin-password"
             type="password"
-            autoFocus
             autoComplete="current-password"
             value={password}
             onChange={(e) => {

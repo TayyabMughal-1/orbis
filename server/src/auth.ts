@@ -1,84 +1,110 @@
-import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
+import { createHmac, timingSafeEqual } from 'node:crypto'
 import type { NextFunction, Request, Response } from 'express'
 import { ApiError } from './errors.js'
+import { DUMMY_HASH, hashPassword, verifyPassword } from './password.js'
+import { query, type UserRow, type UserRole } from './db.js'
 
 // ---------------------------------------------------------------------
 // Admin authentication.
 //
-// One operator, one password, no user table. That is the right size for
-// a store this size, and it avoids inventing a half-finished accounts
-// system that nobody audits.
+// Accounts live in the `users` table, each with an email, an scrypt
+// password hash and a role. The ADMIN named by ADMIN_EMAIL is seeded
+// from the environment on connect (see seedAdminUser in db.ts), so a
+// fresh database still has exactly one way in and no default password.
 //
 // How it works:
-//   • ADMIN_PASSWORD (or ADMIN_PASSWORD_HASH) lives in the environment.
-//     Without it the admin API is switched off entirely — a deployment
-//     that forgets to set it is locked, not wide open.
-//   • Login compares in constant time, then returns a signed token.
-//   • The token is an HMAC over {issued, expires}. Nothing is stored
-//     server-side, so there is no session table to leak and restarting
-//     the process does not log you out mid-edit.
+//   • Login looks the email up, checks the password in constant time,
+//     and returns a signed token.
+//   • The token is an HMAC over {sub, email, role, issued, expires}.
+//     Nothing is stored server-side, so there is no session table to
+//     leak and restarting the process does not log anyone out mid-edit.
+//   • Because the role is inside the signed token, a request can be
+//     authorised without a database round trip.
 //
-// What this deliberately is not: multi-user, role-based, or audited.
-// If more than one person needs access, or you need to know who changed
-// a price, this wants replacing with real accounts.
+// The trade that comes with a stateless token: revoking one before it
+// expires means changing ADMIN_SECRET, which signs out everybody. At
+// this size that is the right trade. A sessions table is what to
+// reach for when it stops being.
 // ---------------------------------------------------------------------
 
 const TOKEN_TTL_MS = 12 * 60 * 60 * 1000 // 12 hours
 
-/** Secret for signing tokens. Falls back to the password if unset. */
+export type AdminClaims = {
+  /** The user's id. */
+  sub: string
+  email: string
+  role: UserRole
+  iat: number
+  exp: number
+}
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace Express {
+    interface Request {
+      /** Set by requireAdmin once the bearer token checks out. */
+      admin?: AdminClaims
+    }
+  }
+}
+
+/** Secret for signing tokens. Falls back to the admin password if unset. */
 function signingSecret(): string {
   const secret = process.env.ADMIN_SECRET ?? process.env.ADMIN_PASSWORD_HASH ?? process.env.ADMIN_PASSWORD
   if (!secret) throw new ApiError(503, 'admin_disabled', 'The admin API is not configured.')
   return secret
 }
 
+/**
+ * Whether the dashboard is switched on at all. Both halves are needed:
+ * the email names the account, the password (or its hash) is what seeds
+ * it. A deployment that sets neither is locked, not wide open.
+ */
 export function adminEnabled(): boolean {
-  return Boolean(process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD_HASH)
+  return Boolean(
+    process.env.ADMIN_EMAIL && (process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD_HASH),
+  )
 }
 
-// ------------------------------------------------------------ password
+export { hashPassword }
+
+// ------------------------------------------------------------- sign in
 
 /**
- * Hashes a password for ADMIN_PASSWORD_HASH. Run:
- *   node -e "console.log(require('./server/dist/index.cjs'))"
- * or use the `npm run admin:hash` script.
+ * Finds the user and checks the password. Returns null for both "no such
+ * email" and "wrong password" — telling those apart is exactly what an
+ * attacker enumerating accounts wants.
+ *
+ * The dummy hash matters for the same reason: without it a missing email
+ * returns in microseconds while a real one takes a full scrypt, and the
+ * gap is measurable from outside.
  */
-export function hashPassword(password: string): string {
-  const salt = randomBytes(16).toString('hex')
-  const derived = scryptSync(password, salt, 64).toString('hex')
-  return `scrypt:${salt}:${derived}`
+export async function authenticate(email: string, password: string): Promise<UserRow | null> {
+  const normalised = email.trim().toLowerCase()
+  if (!normalised || !password) {
+    verifyPassword(password, DUMMY_HASH)
+    return null
+  }
+
+  const found = await query<UserRow>('SELECT * FROM users WHERE lower(email) = $1', [normalised])
+  const user = found.rows[0]
+  if (!user) {
+    verifyPassword(password, DUMMY_HASH)
+    return null
+  }
+
+  if (!verifyPassword(password, user.password_hash)) return null
+  return user
 }
 
-function verifyHashed(password: string, stored: string): boolean {
-  const [scheme, salt, expected] = stored.split(':')
-  if (scheme !== 'scrypt' || !salt || !expected) return false
-  const derived = scryptSync(password, salt, 64)
-  const expectedBuf = Buffer.from(expected, 'hex')
-  if (derived.length !== expectedBuf.length) return false
-  return timingSafeEqual(derived, expectedBuf)
-}
-
-function verifyPlain(password: string, stored: string): boolean {
-  const a = Buffer.from(password)
-  const b = Buffer.from(stored)
-  // timingSafeEqual throws on a length mismatch, which would itself leak
-  // the length — compare padded buffers instead.
-  const len = Math.max(a.length, b.length)
-  const pa = Buffer.alloc(len)
-  const pb = Buffer.alloc(len)
-  a.copy(pa)
-  b.copy(pb)
-  return timingSafeEqual(pa, pb) && a.length === b.length
-}
-
-export function checkPassword(password: string): boolean {
-  const hashed = process.env.ADMIN_PASSWORD_HASH
-  if (hashed) return verifyHashed(password, hashed)
-
-  const plain = process.env.ADMIN_PASSWORD
-  if (plain) return verifyPlain(password, plain)
-
-  return false
+/** Stamps the moment of a successful sign-in. Never blocks the login. */
+export async function recordLogin(user: UserRow): Promise<void> {
+  try {
+    await query('UPDATE users SET last_login_at = now() WHERE id = $1', [user.id])
+  } catch {
+    // A dashboard that refuses a correct password because one bookkeeping
+    // write failed would be a poor trade.
+  }
 }
 
 // --------------------------------------------------------------- token
@@ -90,28 +116,39 @@ function sign(payload: string): string {
   return b64url(createHmac('sha256', signingSecret()).update(payload).digest())
 }
 
-export function issueToken(now = Date.now()): { token: string; expiresAt: number } {
+export function issueToken(user: UserRow, now = Date.now()): { token: string; expiresAt: number } {
   const expiresAt = now + TOKEN_TTL_MS
-  const payload = b64url(JSON.stringify({ iat: now, exp: expiresAt }))
+  const claims: AdminClaims = {
+    sub: user.id,
+    email: user.email,
+    role: user.role,
+    iat: now,
+    exp: expiresAt,
+  }
+  const payload = b64url(JSON.stringify(claims))
   return { token: `${payload}.${sign(payload)}`, expiresAt }
 }
 
-export function verifyToken(token: string, now = Date.now()): boolean {
+/** The claims carried by a valid, unexpired token, or null. */
+export function readToken(token: string, now = Date.now()): AdminClaims | null {
   const [payload, signature] = token.split('.')
-  if (!payload || !signature) return false
+  if (!payload || !signature) return null
 
   const expected = sign(payload)
   const a = Buffer.from(signature)
   const b = Buffer.from(expected)
-  if (a.length !== b.length || !timingSafeEqual(a, b)) return false
+  if (a.length !== b.length || !timingSafeEqual(a, b)) return null
 
   try {
-    const decoded = JSON.parse(
+    const claims = JSON.parse(
       Buffer.from(payload.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString(),
-    ) as { exp?: number }
-    return typeof decoded.exp === 'number' && decoded.exp > now
+    ) as AdminClaims
+
+    if (typeof claims.exp !== 'number' || claims.exp <= now) return null
+    if (typeof claims.sub !== 'string' || typeof claims.role !== 'string') return null
+    return claims
   } catch {
-    return false
+    return null
   }
 }
 
@@ -123,7 +160,7 @@ export function requireAdmin(req: Request, _res: Response, next: NextFunction): 
       new ApiError(
         503,
         'admin_disabled',
-        'The admin API is disabled because no ADMIN_PASSWORD is configured on the server.',
+        'The admin API is disabled because no ADMIN_EMAIL and ADMIN_PASSWORD are configured on the server.',
       ),
     )
     return
@@ -131,11 +168,20 @@ export function requireAdmin(req: Request, _res: Response, next: NextFunction): 
 
   const header = req.get('authorization') ?? ''
   const token = header.startsWith('Bearer ') ? header.slice(7).trim() : ''
+  const claims = token ? readToken(token) : null
 
-  if (!token || !verifyToken(token)) {
+  if (!claims) {
     next(new ApiError(401, 'unauthorized', 'Sign in again to continue.'))
     return
   }
 
+  if (claims.role !== 'ADMIN') {
+    // A real account, but not one allowed in here. 403 rather than 401:
+    // signing in again will not help.
+    next(new ApiError(403, 'forbidden', 'Your account does not have admin access.'))
+    return
+  }
+
+  req.admin = claims
   next()
 }

@@ -12,7 +12,6 @@
     "api:dev": "npm run api:build && node --env-file-if-exists=.env --watch server/dist/index.cjs",
     "api:check": "tsc -p server/tsconfig.json --noEmit",
     "api:reset": "node --env-file-if-exists=.env server/reset.mjs",
-    "db:dev": "node server/dev-db.mjs",
     "dev:all": "concurrently -n api,web -c cyan,magenta \"npm run api:dev\" \"cross-env ORBIS_SAME_ORIGIN_API=1 vite\"",
     "build:live": "cross-env ORBIS_SAME_ORIGIN_API=1 npm run build",
     "admin:hash": "node server/hash-password.mjs"
@@ -21,7 +20,7 @@
     "cors": "^2.8.6",
     "express": "^4.22.2",
     "lucide-react": "^0.454.0",
-    "mongodb": "^7.6.0",
+    "pg": "^8.23.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.30.6"
@@ -30,6 +29,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.25",
     "@types/node": "^22.20.2",
+    "@types/pg": "^8.23.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
@@ -37,16 +37,10 @@
     "concurrently": "^10.0.5",
     "cross-env": "^10.1.0",
     "esbuild": "^0.28.2",
-    "mongodb-memory-server": "^11.2.0",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3",
     "vite": "^5.4.10"
-  },
-  "config": {
-    "mongodbMemoryServer": {
-      "disablePostinstall": "1"
-    }
   },
   "engines": {
     "node": ">=20"

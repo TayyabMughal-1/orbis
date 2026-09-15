@@ -1,7 +1,7 @@
 import express, { type NextFunction, type Request, type Response } from 'express'
 import cors from 'cors'
 import { ApiError, badRequest, tooMany } from './errors.js'
-import { connect, ping, stats as dbStats } from './mongo.js'
+import { connect, ping, stats as dbStats } from './db.js'
 import {
   createOrder,
   getOrder,
@@ -141,7 +141,7 @@ const clientKey = (req: Request) => req.ip ?? req.socket.remoteAddress ?? 'unkno
 app.get(
   '/api/health',
   route(async (_req, res) => {
-    res.json({ ok: await ping(), database: 'mongodb', ...(await dbStats()) })
+    res.json({ ok: await ping(), database: 'postgres', ...(await dbStats()) })
   }),
 )
 

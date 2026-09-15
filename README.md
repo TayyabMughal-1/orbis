@@ -73,15 +73,16 @@ dismiss, they are not asked again.
 
 ## The backend
 
-`server/` is an Express + MongoDB service. MongoDB was chosen because the whole
+`server/` is an Express + Postgres service, hosted on Supabase. Postgres because the whole
 thing has to run on Vercel: a serverless function has no filesystem worth
-keeping, so the database has to live somewhere else. Atlas' free tier is enough.
+keeping, so the database has to live somewhere else. Supabase's free tier is enough.
 
 ```
 server/src/
   app.ts        the Express app — routes, CORS, rate limiting, error mapping
   index.ts      local entry point: connect, then listen on a port
-  mongo.ts      connection caching, indexes, first-run seed
+  db.ts         pool caching, schema, first-run seed
+  schema.ts     the tables, as SQL
   repo.ts       reads
   adminRepo.ts  writes, behind the admin token
   service.ts    pricing an order (shares src/lib/pricing.ts with the web app)
@@ -102,7 +103,7 @@ Two details exist purely because of serverless:
 - **The client is cached on `globalThis`.** Vercel freezes a container between
   invocations rather than destroying it, so a warm request reuses the existing
   connection. Without this, a burst of traffic opens a connection per request and
-  exhausts the Atlas pool.
+  exhausts the connection limit.
 - **Seeding uses `$setOnInsert`, never `$set`.** Several cold starts can race on
   a fresh database, and the loser must not overwrite stock the winner has already
   sold from.
@@ -110,8 +111,8 @@ Two details exist purely because of serverless:
 Stock is decremented inside a transaction, and the guard is in the update filter
 itself — a variant only matches while it still holds enough stock. Two people
 buying the last item cannot both succeed: the loser's update matches nothing and
-the whole transaction is abandoned. This needs a replica set, which every Atlas
-cluster is, including the free one.
+the whole transaction is abandoned. Postgres takes a row lock and evaluates the
+`WHERE` against the committed row, so the loser updates nothing and rolls back.
 
 | Method | Path | |
 | --- | --- | --- |
@@ -151,21 +152,46 @@ Four rules the service actually enforces, rather than merely intending to:
 per region, run promo codes, fulfil orders, and change each store's copy,
 delivery prices and tax rate.
 
+Sign in with an email and a password. Accounts live in the `users` collection,
+each with an scrypt password hash and a role; the ADMIN named by `ADMIN_EMAIL` is
+created from the environment the first time the API connects.
+
 ```bash
-npm run admin:hash -- "a long passphrase"   # prints ADMIN_PASSWORD_HASH=...
-#   1. paste that line into .env in the project root
+#   1. in .env in the project root:
+#        ADMIN_EMAIL=admin@orbisstore.com
+#        ADMIN_PASSWORD=a long passphrase
 #   2. npm run dev:all
 #   3. open http://localhost:5173/admin
 ```
+
+`ADMIN_PASSWORD_HASH` may be used instead of `ADMIN_PASSWORD`, and is what to
+prefer in production — the plaintext then exists nowhere:
+
+```bash
+npm run admin:hash -- "a long passphrase"   # prints ADMIN_PASSWORD_HASH=...
+```
+
+The environment stays the source of truth: change the password there, restart,
+and the stored hash is brought into line. The hash is only rewritten when the
+password has actually changed, so this costs nothing on an ordinary cold start.
+Changing the email creates a second account rather than renaming the first.
 
 The API reads `.env` itself (via Node's `--env-file-if-exists`), so there is no
 dotenv dependency and nothing to import. In production, set the variables the way
 your host does it instead.
 
-**It is off until `ADMIN_PASSWORD` or `ADMIN_PASSWORD_HASH` is set on the API.**
-A deployment that forgets is locked, not wide open. Login is throttled to eight
-attempts per IP per fifteen minutes and issues a signed token that lasts twelve
-hours; there is no session table, so a restart does not sign you out.
+**It is off until `ADMIN_EMAIL` and one of `ADMIN_PASSWORD` / `ADMIN_PASSWORD_HASH`
+are set on the API.** A deployment that forgets is locked, not wide open — no
+user is seeded at all, so there is no default account to guess. Login is
+throttled to eight attempts per IP per fifteen minutes and issues a signed token
+carrying the user's id and role that lasts twelve hours; there is no session
+table, so a restart does not sign you out. A wrong email and a wrong password
+give the same message and take the same time, so the endpoint cannot be used to
+discover which addresses have accounts.
+
+Roles are `ADMIN` and `STAFF`. Everything under `/api/admin` requires `ADMIN`;
+`STAFF` exists so the field is real rather than decorative, and earns its keep
+the first time a route needs to be narrower than the rest.
 
 | Screen | What it does |
 | --- | --- |
@@ -192,9 +218,9 @@ you need to know who changed a price, replace it with real accounts.
 
 The first connection seeds the database from `src/api/db.ts` and then leaves it
 alone — editing that file will not silently rewrite live stock or prices. To
-re-seed, drop the `products` collection in Atlas and restart.
+re-seed, run `npm run api:reset` and restart.
 
-The catalogue lives in MongoDB from then on. Variants are embedded inside their
+The catalogue lives in Postgres from then on. Variants are rows of their
 product, which is the natural shape here: they are never queried on their own,
 and it makes the stock decrement one atomic update on one document rather than a
 join. Prices and stock are keyed by region, so a market can be repriced or
@@ -313,11 +339,13 @@ project. The only thing hosted elsewhere is the database.
 
 ### Running it locally
 
-The API needs a MongoDB. Either point `MONGODB_URI` at the same Atlas cluster
-you deploy against, or run a throwaway one:
+The API needs a Postgres. Point `DATABASE_URL` at the same Supabase project you
+deploy against — the free tier is fine to develop against directly — or at any
+local Postgres:
 
 ```bash
-npm run db:dev        # prints a MONGODB_URI — leave it running
+# .env
+DATABASE_URL=postgresql://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres
 ```
 
 Then, in another terminal, with that URI in the environment:
@@ -326,14 +354,14 @@ Then, in another terminal, with that URI in the environment:
 npm run dev:all       # API on :8787, storefront on :5173 proxying /api
 ```
 
-The in-memory database is wiped when you stop it, and it downloads a MongoDB
-binary the first time you use it. `npm run dev` on its own skips the API
+The schema is applied on first connect, so there is no migration step to run.
+`npm run dev` on its own skips the API
 entirely and runs the storefront against the catalogue bundled into
 `src/api/db.ts` — enough for design work, and it needs no database at all.
 
 ### 1. A database
 
-[MongoDB Atlas](https://www.mongodb.com/atlas) free tier is enough.
+[Supabase](https://supabase.com/dashboard) free tier is enough.
 
 1. Create a cluster.
 2. **Database Access** → add a user, copy the password.
@@ -363,18 +391,25 @@ In Project → Settings → Environment Variables:
 
 | Variable | Value | |
 | --- | --- | --- |
-| `MONGODB_URI` | your Atlas connection string, database included: `...mongodb.net/orbis?...` | **required** |
+| `DATABASE_URL` | Supabase → Connect → Session pooler URI, password filled in | **required** |
+| `ADMIN_EMAIL` | the admin account's email | required for `/admin` |
 | `ADMIN_PASSWORD_HASH` | output of `npm run admin:hash -- "your passphrase"` | required for `/admin` |
+| `ADMIN_NAME` | display name, default `Administrator` | optional |
 | `VITE_SITE_URL` | `https://your-domain.com` | canonicals, hreflang, sitemap |
 | `CORS_ORIGINS` | only if the API is called cross-origin | optional |
 
 `VITE_SITE_URL` is read at **build** time, so changing it needs a redeploy.
-`MONGODB_URI` and `ADMIN_PASSWORD_HASH` are read at request time.
+`DATABASE_URL`, `ADMIN_EMAIL` and `ADMIN_PASSWORD_HASH` are read at request time.
 
-Which database inside the cluster comes from the path of `MONGODB_URI`, so one
-variable carries both. Name it explicitly: given no path the driver falls back to
-`test` and would seed the catalogue somewhere nobody looks, so the API resolves
-`orbis` instead. `MONGODB_DB` still overrides a pathless URI.
+Use the **Session pooler** connection string, not the direct one. Serverless
+functions open a connection per cold container, and Postgres — unlike Mongo —
+spends real memory per connection; the pooler is what stops a traffic spike from
+exhausting the project's limit. The API keeps its own pool small for the same
+reason (`PGPOOL_MAX`, default 3).
+
+TLS is on, but the certificate chain is not verified, because Supabase presents a
+CA this client has no root for. Set `PGSSL_STRICT=1` to demand a verifiable chain
+when pointing at a Postgres whose CA the runtime already trusts.
 
 Set `ADMIN_PASSWORD_HASH` rather than `ADMIN_PASSWORD` — the hash is what the
 server compares against, and the plaintext then exists nowhere. Without either,
@@ -389,7 +424,7 @@ every cold start and safe when several race.
 
 ### If something is wrong
 
-- **`/api/health` returns 503 `db_not_configured`** — `MONGODB_URI` is not set on
+- **`/api/health` returns 503 `db_not_configured`** — `DATABASE_URL` is not set on
   the environment you are looking at. Vercel keeps Production, Preview and
   Development separate; set it on all three.
 - **503 `db_unavailable`** — the URI is set but the cluster refused. Almost
@@ -397,14 +432,17 @@ every cold start and safe when several race.
 - **The shop loads with no products** — the build ran without `VITE_API_URL`.
   `vercel.json` sets it via `npm run build:live`; if you overrode the build
   command in the dashboard, that is why.
-- **`/admin` says the password is wrong** — `ADMIN_PASSWORD_HASH` is missing or
-  was pasted with the `ADMIN_PASSWORD_HASH=` prefix included in the value.
+- **`/admin` says the email and password do not match** — `ADMIN_PASSWORD_HASH`
+  is missing, or was pasted with the `ADMIN_PASSWORD_HASH=` prefix included in
+  the value; or `ADMIN_EMAIL` differs from the address being typed. Check the
+  `users` collection: the account is created on the first connect after both are
+  set, and the startup log says `created ADMIN user <email>` when it happens.
 
 ### Running it anywhere else
 
 `npm run api:build` produces `server/dist/index.cjs`; run it with plain `node`.
 Set `NODE_ENV=production`, `CORS_ORIGINS` to your storefront's origin,
-`MONGODB_URI`, and `TRUST_PROXY=1` if anything sits in front of it. The same
+`DATABASE_URL`, and `TRUST_PROXY=1` if anything sits in front of it. The same
 database works for both — nothing about the API assumes serverless.
 
 `public/_redirects` covers Netlify. For nginx:

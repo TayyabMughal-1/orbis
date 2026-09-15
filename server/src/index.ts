@@ -1,5 +1,5 @@
 import { app, ensureReady, adminEnabled } from "./app";
-import { databaseName, stats } from "./mongo";
+import { databaseLabel, stats } from "./db.js";
 
 // ---------------------------------------------------------------------
 // Local / container entry point.
@@ -18,27 +18,27 @@ async function main() {
   } catch (err) {
     // The two failures look identical in a stack trace and have
     // completely different fixes, so they are told apart here.
-    if (!process.env.MONGODB_URI) {
+    if (!process.env.DATABASE_URL) {
       console.error(
-        "\n[api] MONGODB_URI is not set, so there is no database to connect to.",
+        "\n[api] DATABASE_URL is not set, so there is no database to connect to.",
       );
       console.error(
         "[api] Add it to .env — see .env.example for how to get one from",
       );
-      console.error("[api] MongoDB Atlas (the free tier is plenty):\n");
+      console.error("[api] Supabase (the free tier is plenty):\n");
       console.error(
-        "[api]   MONGODB_URI=mongodb+srv://user:password@cluster0.xxxxx.mongodb.net/\n",
+        "[api]   DATABASE_URL=postgresql://postgres.<ref>:<pw>@aws-0-<region>.pooler.supabase.com:6543/postgres\n",
       );
       process.exit(1);
     }
-    console.error("\n[api] Could not connect to MongoDB.");
+    console.error("\n[api] Could not connect to Postgres.");
     console.error(
       "[api] " + (err instanceof Error ? err.message : String(err)),
     );
     console.error(
-      "[api] Check the username and password in MONGODB_URI, and that your IP",
+      "[api] Check the username and password in DATABASE_URL, and that the project",
     );
-    console.error("[api] is allowed in the Atlas Network Access list.\n");
+    console.error("[api] is not paused in the Supabase dashboard.\n");
     process.exit(1);
   }
 
@@ -47,7 +47,7 @@ async function main() {
   const server = app.listen(PORT, () => {
     console.log(`[api] listening on http://localhost:${PORT}`);
     console.log(
-      `[api] mongodb database "${databaseName(process.env.MONGODB_URI ?? "")}"`,
+      `[api] postgres ${databaseLabel()}`,
     );
     console.log(
       `[api] ${counts.products} products, ${counts.variants} variants, ${counts.orders} orders`,
