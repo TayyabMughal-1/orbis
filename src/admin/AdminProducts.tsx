@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Plus, Trash2 } from 'lucide-react'
-import { adminApi, type ProductPayload } from '../api/admin'
+import { adminApi, type ProductPayload, type TaxonomyRow } from '../api/admin'
+import { useAsync } from '../lib/useAsync'
 import { errorMessage } from '../api/client'
 import { CATEGORIES } from '../api/db'
 import { REGIONS, REGION_CODES, type RegionCode } from '../regions/config'
@@ -216,6 +217,25 @@ export function AdminProductEditor() {
     ratingAverage: '',
     ratingCount: '',
   })
+  // Departments and collections come from the database rather than the
+  // hard-coded catalogue, so anything created on the Collections screen
+  // shows up here without a rebuild.
+  const taxonomy = useAsync<[TaxonomyRow[], TaxonomyRow[]]>(
+    () => Promise.all([adminApi.listCategories(), adminApi.listCollections()]),
+    [],
+  )
+  const [collections, setCollections] = useState<string[]>([])
+
+  // A new product starts on the first department in the bundled catalogue,
+  // which may have been renamed or removed since. A <select> whose value
+  // matches no option renders blank and silently submits nothing, so fall
+  // back to whatever the database actually has.
+  useEffect(() => {
+    const categories = taxonomy.data?.[0]
+    if (!categories || categories.length === 0) return
+    if (categories.some((c) => c.id === form.category)) return
+    set('category')(categories[0].id)
+  }, [taxonomy.data, form.category])
   const [media, setMedia] = useState<unknown[]>([{ kind: 'render', shape: 'orb', hue: 210 }])
   const [specs, setSpecs] = useState<{ label: string; value: string }[]>([])
   const [variants, setVariants] = useState<VariantDraft[]>([blankVariant()])
@@ -244,6 +264,7 @@ export function AdminProductEditor() {
           ratingAverage: product.rating ? String(product.rating.average) : '',
           ratingCount: product.rating ? String(product.rating.count) : '',
         })
+        setCollections(product.collections ?? [])
         setMedia(product.media)
         setSpecs(product.specs)
         setVariants(product.variants.map(toDraft))
@@ -275,6 +296,7 @@ export function AdminProductEditor() {
         ? { average: Number(form.ratingAverage), count: Number(form.ratingCount) || 0 }
         : null,
       category: form.category,
+      collections,
       badges: form.badges.split(',').map((b) => b.trim()).filter(Boolean),
       media,
       specs: specs.filter((s) => s.label && s.value),
@@ -352,12 +374,51 @@ export function AdminProductEditor() {
             value={form.category}
             onChange={(e) => set('category')(e.target.value)}
           >
-            {CATEGORIES.map((c) => (
+            {(taxonomy.data?.[0] ?? []).map((c) => (
               <option key={c.id} value={c.id} className="bg-background">
                 {c.label}
+                {c.active ? '' : ' (paused)'}
               </option>
             ))}
           </select>
+        </Field>
+
+        {/* Collections are a checklist, not a select: a product can be in
+            any number of them, and the empty state has to say where they
+            come from or this reads as broken rather than unconfigured. */}
+        <Field label="Collections">
+          {taxonomy.loading && <p className="font-mono text-[11px] text-muted">Loading…</p>}
+          {taxonomy.data && taxonomy.data[1].length === 0 && (
+            <p className="font-mono text-[11px] leading-relaxed text-muted">
+              None yet — create one on the Collections screen and it appears here.
+            </p>
+          )}
+          {taxonomy.data && taxonomy.data[1].length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {taxonomy.data[1].map((c) => {
+                const on = collections.includes(c.id)
+                return (
+                  <button
+                    key={c.id}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() =>
+                      setCollections((prev) =>
+                        prev.includes(c.id) ? prev.filter((x) => x !== c.id) : [...prev, c.id],
+                      )
+                    }
+                    className={`press rounded-full border px-3.5 py-1.5 font-mono text-[11px] transition-colors ${
+                      on
+                        ? 'border-accent bg-accent text-background'
+                        : 'border-ink/15 text-muted hover:border-ink/35 hover:text-ink'
+                    }`}
+                  >
+                    {c.label}
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </Field>
       </div>
 

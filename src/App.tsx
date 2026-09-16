@@ -25,6 +25,7 @@ import NotFound from './pages/NotFound'
 import AdminShell from './admin/AdminShell'
 import { AdminProductEditor, AdminProductList } from './admin/AdminProducts'
 import { AdminOrders, AdminPromos, AdminSettings } from './admin/AdminRest'
+import AdminTaxonomy from './admin/AdminTaxonomy'
 
 // ---------------------------------------------------------------------
 // Routing
@@ -108,6 +109,7 @@ export default function App() {
         <Route path="/admin" element={<AdminShell />}>
           <Route index element={<AdminProductList />} />
           <Route path="products/:slug" element={<AdminProductEditor />} />
+          <Route path="taxonomy" element={<AdminTaxonomy />} />
           <Route path="promos" element={<AdminPromos />} />
           <Route path="orders" element={<AdminOrders />} />
           <Route path="settings" element={<AdminSettings />} />

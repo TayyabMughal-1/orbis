@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import pg from 'pg'
-import { PRODUCTS, PROMOS } from '../../src/api/db.js'
+import { CATEGORIES, PRODUCTS, PROMOS } from '../../src/api/db.js'
 import { ApiError } from './errors.js'
 import { hashPassword, verifyPassword } from './password.js'
 import { SCHEMA_SQL } from './schema.js'
@@ -158,6 +158,7 @@ export async function connect(): Promise<void> {
     console.log(`[db] postgres is connected ("${info.rows[0].db}")`)
     await ensureSchema(pool)
     await seed(pool)
+    await backfillCategories(pool)
     await seedAdminUser(pool)
   })()
 
@@ -267,6 +268,20 @@ async function seed(pool: pg.Pool): Promise<void> {
       }
     }
 
+    // Departments come from the catalogue in the repo so a fresh database
+    // has the ones the products already reference. They are editable in
+    // the dashboard afterwards; ON CONFLICT DO NOTHING keeps a rename from
+    // being undone on the next cold start.
+    let categoryPosition = 0
+    for (const category of CATEGORIES) {
+      await client.query(
+        `INSERT INTO categories (id, label, blurb, position, active)
+         VALUES ($1,$2,$3,$4,true) ON CONFLICT (id) DO NOTHING`,
+        [category.id, category.label, category.blurb ?? '', categoryPosition],
+      )
+      categoryPosition += 1
+    }
+
     for (const promo of PROMOS) {
       await client.query(
         `INSERT INTO promos (code, label, percent_off, regions, min_subtotal, active)
@@ -283,7 +298,10 @@ async function seed(pool: pg.Pool): Promise<void> {
     client.release()
   }
 
-  console.log(`[db] seeded ${PRODUCTS.length} products and ${PROMOS.length} promo codes`)
+  console.log(
+    `[db] seeded ${PRODUCTS.length} products, ${PROMOS.length} promo codes ` +
+      `and ${CATEGORIES.length} categories`,
+  )
 }
 
 // --------------------------------------------------------- admin user
@@ -303,6 +321,32 @@ async function seed(pool: pg.Pool): Promise<void> {
  * that has not configured an admin ends up with no users and a locked
  * dashboard, rather than a default account with a guessable password.
  */
+/**
+ * Fills the categories table on a database that was seeded before the
+ * table existed.
+ *
+ * seed() returns early once there are products, so it would never run
+ * again on a live database — and the dashboard would then offer an empty
+ * department list for products that all have one.
+ */
+async function backfillCategories(pool: pg.Pool): Promise<void> {
+  const { rows } = await pool.query<{ count: string }>(
+    'SELECT count(*)::text AS count FROM categories',
+  )
+  if (Number(rows[0].count) > 0) return
+
+  let position = 0
+  for (const category of CATEGORIES) {
+    await pool.query(
+      `INSERT INTO categories (id, label, blurb, position, active)
+       VALUES ($1,$2,$3,$4,true) ON CONFLICT (id) DO NOTHING`,
+      [category.id, category.label, category.blurb ?? '', position],
+    )
+    position += 1
+  }
+  console.log(`[db] backfilled ${CATEGORIES.length} categories`)
+}
+
 async function seedAdminUser(pool: pg.Pool): Promise<void> {
   const email = process.env.ADMIN_EMAIL?.trim().toLowerCase()
   if (!email) return

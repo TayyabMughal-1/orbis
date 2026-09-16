@@ -193,6 +193,24 @@ export type ProductPayload = Omit<Product, 'rating'> & {
   rating: { average: number; count: number } | null
 }
 
+export type TaxonomyRow = {
+  id: string
+  label: string
+  /** blurb on a category, description on a collection */
+  body: string
+  position: number
+  active: boolean
+  productCount: number
+}
+
+export type TaxonomyInput = {
+  id?: string
+  label: string
+  body?: string
+  position?: number
+  active?: boolean
+}
+
 /** Who is signed in. The role is carried in the token, not looked up. */
 export type AdminUser = { email: string; name: string; role: 'ADMIN' | 'STAFF' }
 
@@ -232,6 +250,41 @@ export const adminApi = {
   listOrders: () => request<Order[]>('/admin/orders'),
   updateOrder: (number: string, patch: { status?: string; paymentStatus?: string }) =>
     request<Order>(`/admin/orders/${encodeURIComponent(number)}`, json('PATCH', patch)),
+
+  // The API names the free-text column after the thing it describes —
+  // blurb on a category, description on a collection — so both are mapped
+  // onto one `body` here and the screen can treat them alike.
+  listCategories: async (): Promise<TaxonomyRow[]> => {
+    const rows = await request<(Omit<TaxonomyRow, 'body'> & { blurb: string })[]>('/admin/categories')
+    return rows.map(({ blurb, ...rest }) => ({ ...rest, body: blurb }))
+  },
+  saveCategory: async (input: TaxonomyInput): Promise<TaxonomyRow> => {
+    const r = await request<Omit<TaxonomyRow, 'body'> & { blurb: string }>(
+      '/admin/categories',
+      json('POST', input),
+    )
+    const { blurb, ...rest } = r
+    return { ...rest, body: blurb }
+  },
+  deleteCategory: (id: string) =>
+    request<{ ok: true }>(`/admin/categories/${encodeURIComponent(id)}`, json('DELETE')),
+
+  listCollections: async (): Promise<TaxonomyRow[]> => {
+    const rows = await request<(Omit<TaxonomyRow, 'body'> & { description: string })[]>(
+      '/admin/collections',
+    )
+    return rows.map(({ description, ...rest }) => ({ ...rest, body: description }))
+  },
+  saveCollection: async (input: TaxonomyInput): Promise<TaxonomyRow> => {
+    const r = await request<Omit<TaxonomyRow, 'body'> & { description: string }>(
+      '/admin/collections',
+      json('POST', input),
+    )
+    const { description, ...rest } = r
+    return { ...rest, body: description }
+  },
+  deleteCollection: (id: string) =>
+    request<{ ok: true }>(`/admin/collections/${encodeURIComponent(id)}`, json('DELETE')),
 
   getSettings: (region: RegionCode) => request<RegionSettings>(`/admin/settings/${region}`),
   putSettings: (region: RegionCode, settings: RegionSettings) =>

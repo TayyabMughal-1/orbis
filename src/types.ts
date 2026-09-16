@@ -49,6 +49,8 @@ export type Product = {
   highlights: string[]
   rating: Rating | null
   category: Category
+  /** Collection ids this product is filed under. Any number, including none. */
+  collections?: string[]
   /** Short marketing flags rendered as pills on the card. */
   badges?: string[]
   media: MediaItem[]

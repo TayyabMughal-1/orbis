@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
-import { AtSign, Lock, LogOut, Package, Percent, Settings, ShoppingBag } from 'lucide-react'
+import { AtSign, LayoutGrid, Lock, LogOut, Package, Percent, Settings, ShoppingBag } from 'lucide-react'
 import { adminApi, apiReachable, getToken, isLocalhost } from '../api/admin'
 import { errorMessage } from '../api/client'
 
@@ -200,6 +200,9 @@ function Dashboard({ onSignOut }: { onSignOut: () => void }) {
           <nav className="flex gap-2 overflow-x-auto lg:flex-col lg:overflow-visible">
             <NavLink to="/admin" end className={link}>
               <Package size={15} /> Products
+            </NavLink>
+            <NavLink to="/admin/taxonomy" className={link}>
+              <LayoutGrid size={15} /> Collections
             </NavLink>
             <NavLink to="/admin/promos" className={link}>
               <Percent size={15} /> Promo codes

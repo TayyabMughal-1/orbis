@@ -42,6 +42,7 @@ type ProductJoinRow = {
   specs: unknown
   featured: number
   weight_grams: number
+  collections: string[] | null
   v_id: string | null
   v_sku: string | null
   v_label: string | null
@@ -59,7 +60,12 @@ const PRODUCT_SELECT = `
          p.media, p.specs, p.featured, p.weight_grams,
          v.id AS v_id, v.sku AS v_sku, v.label AS v_label,
          v.options AS v_options, v.position AS v_position,
-         vr.region, vr.price, vr.compare_at, vr.stock
+         vr.region, vr.price, vr.compare_at, vr.stock,
+         COALESCE(
+           (SELECT array_agg(pc.collection_id ORDER BY pc.collection_id)
+              FROM product_collections pc WHERE pc.product_id = p.id),
+           '{}'
+         ) AS collections
     FROM products p
     LEFT JOIN variants v ON v.product_id = p.id
     LEFT JOIN variant_regions vr ON vr.variant_id = v.id`
@@ -93,6 +99,7 @@ function assemble(rows: ProductJoinRow[]): Product[] {
         specs: (row.specs ?? []) as Product['specs'],
         featured: row.featured ?? 0,
         weightGrams: row.weight_grams ?? 0,
+        collections: row.collections ?? [],
         variants: [],
       }
       byId.set(row.id, product)

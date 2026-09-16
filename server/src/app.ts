@@ -17,7 +17,7 @@ import { authorizePayment } from './payments.js'
 import { asAddress, asCartLines, asEmail, asOptionalString, asRegion, asString } from './validate.js'
 import { admin } from './admin.js'
 import { adminEnabled } from './auth.js'
-import { publicSettings, resolveRegionConfig } from './adminRepo.js'
+import { listCategories, listCollections, publicSettings, resolveRegionConfig } from './adminRepo.js'
 import { REGIONS } from '../../src/regions/config.js'
 import type { Category } from '../../src/types.js'
 
@@ -187,6 +187,27 @@ app.get(
     // payload is tiny and unchanged responses come back as a 304.
     res.set('Cache-Control', 'no-cache')
     res.json(await publicSettings(region))
+  }),
+)
+
+// The storefront's own copies of the taxonomy. Only the active rows, and
+// without the product counts the dashboard needs — a shopper has no use
+// for a department that has been switched off.
+app.get(
+  '/api/categories',
+  route(async (_req, res) => {
+    res.set('Cache-Control', 'no-store')
+    const rows = await listCategories()
+    res.json(rows.filter((c) => c.active).map(({ productCount: _count, ...rest }) => rest))
+  }),
+)
+
+app.get(
+  '/api/collections',
+  route(async (_req, res) => {
+    res.set('Cache-Control', 'no-store')
+    const rows = await listCollections()
+    res.json(rows.filter((c) => c.active).map(({ productCount: _count, ...rest }) => rest))
   }),
 )
 

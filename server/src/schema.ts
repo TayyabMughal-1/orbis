@@ -74,6 +74,46 @@ CREATE TABLE IF NOT EXISTS variant_regions (
   PRIMARY KEY (variant_id, region)
 );
 
+-- Departments a product belongs to, one each. Seeded from the catalogue
+-- in the repo so an existing database keeps working, then editable in the
+-- dashboard.
+--
+-- products.category is deliberately NOT a foreign key here. A category is
+-- a label an operator can rename or retire, and a stray delete must never
+-- cascade into deleting the products filed under it. The join is by id and
+-- a product whose category no longer exists simply stops being filtered
+-- into it.
+CREATE TABLE IF NOT EXISTS categories (
+  id       text PRIMARY KEY,
+  label    text NOT NULL,
+  blurb    text NOT NULL DEFAULT '',
+  position integer NOT NULL DEFAULT 0,
+  active   boolean NOT NULL DEFAULT true
+);
+
+-- Curated groupings that cut across departments — "New in", "Summer",
+-- "Last chance". A product can be in any number of them, which is what
+-- separates a collection from a category.
+CREATE TABLE IF NOT EXISTS collections (
+  id          text PRIMARY KEY,
+  label       text NOT NULL,
+  description text NOT NULL DEFAULT '',
+  position    integer NOT NULL DEFAULT 0,
+  active      boolean NOT NULL DEFAULT true
+);
+
+-- The many-to-many. Both sides cascade: deleting a collection should
+-- unfile its products, not orphan rows, and deleting a product should take
+-- its memberships with it.
+CREATE TABLE IF NOT EXISTS product_collections (
+  product_id    text NOT NULL REFERENCES products (id) ON DELETE CASCADE,
+  collection_id text NOT NULL REFERENCES collections (id) ON DELETE CASCADE,
+  PRIMARY KEY (product_id, collection_id)
+);
+
+CREATE INDEX IF NOT EXISTS product_collections_collection_idx
+  ON product_collections (collection_id);
+
 CREATE TABLE IF NOT EXISTS promos (
   code         text PRIMARY KEY,
   label        text NOT NULL,

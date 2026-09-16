@@ -11,6 +11,13 @@ import {
   saveProduct,
   savePromo,
   updateOrder,
+  listCategories,
+  saveCategory,
+  deleteCategory,
+  listCollections,
+  saveCollection,
+  deleteCollection,
+  type TaxonomyInput,
   type ProductInput,
   type PromoInput,
   type RegionSettings,
@@ -18,7 +25,7 @@ import {
 import { getProductBySlug, listProducts } from './repo.js'
 import { stats } from './db.js'
 import { REGION_CODES, isRegionCode, type RegionCode } from '../../src/regions/config.js'
-import { asRegion, asString } from './validate.js'
+import { asOptionalString, asRegion, asString } from './validate.js'
 
 // ---------------------------------------------------------------------
 // The admin API.
@@ -158,6 +165,12 @@ function asProductInput(body: unknown): ProductInput {
           .filter((sp: any) => sp && typeof sp.label === 'string' && typeof sp.value === 'string')
           .slice(0, 20)
       : [],
+    // Undefined rather than [] when the field is absent: saveProduct
+    // treats an empty array as "file this under nothing" and an absent one
+    // as "leave the memberships alone".
+    collections: Array.isArray(raw.collections)
+      ? raw.collections.filter((c: unknown): c is string => typeof c === 'string')
+      : undefined,
     featured: Math.max(0, Math.min(100, Math.round(Number(raw.featured) || 0))),
     weightGrams: Math.max(0, Math.round(Number(raw.weightGrams) || 0)),
     variants: variants.map((v: any, i: number) => ({
@@ -317,4 +330,52 @@ admin.put(
   route(async (req, res) =>
     res.json(await putSettings(asRegion(req.params.region, 'region'), asSettings(req.body))),
   ),
+)
+
+// -------------------------------------------- categories & collections
+
+function asTaxonomyInput(body: unknown): TaxonomyInput {
+  if (typeof body !== 'object' || body === null) {
+    throw badRequest('invalid_body', 'Expected a name and an optional description.')
+  }
+  const raw = body as Record<string, unknown>
+  return {
+    id: asOptionalString(raw.id, 'id', 80) || undefined,
+    label: asString(raw.label, 'label', 60),
+    body: asOptionalString(raw.body, 'body', 400) || '',
+    position: raw.position === undefined ? 0 : Number(raw.position),
+    active: raw.active === undefined ? true : Boolean(raw.active),
+  }
+}
+
+admin.get(
+  '/categories',
+  route(async (_req, res) => res.json(await listCategories())),
+)
+admin.post(
+  '/categories',
+  route(async (req, res) => res.json(await saveCategory(asTaxonomyInput(req.body)))),
+)
+admin.delete(
+  '/categories/:id',
+  route(async (req, res) => {
+    await deleteCategory(asString(req.params.id, 'id', 80))
+    res.json({ ok: true })
+  }),
+)
+
+admin.get(
+  '/collections',
+  route(async (_req, res) => res.json(await listCollections())),
+)
+admin.post(
+  '/collections',
+  route(async (req, res) => res.json(await saveCollection(asTaxonomyInput(req.body)))),
+)
+admin.delete(
+  '/collections/:id',
+  route(async (req, res) => {
+    await deleteCollection(asString(req.params.id, 'id', 80))
+    res.json({ ok: true })
+  }),
 )

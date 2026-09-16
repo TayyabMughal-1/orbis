@@ -41,6 +41,8 @@ export type ProductInput = {
   specs: { label: string; value: string }[]
   featured: number
   weightGrams: number
+  /** Collection ids. Omitted leaves existing memberships alone. */
+  collections?: string[]
   variants: VariantInput[]
 }
 
@@ -112,6 +114,20 @@ export async function saveProduct(input: ProductInput): Promise<Product> {
       id,
       keep,
     ])
+
+    // Memberships are replaced wholesale, like variants: what the form
+    // submits is the complete set. Skipped entirely when the caller omits
+    // the field, so a partial update cannot silently unfile a product.
+    if (input.collections) {
+      await client.query('DELETE FROM product_collections WHERE product_id = $1', [id])
+      for (const collectionId of [...new Set(input.collections)]) {
+        await client.query(
+          `INSERT INTO product_collections (product_id, collection_id)
+           VALUES ($1,$2) ON CONFLICT DO NOTHING`,
+          [id, collectionId],
+        )
+      }
+    }
 
     for (const [index, v] of input.variants.entries()) {
       const variantId = keep[index]
@@ -370,4 +386,155 @@ export async function publicSettings(region: RegionCode) {
       freeOver: t.freeOver ?? null,
     })),
   }
+}
+
+// ------------------------------------------------- categories & collections
+
+export type TaxonomyInput = {
+  id?: string
+  label: string
+  /** Blurb for a category, description for a collection. */
+  body?: string
+  position?: number
+  active?: boolean
+}
+
+export type CategoryRow = {
+  id: string
+  label: string
+  blurb: string
+  position: number
+  active: boolean
+  /** How many products are filed under it. Read-only. */
+  productCount: number
+}
+
+export type CollectionRow = {
+  id: string
+  label: string
+  description: string
+  position: number
+  active: boolean
+  productCount: number
+}
+
+function taxonomyId(input: TaxonomyInput): string {
+  const id = slugify(input.id || input.label)
+  if (!id) throw badRequest('invalid_id', 'A name is required.')
+  return id
+}
+
+function taxonomyLabel(input: TaxonomyInput): string {
+  const label = input.label.trim()
+  if (!label) throw badRequest('invalid_label', 'A name is required.')
+  if (label.length > 60) throw badRequest('invalid_label', 'Keep the name under 60 characters.')
+  return label
+}
+
+export async function listCategories(): Promise<CategoryRow[]> {
+  const { rows } = await query<{
+    id: string
+    label: string
+    blurb: string
+    position: number
+    active: boolean
+    product_count: string
+  }>(
+    `SELECT c.*, (SELECT count(*) FROM products p WHERE p.category = c.id)::text AS product_count
+       FROM categories c ORDER BY c.position, c.label`,
+  )
+  return rows.map((r) => ({
+    id: r.id,
+    label: r.label,
+    blurb: r.blurb,
+    position: r.position,
+    active: r.active,
+    productCount: Number(r.product_count),
+  }))
+}
+
+export async function saveCategory(input: TaxonomyInput): Promise<CategoryRow> {
+  const id = taxonomyId(input)
+  await query(
+    `INSERT INTO categories (id, label, blurb, position, active)
+     VALUES ($1,$2,$3,$4,$5)
+     ON CONFLICT (id) DO UPDATE SET
+       label = EXCLUDED.label, blurb = EXCLUDED.blurb,
+       position = EXCLUDED.position, active = EXCLUDED.active`,
+    [id, taxonomyLabel(input), input.body ?? '', Math.round(input.position ?? 0), input.active ?? true],
+  )
+  const found = (await listCategories()).find((c) => c.id === id)
+  if (!found) throw notFound('not_found', 'The category did not save.')
+  return found
+}
+
+/**
+ * Categories are not foreign-keyed from products, so deleting one cannot
+ * cascade into the catalogue. It would instead leave those products
+ * filed under an id that no longer resolves, which is why this refuses
+ * while any product still uses it.
+ */
+export async function deleteCategory(id: string): Promise<void> {
+  const { rows } = await query<{ count: string }>(
+    'SELECT count(*)::text AS count FROM products WHERE category = $1',
+    [id],
+  )
+  const count = Number(rows[0].count)
+  if (count > 0) {
+    throw conflict(
+      'category_in_use',
+      `${count} product${count === 1 ? ' is' : 's are'} still in this department. Move them first.`,
+    )
+  }
+  const result = await query('DELETE FROM categories WHERE id = $1', [id])
+  if (result.rowCount === 0) throw notFound('not_found', 'No category with that id.')
+}
+
+export async function listCollections(): Promise<CollectionRow[]> {
+  const { rows } = await query<{
+    id: string
+    label: string
+    description: string
+    position: number
+    active: boolean
+    product_count: string
+  }>(
+    `SELECT c.*,
+            (SELECT count(*) FROM product_collections pc WHERE pc.collection_id = c.id)::text
+              AS product_count
+       FROM collections c ORDER BY c.position, c.label`,
+  )
+  return rows.map((r) => ({
+    id: r.id,
+    label: r.label,
+    description: r.description,
+    position: r.position,
+    active: r.active,
+    productCount: Number(r.product_count),
+  }))
+}
+
+export async function saveCollection(input: TaxonomyInput): Promise<CollectionRow> {
+  const id = taxonomyId(input)
+  await query(
+    `INSERT INTO collections (id, label, description, position, active)
+     VALUES ($1,$2,$3,$4,$5)
+     ON CONFLICT (id) DO UPDATE SET
+       label = EXCLUDED.label, description = EXCLUDED.description,
+       position = EXCLUDED.position, active = EXCLUDED.active`,
+    [id, taxonomyLabel(input), input.body ?? '', Math.round(input.position ?? 0), input.active ?? true],
+  )
+  const found = (await listCollections()).find((c) => c.id === id)
+  if (!found) throw notFound('not_found', 'The collection did not save.')
+  return found
+}
+
+/**
+ * Safe to delete at any time, unlike a category: product_collections
+ * cascades, so the memberships go and the products themselves are
+ * untouched.
+ */
+export async function deleteCollection(id: string): Promise<void> {
+  const result = await query('DELETE FROM collections WHERE id = $1', [id])
+  if (result.rowCount === 0) throw notFound('not_found', 'No collection by that name.')
 }
