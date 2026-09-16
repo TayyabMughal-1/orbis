@@ -136,6 +136,43 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ------------------------------- region-specific value props */}
+      <section className="border-y border-ink/10 bg-ink/[0.02]">
+        <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-px px-4 sm:px-6 lg:grid-cols-4 lg:px-10">
+          {[
+            {
+              icon: Truck,
+              title: threshold !== null ? `Free over ${formatThreshold(threshold, config)}` : 'Local delivery',
+              body: `${fastest.label} available — ${fastest.eta.toLowerCase()}.`,
+            },
+            {
+              icon: RotateCcw,
+              title: `${config.policy.returnsDays}-day returns`,
+              body: 'Unused and in the original packaging, no questions asked.',
+            },
+            {
+              icon: CreditCard,
+              title: config.paymentMethods[0].label,
+              body: config.paymentMethods
+                .slice(0, 3)
+                .map((m) => m.label)
+                .join(' · '),
+            },
+            {
+              icon: ShieldCheck,
+              title: `${config.policy.warrantyMonths}-month warranty`,
+              body: config.taxNote,
+            },
+          ].map(({ icon: Icon, title, body }, i) => (
+            <Reveal key={title} delay={i * 80} className="px-2 py-8 sm:px-4 lg:px-6">
+              <Icon size={18} className="mb-3 text-accent" strokeWidth={1.6} />
+              <div className="font-grotesk text-[12px] uppercase text-ink">{title}</div>
+              <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-muted">{body}</p>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+
       {/* ------------------------------------------ featured products */}
       {/*
         The carousel has a band to itself. Over the hero it covered the
@@ -197,43 +234,6 @@ export default function Home() {
             ))}
           </RevealGroup>
         )}
-      </section>
-
-      {/* ------------------------------- region-specific value props */}
-      <section className="border-y border-ink/10 bg-ink/[0.02]">
-        <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-px px-4 sm:px-6 lg:grid-cols-4 lg:px-10">
-          {[
-            {
-              icon: Truck,
-              title: threshold !== null ? `Free over ${formatThreshold(threshold, config)}` : 'Local delivery',
-              body: `${fastest.label} available — ${fastest.eta.toLowerCase()}.`,
-            },
-            {
-              icon: RotateCcw,
-              title: `${config.policy.returnsDays}-day returns`,
-              body: 'Unused and in the original packaging, no questions asked.',
-            },
-            {
-              icon: CreditCard,
-              title: config.paymentMethods[0].label,
-              body: config.paymentMethods
-                .slice(0, 3)
-                .map((m) => m.label)
-                .join(' · '),
-            },
-            {
-              icon: ShieldCheck,
-              title: `${config.policy.warrantyMonths}-month warranty`,
-              body: config.taxNote,
-            },
-          ].map(({ icon: Icon, title, body }, i) => (
-            <Reveal key={title} delay={i * 80} className="px-2 py-8 sm:px-4 lg:px-6">
-              <Icon size={18} className="mb-3 text-accent" strokeWidth={1.6} />
-              <div className="font-grotesk text-[12px] uppercase text-ink">{title}</div>
-              <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-muted">{body}</p>
-            </Reveal>
-          ))}
-        </div>
       </section>
 
       {/* ------------------------------------------------ categories */}
