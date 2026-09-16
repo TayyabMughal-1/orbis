@@ -61,16 +61,18 @@ export default function Home() {
           muted
           playsInline
         />
-        {/* Two scrims that do different jobs, so the footage stays visible.
-            The vertical one only feathers the top and bottom edges into the
-            white page — the middle is left alone. The horizontal one is what
-            actually carries the copy: opaque under the left column where the
-            headline sits, gone by halfway, so the right-hand side of the
-            video plays unobstructed. A single flat wash would have had to
-            cover the whole frame to make the text legible, which is what
-            made the video disappear. */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/45 via-transparent to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent lg:via-background/35 lg:to-transparent" />
+        {/* Two scrims, both deliberately light.
+            These were far heavier — opaque white at the left edge and 45%
+            across the top — which hazed over the footage they sat on. The
+            weight was not buying anything: the headline is near-black, and
+            measured against a mid-grey frame it reads at 4.7:1 with no
+            scrim at all. What is left is the minimum that does a job. The
+            vertical one only feathers the top edge and blends the foot into
+            the white page below; the horizontal one puts a soft ground
+            under the left column and is gone by the middle, so the figure
+            and the planet play unobstructed. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/10 via-transparent to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background/65 via-background/10 to-transparent lg:from-background/50 lg:via-transparent" />
 
         <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1600px] flex-col justify-center px-4 py-24 sm:px-6 lg:px-10">
           <div className="max-w-[820px]">
