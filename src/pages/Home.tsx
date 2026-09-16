@@ -56,13 +56,16 @@ export default function Home() {
           muted
           playsInline
         />
-        {/* The scrim carries the text, not the video. On the dark theme a
-            25% wash was enough because the copy was light on a dark frame;
-            with dark copy on white the video has to be pushed back further
-            or the headline sits at roughly 2:1 over whatever frame is
-            playing. Heaviest behind the copy, clearing toward the right. */}
-        <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/60 to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
+        {/* Two scrims that do different jobs, so the footage stays visible.
+            The vertical one only feathers the top and bottom edges into the
+            white page — the middle is left alone. The horizontal one is what
+            actually carries the copy: opaque under the left column where the
+            headline sits, gone by halfway, so the right-hand side of the
+            video plays unobstructed. A single flat wash would have had to
+            cover the whole frame to make the text legible, which is what
+            made the video disappear. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/45 via-transparent to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent lg:via-background/35 lg:to-transparent" />
 
         <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1600px] flex-col justify-center px-4 py-24 sm:px-6 lg:px-10">
           <div className="max-w-[820px]">
