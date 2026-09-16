@@ -7,6 +7,7 @@ import { useAsync } from '../lib/useAsync'
 import { useRegion } from '../regions/RegionContext'
 import { formatMoney } from '../lib/money'
 import type { Product } from '../types'
+import LazyVideo from './ui/LazyVideo'
 
 // ---------------------------------------------------------------------
 // Departments, as a 3D cylinder carousel.
@@ -500,14 +501,10 @@ export default function CategoryCarousel({ intro }: { intro?: React.ReactNode })
                             boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.15)',
                           }}
                         >
-                          <video
+                          <LazyVideo
                             src={cat.video}
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            preload="metadata"
-                            className="absolute inset-0 h-full w-full rounded-[16px] object-cover"
+                            className="h-full w-full rounded-[16px] object-cover"
+                            fallback={<div className="absolute inset-0 bg-ink/10" />}
                           />
 
                           <div className="absolute inset-0 z-10 h-full w-full bg-gradient-to-t from-black/75 via-black/25 to-black/40 p-5">
@@ -571,14 +568,10 @@ export default function CategoryCarousel({ intro }: { intro?: React.ReactNode })
                           className="pointer-events-none absolute inset-0"
                           style={{ filter: 'blur(16px)', transform: 'scale(1.15)' }}
                         >
-                          <video
+                          <LazyVideo
                             src={cat.video}
-                            autoPlay
-                            loop
-                            muted
-                            playsInline
-                            preload="metadata"
-                            className="absolute inset-0 h-full w-full object-cover"
+                            className="h-full w-full object-cover"
+                            fallback={<div className="absolute inset-0 bg-ink/10" />}
                           />
                         </div>
                         <div className="absolute inset-0 bg-black/45" />

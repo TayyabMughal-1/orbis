@@ -9,6 +9,7 @@ import { formatThreshold } from '../lib/money'
 import ProductCard from '../components/ProductCard'
 import CategoryCarousel from '../components/CategoryCarousel'
 import HeroRing from '../components/HeroRing'
+import LazyVideo from '../components/ui/LazyVideo'
 import Reveal, { RevealGroup } from '../components/ui/Reveal'
 import { ErrorState, ProductGridSkeleton, SectionHeading, Stars } from '../components/ui/Atoms'
 import { Seo, absoluteUrl, graph, organizationSchema } from '../lib/seo'
@@ -53,13 +54,17 @@ export default function Home() {
       />
       {/* ------------------------------------------------------ hero */}
       <section className="relative min-h-[86vh] w-full overflow-hidden">
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
+        {/* 17.6MB, and it used to be fetched while the page was still
+            painting. eager means "already on screen", so it loads on the
+            first idle frame instead — the hero paints immediately and the
+            footage arrives a moment later. */}
+        <LazyVideo
           src={VIDEOS.hero}
-          autoPlay
-          loop
-          muted
-          playsInline
+          eager
+          className="absolute inset-0 h-full w-full"
+          fallback={
+            <div className="absolute inset-0 bg-gradient-to-b from-surface via-background to-background" />
+          }
         />
         {/* Two scrims, both deliberately light.
             These were far heavier — opaque white at the left edge and 45%

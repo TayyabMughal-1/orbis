@@ -1,4 +1,5 @@
 import ProductVisual from './ProductVisual'
+import LazyVideo from './LazyVideo'
 import type { MediaItem } from '../../types'
 
 /**
@@ -20,15 +21,13 @@ export default function Media({
   }
 
   if (item.kind === 'video') {
+    // Off-screen cards cost nothing until they scroll in. A grid of
+    // twenty products would otherwise start twenty downloads at once.
     return (
-      <video
-        className={`h-full w-full object-cover ${className}`}
+      <LazyVideo
         src={item.src}
-        autoPlay={autoPlay}
-        loop
-        muted
-        playsInline
-        preload="metadata"
+        className={`h-full w-full ${className}`}
+        fallback={<div className="absolute inset-0 bg-ink/5" />}
       />
     )
   }
