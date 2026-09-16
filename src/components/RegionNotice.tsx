@@ -44,12 +44,12 @@ export default function RegionNotice() {
   }
 
   return (
-    <div className="animate-fade-in relative z-[60] border-b border-white/10 bg-white/[0.04]">
+    <div className="animate-fade-in relative z-[60] border-b border-ink/10 bg-ink/[0.04]">
       <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:px-6 lg:px-10">
         <span aria-hidden="true" className="text-[16px] leading-none">
           {target.flag}
         </span>
-        <p className="font-mono text-[11px] leading-relaxed text-cream/70">
+        <p className="font-mono text-[11px] leading-relaxed text-ink/80">
           You are shopping the {current.country} store in {current.currency.code}. Prices, delivery and
           payment methods are different in {target.country}.
         </p>
@@ -59,7 +59,7 @@ export default function RegionNotice() {
             setRegion(suggested)
             setSuggested(null)
           }}
-          className="press rounded-full bg-neon px-4 py-1.5 font-grotesk text-[11px] uppercase text-background"
+          className="press rounded-full bg-neon px-4 py-1.5 font-grotesk text-[11px] uppercase text-ink"
         >
           Switch to {target.currency.code}
         </button>
@@ -67,7 +67,7 @@ export default function RegionNotice() {
           type="button"
           onClick={dismiss}
           aria-label="Dismiss"
-          className="ml-auto flex h-7 w-7 items-center justify-center rounded-full text-cream/50 hover:text-cream"
+          className="ml-auto flex h-7 w-7 items-center justify-center rounded-full text-muted hover:text-ink"
         >
           <X size={14} />
         </button>

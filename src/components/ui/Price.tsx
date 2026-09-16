@@ -23,7 +23,7 @@ export default function Price({
     <span className={className}>
       <span>{formatMoney(amount, config, compact)}</span>
       {compareAt !== undefined && compareAt > amount && (
-        <span className="ml-2 text-cream/40 line-through">{formatMoney(compareAt, config, compact)}</span>
+        <span className="ml-2 text-muted line-through">{formatMoney(compareAt, config, compact)}</span>
       )}
     </span>
   )

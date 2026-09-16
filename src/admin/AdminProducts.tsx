@@ -77,13 +77,13 @@ export function AdminProductList() {
       />
 
       {error && <Banner tone="error">{error}</Banner>}
-      {!products && !error && <p className="font-mono text-[12px] text-cream/45">Loading…</p>}
+      {!products && !error && <p className="font-mono text-[12px] text-muted">Loading…</p>}
 
       {products && (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse">
             <thead>
-              <tr className="border-b border-white/10 text-left font-mono text-[10px] uppercase tracking-wide text-cream/40">
+              <tr className="border-b border-ink/10 text-left font-mono text-[10px] uppercase tracking-wide text-muted">
                 <th className="py-2 pr-4">Product</th>
                 <th className="py-2 pr-4">Department</th>
                 <th className="py-2 pr-4">Variants</th>
@@ -103,30 +103,30 @@ export function AdminProductList() {
                   Math.min(...product.variants.map((v) => v.price[r]))
 
                 return (
-                  <tr key={product.id} className="border-b border-white/5 align-middle">
+                  <tr key={product.id} className="border-b border-ink/5 align-middle">
                     <td className="py-3 pr-4">
                       <Link
                         to={`/admin/products/${product.slug}`}
-                        className="font-grotesk text-[13px] uppercase text-cream hover:text-neon"
+                        className="font-grotesk text-[13px] uppercase text-ink hover:text-accent"
                       >
                         {product.name}
                       </Link>
-                      <div className="mt-0.5 font-mono text-[10px] text-cream/35">/{product.slug}</div>
+                      <div className="mt-0.5 font-mono text-[10px] text-muted">/{product.slug}</div>
                     </td>
-                    <td className="py-3 pr-4 font-mono text-[11px] capitalize text-cream/60">
+                    <td className="py-3 pr-4 font-mono text-[11px] capitalize text-muted">
                       {product.category}
                     </td>
-                    <td className="py-3 pr-4 font-mono text-[11px] text-cream/60">
+                    <td className="py-3 pr-4 font-mono text-[11px] text-muted">
                       {product.variants.length}
                     </td>
                     {REGION_CODES.map((r) => {
                       const stock = stockFor(r)
                       return (
                         <td key={r} className="py-3 pr-4 font-mono text-[11px]">
-                          <span className="text-cream/70">
+                          <span className="text-ink/80">
                             {formatMoney(fromPrice(r), REGIONS[r], true)}
                           </span>
-                          <span className={stock === 0 ? 'text-amber-300' : 'text-cream/40'}>
+                          <span className={stock === 0 ? 'text-amber-300' : 'text-muted'}>
                             {' '}· {stock}
                           </span>
                         </td>
@@ -137,7 +137,7 @@ export function AdminProductList() {
                         type="button"
                         onClick={() => remove(product)}
                         aria-label={`Delete ${product.name}`}
-                        className="text-cream/30 transition-colors hover:text-red-300"
+                        className="text-muted transition-colors hover:text-red-300"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -314,7 +314,7 @@ export function AdminProductEditor() {
     }
   }
 
-  if (loading) return <p className="font-mono text-[12px] text-cream/45">Loading…</p>
+  if (loading) return <p className="font-mono text-[12px] text-muted">Loading…</p>
 
   return (
     <>
@@ -353,7 +353,7 @@ export function AdminProductEditor() {
             onChange={(e) => set('category')(e.target.value)}
           >
             {CATEGORIES.map((c) => (
-              <option key={c.id} value={c.id} className="bg-[#060d2e]">
+              <option key={c.id} value={c.id} className="bg-background">
                 {c.label}
               </option>
             ))}
@@ -408,7 +408,7 @@ export function AdminProductEditor() {
       {/* ------------------------------------------------- variants */}
       <div className="mt-10">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-grotesk text-[15px] uppercase text-cream">
+          <h2 className="font-grotesk text-[15px] uppercase text-ink">
             Variants, prices and stock
           </h2>
           <AdminButton tone="ghost" onClick={() => setVariants((v) => [...v, blankVariant()])}>
@@ -417,14 +417,14 @@ export function AdminProductEditor() {
             </span>
           </AdminButton>
         </div>
-        <p className="mb-4 font-mono text-[11px] leading-relaxed text-cream/45">
+        <p className="mb-4 font-mono text-[11px] leading-relaxed text-muted">
           Each store is priced separately — there is no exchange rate. Enter prices the way a customer
           reads them ({REGIONS.us.currency.symbol}289.00, AED 1060.00, Rs 79900).
         </p>
 
         <div className="space-y-4">
           {variants.map((variant, index) => (
-            <div key={index} className="rounded-[14px] border border-white/10 bg-white/[0.02] p-4">
+            <div key={index} className="rounded-[14px] border border-ink/10 bg-ink/[0.02] p-4">
               <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-5">
                 <Field label="SKU">
                   <input
@@ -476,8 +476,8 @@ export function AdminProductEditor() {
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {REGION_CODES.map((region) => (
-                  <div key={region} className="rounded-[10px] border border-white/10 p-3">
-                    <div className="mb-2 font-mono text-[10px] uppercase tracking-wide text-cream/50">
+                  <div key={region} className="rounded-[10px] border border-ink/10 p-3">
+                    <div className="mb-2 font-mono text-[10px] uppercase tracking-wide text-muted">
                       {REGIONS[region].country} · {REGIONS[region].currency.code}
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -525,7 +525,7 @@ export function AdminProductEditor() {
                         setVariants((vs) => vs.filter((_, i) => i !== index))
                       }
                     }}
-                    className="font-mono text-[10px] uppercase text-cream/35 hover:text-red-300"
+                    className="font-mono text-[10px] uppercase text-muted hover:text-red-300"
                   >
                     Remove variant
                   </button>
@@ -539,7 +539,7 @@ export function AdminProductEditor() {
       {/* ---------------------------------------------------- specs */}
       <div className="mt-10">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-grotesk text-[15px] uppercase text-cream">Specifications</h2>
+          <h2 className="font-grotesk text-[15px] uppercase text-ink">Specifications</h2>
           <AdminButton
             tone="ghost"
             onClick={() => setSpecs((s) => [...s, { label: '', value: '' }])}
@@ -571,7 +571,7 @@ export function AdminProductEditor() {
               <button
                 type="button"
                 onClick={() => setSpecs((ss) => ss.filter((_, i) => i !== index))}
-                className="flex-none px-2 text-cream/30 hover:text-red-300"
+                className="flex-none px-2 text-muted hover:text-red-300"
                 aria-label="Remove specification"
               >
                 <Trash2 size={14} />
@@ -579,12 +579,12 @@ export function AdminProductEditor() {
             </div>
           ))}
           {specs.length === 0 && (
-            <p className="font-mono text-[11px] text-cream/35">No specifications yet.</p>
+            <p className="font-mono text-[11px] text-muted">No specifications yet.</p>
           )}
         </div>
       </div>
 
-      <div className="mt-10 border-t border-white/10 pt-5">
+      <div className="mt-10 border-t border-ink/10 pt-5">
         <AdminButton onClick={save} disabled={saving || !form.name}>
           {saving ? 'Saving…' : 'Save product'}
         </AdminButton>

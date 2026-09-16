@@ -86,15 +86,15 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`animate-slide-up-in pointer-events-auto flex items-start gap-3 rounded-[14px] border p-3.5 shadow-2xl shadow-black/50 backdrop-blur-md sm:animate-slide-in-right ${
+            className={`animate-slide-up-in pointer-events-auto flex items-start gap-3 rounded-[14px] border p-3.5 shadow-pop backdrop-blur-md sm:animate-slide-in-right ${
               toast.tone === 'success'
-                ? 'border-neon/40 bg-[#0a1b12]/95'
-                : 'border-red-400/40 bg-[#1b0a0e]/95'
+                ? 'border-accent/25 bg-[#F2FBEA]'
+                : 'border-red-500/25 bg-[#FEF2F2]'
             }`}
           >
             <span
               className={`mt-0.5 flex h-5 w-5 flex-none items-center justify-center rounded-full ${
-                toast.tone === 'success' ? 'bg-neon text-background' : 'bg-red-400 text-background'
+                toast.tone === 'success' ? 'bg-accent text-background' : 'bg-red-600 text-background'
               }`}
             >
               {toast.tone === 'success' ? (
@@ -105,9 +105,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             </span>
 
             <div className="min-w-0 flex-1">
-              <p className="font-grotesk text-[12px] uppercase text-cream">{toast.message}</p>
+              <p className="font-grotesk text-[12px] uppercase text-ink">{toast.message}</p>
               {toast.detail && (
-                <p className="mt-0.5 truncate font-mono text-[11px] text-cream/55">{toast.detail}</p>
+                <p className="mt-0.5 truncate font-mono text-[11px] text-muted">{toast.detail}</p>
               )}
               {toast.action && (
                 <button
@@ -116,7 +116,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                     toast.action?.onClick()
                     dismiss(toast.id)
                   }}
-                  className="mt-2 font-mono text-[11px] uppercase text-neon underline underline-offset-4"
+                  className="mt-2 font-mono text-[11px] uppercase text-accent underline underline-offset-4"
                 >
                   {toast.action.label}
                 </button>
@@ -127,7 +127,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               type="button"
               onClick={() => dismiss(toast.id)}
               aria-label="Dismiss notification"
-              className="flex-none text-cream/40 transition-colors hover:text-cream"
+              className="flex-none text-muted transition-colors hover:text-ink"
             >
               <X size={14} />
             </button>

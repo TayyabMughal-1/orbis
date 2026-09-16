@@ -15,14 +15,14 @@ export default function Footer() {
   const { config, href, setRegion, region } = useRegion()
 
   return (
-    <footer className="border-t border-white/10 bg-background">
+    <footer className="border-t border-ink/10 bg-background">
       <div className="mx-auto max-w-[1600px] px-4 py-14 sm:px-6 lg:px-10">
         <div className="grid grid-cols-2 gap-10 lg:grid-cols-5">
           <div className="col-span-2 lg:col-span-2">
-            <div className="font-grotesk text-[20px] uppercase text-cream">
-              Orbis <span className="text-cream/55">Store</span>
+            <div className="font-grotesk text-[20px] uppercase text-ink">
+              Orbis <span className="text-muted">Store</span>
             </div>
-            <p className="mt-3 max-w-xs font-mono text-[12px] leading-relaxed text-cream/55">
+            <p className="mt-3 max-w-xs font-mono text-[12px] leading-relaxed text-muted">
               Collectible Orbis figures, plus the homeware, lighting, apparel and prints that go with
               them. Shipping across {config.country} from our local warehouse.
             </p>
@@ -30,25 +30,25 @@ export default function Footer() {
             <div className="mt-6 space-y-2">
               <a
                 href={`mailto:${config.support.email}`}
-                className="flex items-center gap-2 font-mono text-[12px] text-cream/70 hover:text-neon"
+                className="flex items-center gap-2 font-mono text-[12px] text-ink/80 hover:text-accent"
               >
                 <Mail size={13} /> {config.support.email}
               </a>
               <a
                 href={`tel:${config.support.phone.replace(/[^\d+]/g, '')}`}
-                className="flex items-center gap-2 font-mono text-[12px] text-cream/70 hover:text-neon"
+                className="flex items-center gap-2 font-mono text-[12px] text-ink/80 hover:text-accent"
               >
                 <Phone size={13} /> {config.support.phone}
               </a>
-              <div className="font-mono text-[11px] text-cream/40">{config.support.hours}</div>
+              <div className="font-mono text-[11px] text-muted">{config.support.hours}</div>
             </div>
           </div>
 
           <div>
-            <h3 className="font-grotesk text-[12px] uppercase tracking-wide text-cream">Shop</h3>
+            <h3 className="font-grotesk text-[12px] uppercase tracking-wide text-ink">Shop</h3>
             <ul className="mt-4 space-y-2">
               <li>
-                <Link to={href('/shop')} className="font-mono text-[12px] text-cream/60 hover:text-neon">
+                <Link to={href('/shop')} className="font-mono text-[12px] text-muted hover:text-accent">
                   All products
                 </Link>
               </li>
@@ -56,7 +56,7 @@ export default function Footer() {
                 <li key={cat.id}>
                   <Link
                     to={href(`/shop/${cat.id}`)}
-                    className="font-mono text-[12px] text-cream/60 hover:text-neon"
+                    className="font-mono text-[12px] text-muted hover:text-accent"
                   >
                     {cat.label}
                   </Link>
@@ -66,34 +66,34 @@ export default function Footer() {
           </div>
 
           <div>
-            <h3 className="font-grotesk text-[12px] uppercase tracking-wide text-cream">
+            <h3 className="font-grotesk text-[12px] uppercase tracking-wide text-ink">
               Delivery &amp; returns
             </h3>
-            <ul className="mt-4 space-y-2 font-mono text-[12px] text-cream/60">
+            <ul className="mt-4 space-y-2 font-mono text-[12px] text-muted">
               <li>{config.policy.returnsDays}-day returns</li>
               <li>{config.policy.warrantyMonths}-month warranty</li>
               <li>{config.taxNote}</li>
               <li>
-                <Link to={href('/orders')} className="hover:text-neon">
+                <Link to={href('/orders')} className="hover:text-accent">
                   Track an order
                 </Link>
               </li>
               <li>
-                <Link to={href('/help')} className="hover:text-neon">
+                <Link to={href('/help')} className="hover:text-accent">
                   Delivery &amp; returns FAQ
                 </Link>
               </li>
             </ul>
-            <p className="mt-4 font-mono text-[11px] leading-relaxed text-cream/40">
+            <p className="mt-4 font-mono text-[11px] leading-relaxed text-muted">
               {config.policy.dutiesNote}
             </p>
           </div>
 
           <div>
-            <h3 className="font-grotesk text-[12px] uppercase tracking-wide text-cream">We accept</h3>
+            <h3 className="font-grotesk text-[12px] uppercase tracking-wide text-ink">We accept</h3>
             <ul className="mt-4 space-y-2">
               {config.paymentMethods.map((method) => (
-                <li key={method.id} className="font-mono text-[12px] text-cream/60">
+                <li key={method.id} className="font-mono text-[12px] text-muted">
                   {method.label}
                 </li>
               ))}
@@ -102,15 +102,15 @@ export default function Footer() {
         </div>
 
         {/* newsletter */}
-        <div className="mt-12 border-t border-white/10 pt-10">
+        <div className="mt-12 border-t border-ink/10 pt-10">
           <div className="max-w-md">
             <Newsletter />
           </div>
         </div>
 
         {/* the three storefronts, always reachable */}
-        <div className="mt-12 flex flex-wrap items-center gap-2 border-t border-white/10 pt-8">
-          <span className="mr-2 font-mono text-[10px] uppercase tracking-[0.2em] text-cream/40">
+        <div className="mt-12 flex flex-wrap items-center gap-2 border-t border-ink/10 pt-8">
+          <span className="mr-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
             Other stores
           </span>
           {REGION_LIST.map((r) => (
@@ -121,8 +121,8 @@ export default function Footer() {
               disabled={r.code === region}
               className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase transition-colors ${
                 r.code === region
-                  ? 'border-neon/40 bg-neon/10 text-neon'
-                  : 'border-white/15 text-cream/60 hover:border-white/35 hover:text-cream'
+                  ? 'border-accent/40 bg-accent/10 text-accent'
+                  : 'border-ink/15 text-muted hover:border-ink/35 hover:text-ink'
               }`}
             >
               <span aria-hidden="true">{r.flag}</span> {r.country} · {r.currency.code}
@@ -130,9 +130,9 @@ export default function Footer() {
           ))}
         </div>
 
-        <div className="mt-8 flex flex-col gap-2 font-mono text-[11px] leading-relaxed text-cream/40 sm:flex-row sm:items-end sm:justify-between">
+        <div className="mt-8 flex flex-col gap-2 font-mono text-[11px] leading-relaxed text-muted sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <div className="text-cream/55">{config.entity.name}</div>
+            <div className="text-muted">{config.entity.name}</div>
             {config.entity.addressLines.map((line) => (
               <div key={line}>{line}</div>
             ))}

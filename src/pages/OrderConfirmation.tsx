@@ -16,10 +16,10 @@ export default function OrderConfirmation() {
   if (state.loading) {
     return (
       <div className="mx-auto max-w-3xl animate-pulse px-4 py-24">
-        <div className="mx-auto h-12 w-12 rounded-full bg-white/10" />
-        <div className="mx-auto mt-6 h-8 w-2/3 rounded bg-white/10" />
-        <div className="mx-auto mt-4 h-4 w-1/3 rounded bg-white/5" />
-        <div className="mt-10 h-64 rounded-[20px] bg-white/5" />
+        <div className="mx-auto h-12 w-12 rounded-full bg-ink/10" />
+        <div className="mx-auto mt-6 h-8 w-2/3 rounded bg-ink/10" />
+        <div className="mx-auto mt-4 h-4 w-1/3 rounded bg-ink/5" />
+        <div className="mt-10 h-64 rounded-[20px] bg-ink/5" />
       </div>
     )
   }
@@ -29,7 +29,7 @@ export default function OrderConfirmation() {
       <div className="mx-auto max-w-2xl px-4 py-24">
         <ErrorState message={state.error ?? 'Order not found.'} />
         <div className="mt-6 text-center">
-          <Link to={href('/orders')} className="font-mono text-[12px] uppercase text-neon underline underline-offset-4">
+          <Link to={href('/orders')} className="font-mono text-[12px] uppercase text-accent underline underline-offset-4">
             Look up another order
           </Link>
         </div>
@@ -51,25 +51,25 @@ export default function OrderConfirmation() {
         noindex
       />
       <div className="text-center">
-        <span className="animate-scale-in mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-neon text-background">
+        <span className="animate-scale-in mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-neon text-ink">
           <Check size={26} strokeWidth={3} />
         </span>
-        <h1 className="mt-6 font-grotesk text-[30px] uppercase leading-tight text-cream sm:text-[40px]">
+        <h1 className="mt-6 font-grotesk text-[30px] uppercase leading-tight text-ink sm:text-[40px]">
           Order confirmed
         </h1>
-        <p className="mt-3 font-mono text-[12px] uppercase text-cream/55">
+        <p className="mt-3 font-mono text-[12px] uppercase text-muted">
           {order.number} · {placed.toLocaleDateString(config.locale, { dateStyle: 'long' })}
         </p>
-        <p className="mx-auto mt-4 max-w-md font-mono text-[12px] leading-relaxed text-cream/50">
+        <p className="mx-auto mt-4 max-w-md font-mono text-[12px] leading-relaxed text-muted">
           A confirmation is on its way to {order.email}. Keep the order number — it is how we find
           you if you need to change anything.
         </p>
       </div>
 
       {/* what happens next, which genuinely differs by market */}
-      <div className="mt-10 rounded-[18px] border border-neon/30 bg-neon/[0.05] p-5">
-        <h2 className="mb-2 font-grotesk text-[13px] uppercase text-neon">What happens next</h2>
-        <p className="font-mono text-[12px] leading-relaxed text-cream/70">
+      <div className="mt-10 rounded-[18px] border border-accent/30 bg-accent/[0.05] p-5">
+        <h2 className="mb-2 font-grotesk text-[13px] uppercase text-accent">What happens next</h2>
+        <p className="font-mono text-[12px] leading-relaxed text-ink/80">
           {order.paymentMethodId === 'cod' ? (
             <>
               Have {formatMoney(order.totals.total, config, false)} ready in cash. Your order ships{' '}
@@ -83,7 +83,7 @@ export default function OrderConfirmation() {
             </>
           ) : awaitingPayment ? (
             <>
-              Your order is reserved, but <strong className="text-cream">no card has been charged</strong> —
+              Your order is reserved, but <strong className="text-ink">no card has been charged</strong> —
               this store has no live payment gateway connected yet. We will email {order.email} to
               settle payment, and it ships {order.shipping.label.toLowerCase()} once that is done.
             </>
@@ -99,27 +99,27 @@ export default function OrderConfirmation() {
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr]">
         {/* items */}
-        <div className="rounded-[20px] border border-white/10 bg-white/[0.02] p-6">
-          <h2 className="mb-5 font-grotesk text-[13px] uppercase text-cream">
+        <div className="rounded-[20px] border border-ink/10 bg-ink/[0.02] p-6">
+          <h2 className="mb-5 font-grotesk text-[13px] uppercase text-ink">
             {order.lines.length} item{order.lines.length === 1 ? '' : 's'}
           </h2>
-          <ul className="divide-y divide-white/10">
+          <ul className="divide-y divide-ink/10">
             {order.lines.map((line) => (
               <li key={line.sku} className="flex items-start justify-between gap-4 py-3">
                 <div className="min-w-0">
-                  <div className="font-grotesk text-[12px] uppercase text-cream">{line.productName}</div>
-                  <div className="mt-0.5 font-mono text-[10px] uppercase text-cream/45">
+                  <div className="font-grotesk text-[12px] uppercase text-ink">{line.productName}</div>
+                  <div className="mt-0.5 font-mono text-[10px] uppercase text-muted">
                     {line.variantLabel} · {line.sku} · Qty {line.quantity}
                   </div>
                 </div>
-                <div className="flex-none font-mono text-[12px] text-cream">
+                <div className="flex-none font-mono text-[12px] text-ink">
                   {formatMoney(line.lineTotal, config, false)}
                 </div>
               </li>
             ))}
           </ul>
 
-          <div className="mt-6 grid grid-cols-1 gap-5 border-t border-white/10 pt-6 sm:grid-cols-2">
+          <div className="mt-6 grid grid-cols-1 gap-5 border-t border-ink/10 pt-6 sm:grid-cols-2">
             <Block icon={MapPin} title="Delivering to">
               {order.address.fullName}
               <br />
@@ -164,7 +164,7 @@ export default function OrderConfirmation() {
               {order.paymentStatus === 'paid' && (
                 <>
                   <br />
-                  <span className="text-neon">Paid</span>
+                  <span className="text-accent">Paid</span>
                 </>
               )}
             </Block>
@@ -181,18 +181,18 @@ export default function OrderConfirmation() {
 
         {/* totals */}
         <aside>
-          <div className="rounded-[20px] border border-white/10 bg-white/[0.02] p-6">
-            <h2 className="mb-5 font-grotesk text-[13px] uppercase text-cream">Total paid</h2>
+          <div className="rounded-[20px] border border-ink/10 bg-ink/[0.02] p-6">
+            <h2 className="mb-5 font-grotesk text-[13px] uppercase text-ink">Total paid</h2>
             <TotalsRows totals={order.totals} />
             {order.promoCode && (
-              <p className="mt-3 font-mono text-[10px] uppercase text-neon">Code {order.promoCode} applied</p>
+              <p className="mt-3 font-mono text-[10px] uppercase text-accent">Code {order.promoCode} applied</p>
             )}
             {order.paymentInstructions && (
               <p className="mt-3 font-mono text-[10px] leading-relaxed text-amber-200/80">
                 {order.paymentInstructions}
               </p>
             )}
-            <p className="mt-5 font-mono text-[10px] leading-relaxed text-cream/40">
+            <p className="mt-5 font-mono text-[10px] leading-relaxed text-muted">
               {config.policy.returnsDays}-day returns · {config.policy.warrantyMonths}-month warranty ·{' '}
               {config.entity.name} · {config.entity.registration}
             </p>
@@ -200,7 +200,7 @@ export default function OrderConfirmation() {
 
           <Link
             to={href('/shop')}
-            className="mt-4 block rounded-full border border-white/20 py-3 text-center font-grotesk text-[12px] uppercase text-cream transition-colors hover:border-white/45"
+            className="mt-4 block rounded-full border border-ink/20 py-3 text-center font-grotesk text-[12px] uppercase text-ink transition-colors hover:border-ink/45"
           >
             Continue shopping
           </Link>
@@ -221,10 +221,10 @@ function Block({
 }) {
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wide text-cream/45">
+      <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wide text-muted">
         <Icon size={12} /> {title}
       </div>
-      <div className="font-mono text-[11px] leading-relaxed text-cream/75">{children}</div>
+      <div className="font-mono text-[11px] leading-relaxed text-ink/80">{children}</div>
     </div>
   )
 }

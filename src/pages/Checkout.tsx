@@ -138,14 +138,14 @@ export default function Checkout() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24 sm:px-6">
         <Seo title="Checkout" description="Complete your Orbis Store order." path="/checkout" noindex />
-        <h1 className="mb-8 text-center font-grotesk text-[34px] uppercase text-cream">Checkout</h1>
+        <h1 className="mb-8 text-center font-grotesk text-[34px] uppercase text-ink">Checkout</h1>
         <EmptyState
           title="There is nothing to check out"
           body="Your cart is empty. Add something first and we will take it from there."
           action={
             <Link
               to={href('/shop')}
-              className="rounded-full bg-neon px-7 py-3 font-grotesk text-[12px] uppercase text-background"
+              className="rounded-full bg-neon px-7 py-3 font-grotesk text-[12px] uppercase text-ink"
             >
               Browse the collection
             </Link>
@@ -164,10 +164,10 @@ export default function Checkout() {
         noindex
       />
       <div className="mb-10">
-        <h1 className="font-grotesk text-[34px] uppercase leading-none text-cream sm:text-[44px]">
+        <h1 className="font-grotesk text-[34px] uppercase leading-none text-ink sm:text-[44px]">
           Checkout
         </h1>
-        <p className="mt-3 font-mono text-[12px] uppercase text-cream/50">
+        <p className="mt-3 font-mono text-[12px] uppercase text-muted">
           <span aria-hidden="true">{config.flag}</span> {config.country} store · paying in{' '}
           {config.currency.code}
         </p>
@@ -260,13 +260,13 @@ export default function Checkout() {
                 placeholder={config.address.postalPlaceholder}
               />
               <div className="flex items-end">
-                <div className="w-full rounded-[12px] border border-white/10 bg-white/[0.02] px-3 py-2.5 font-mono text-[12px] text-cream/50">
+                <div className="w-full rounded-[12px] border border-ink/10 bg-ink/[0.02] px-3 py-2.5 font-mono text-[12px] text-muted">
                   Country · {config.country}
                 </div>
               </div>
             </div>
             {config.code === 'us' && form.region && (
-              <p className="mt-3 font-mono text-[10px] uppercase text-cream/40">
+              <p className="mt-3 font-mono text-[10px] uppercase text-muted">
                 Sales tax for {form.region} is applied to this order.
               </p>
             )}
@@ -281,8 +281,8 @@ export default function Checkout() {
                   key={option.id}
                   className={`flex cursor-pointer items-center gap-3 rounded-[14px] border p-4 transition-colors ${
                     shippingId === option.id
-                      ? 'border-neon/50 bg-neon/[0.06]'
-                      : 'border-white/12 hover:border-white/30'
+                      ? 'border-accent/50 bg-accent/[0.06]'
+                      : 'border-ink/12 hover:border-ink/30'
                   }`}
                 >
                   <input
@@ -290,20 +290,20 @@ export default function Checkout() {
                     name="shipping"
                     checked={shippingId === option.id}
                     onChange={() => setShippingId(option.id)}
-                    className="h-3.5 w-3.5 accent-[#6FFF00]"
+                    className="h-3.5 w-3.5 accent-[#2F7D00]"
                   />
                   <span className="flex-1">
-                    <span className="block font-grotesk text-[12px] uppercase text-cream">
+                    <span className="block font-grotesk text-[12px] uppercase text-ink">
                       {option.label}
                     </span>
-                    <span className="block font-mono text-[11px] text-cream/45">{option.eta}</span>
+                    <span className="block font-mono text-[11px] text-muted">{option.eta}</span>
                   </span>
-                  <span className="font-mono text-[12px] text-neon">
+                  <span className="font-mono text-[12px] text-accent">
                     {option.amount === 0 ? 'Free' : formatMoney(option.amount, config, false)}
                   </span>
                 </label>
               ))}
-              {!quote.data && <div className="h-40 animate-pulse rounded-[14px] bg-white/5" />}
+              {!quote.data && <div className="h-40 animate-pulse rounded-[14px] bg-ink/5" />}
             </div>
           </section>
 
@@ -316,8 +316,8 @@ export default function Checkout() {
                   key={method.id}
                   className={`flex cursor-pointer items-center gap-3 rounded-[14px] border p-4 transition-colors ${
                     paymentId === method.id
-                      ? 'border-neon/50 bg-neon/[0.06]'
-                      : 'border-white/12 hover:border-white/30'
+                      ? 'border-accent/50 bg-accent/[0.06]'
+                      : 'border-ink/12 hover:border-ink/30'
                   }`}
                 >
                   <input
@@ -325,13 +325,13 @@ export default function Checkout() {
                     name="payment"
                     checked={paymentId === method.id}
                     onChange={() => setPaymentId(method.id)}
-                    className="h-3.5 w-3.5 accent-[#6FFF00]"
+                    className="h-3.5 w-3.5 accent-[#2F7D00]"
                   />
                   <span className="flex-1">
-                    <span className="block font-grotesk text-[12px] uppercase text-cream">
+                    <span className="block font-grotesk text-[12px] uppercase text-ink">
                       {method.label}
                     </span>
-                    <span className="block font-mono text-[11px] text-cream/45">{method.description}</span>
+                    <span className="block font-mono text-[11px] text-muted">{method.description}</span>
                   </span>
                   {method.surcharge ? (
                     <span className="font-mono text-[11px] text-amber-300">
@@ -342,9 +342,9 @@ export default function Checkout() {
               ))}
             </div>
 
-            <div className="mt-4 flex gap-2.5 rounded-[14px] border border-white/12 bg-white/[0.02] p-4">
-              <Lock size={14} className="mt-0.5 flex-none text-cream/50" />
-              <p className="font-mono text-[10px] leading-relaxed text-cream/45">
+            <div className="mt-4 flex gap-2.5 rounded-[14px] border border-ink/12 bg-ink/[0.02] p-4">
+              <Lock size={14} className="mt-0.5 flex-none text-muted" />
+              <p className="font-mono text-[10px] leading-relaxed text-muted">
                 {selectedPayment.offline ? (
                   <>
                     No payment is taken now — you pay on delivery. We will confirm the order by email
@@ -356,7 +356,7 @@ export default function Checkout() {
                     Card details are never handled by this page. In production the order is created
                     server-side and the payment is completed on the provider&apos;s own hosted form —
                     Stripe, Checkout.com, Easypaisa or JazzCash depending on the store.{' '}
-                    <strong className="text-cream/70">
+                    <strong className="text-ink/80">
                       This build records the order without charging a card.
                     </strong>
                   </>
@@ -368,25 +368,25 @@ export default function Checkout() {
 
         {/* ------------------------------------------------- summary */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-[20px] border border-white/10 bg-white/[0.02] p-6">
-            <h2 className="mb-5 font-grotesk text-[14px] uppercase text-cream">Your order</h2>
+          <div className="rounded-[20px] border border-ink/10 bg-ink/[0.02] p-6">
+            <h2 className="mb-5 font-grotesk text-[14px] uppercase text-ink">Your order</h2>
 
             <ul className="mb-5 space-y-3">
               {resolved.map(({ line, product, variant, lineTotal }) => (
                 <li key={variant.id} className="flex items-center gap-3">
-                  <div className="relative h-14 w-14 flex-none overflow-hidden rounded-[10px] bg-[#03081c]">
+                  <div className="relative h-14 w-14 flex-none overflow-hidden rounded-[10px] bg-surface">
                     <Media item={product.media[0]} autoPlay={false} />
-                    <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-white/90 px-1 font-mono text-[10px] font-bold text-background">
+                    <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ink/90 px-1 font-mono text-[10px] font-bold text-ink">
                       {line.quantity}
                     </span>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="truncate font-grotesk text-[11px] uppercase text-cream">
+                    <div className="truncate font-grotesk text-[11px] uppercase text-ink">
                       {product.name}
                     </div>
-                    <div className="truncate font-mono text-[10px] text-cream/45">{variant.label}</div>
+                    <div className="truncate font-mono text-[10px] text-muted">{variant.label}</div>
                   </div>
-                  <div className="flex-none font-mono text-[12px] text-cream">
+                  <div className="flex-none font-mono text-[12px] text-ink">
                     {formatMoney(lineTotal, config, false)}
                   </div>
                 </li>
@@ -407,7 +407,7 @@ export default function Checkout() {
             {quote.data ? (
               <TotalsRows totals={quote.data.totals} />
             ) : (
-              <div className="h-36 animate-pulse rounded bg-white/5" />
+              <div className="h-36 animate-pulse rounded bg-ink/5" />
             )}
 
             {submitError && (
@@ -420,7 +420,7 @@ export default function Checkout() {
             <button
               type="submit"
               disabled={submitting || !quote.data}
-              className="press mt-6 w-full rounded-full bg-neon py-3.5 font-grotesk text-[13px] uppercase text-background transition-opacity hover:opacity-90 disabled:opacity-40"
+              className="press mt-6 w-full rounded-full bg-neon py-3.5 font-grotesk text-[13px] uppercase text-ink transition-opacity hover:opacity-90 disabled:opacity-40"
             >
               {submitting
                 ? 'Placing order…'
@@ -429,7 +429,7 @@ export default function Checkout() {
                   : `Pay ${quote.data ? formatMoney(quote.data.totals.total, config, false) : ''}`}
             </button>
 
-            <p className="mt-3 text-center font-mono text-[10px] leading-relaxed text-cream/40">
+            <p className="mt-3 text-center font-mono text-[10px] leading-relaxed text-muted">
               By placing this order you agree to our terms. {config.policy.returnsDays}-day returns ·{' '}
               {config.taxNote}
             </p>
@@ -452,10 +452,10 @@ function newIdempotencyKey(): string {
 function Legend({ step, title }: { step: number; title: string }) {
   return (
     <div className="mb-5 flex items-center gap-3">
-      <span className="flex h-6 w-6 items-center justify-center rounded-full border border-white/20 font-mono text-[11px] text-cream/70">
+      <span className="flex h-6 w-6 items-center justify-center rounded-full border border-ink/20 font-mono text-[11px] text-ink/80">
         {step}
       </span>
-      <h2 className="font-grotesk text-[15px] uppercase text-cream">{title}</h2>
+      <h2 className="font-grotesk text-[15px] uppercase text-ink">{title}</h2>
     </div>
   )
 }
@@ -483,16 +483,16 @@ function Field({
 }) {
   return (
     <label className="block" data-error={Boolean(error)}>
-      <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wide text-cream/50">
+      <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wide text-muted">
         {label}
       </span>
       <span
-        className={`flex items-center rounded-[12px] border bg-white/5 transition-colors focus-within:border-white/45 ${
-          error ? 'border-red-400/60' : 'border-white/15'
+        className={`flex items-center rounded-[12px] border bg-ink/5 transition-colors focus-within:border-ink/45 ${
+          error ? 'border-red-400/60' : 'border-ink/15'
         }`}
       >
         {prefix && (
-          <span className="pl-3 font-mono text-[12px] text-cream/45">{prefix}</span>
+          <span className="pl-3 font-mono text-[12px] text-muted">{prefix}</span>
         )}
         <input
           type={type}
@@ -500,13 +500,13 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           autoComplete={autoComplete}
           placeholder={placeholder}
-          className="w-full bg-transparent px-3 py-2.5 font-mono text-[12px] text-cream outline-none placeholder:text-cream/30"
+          className="w-full bg-transparent px-3 py-2.5 font-mono text-[12px] text-ink outline-none placeholder:text-muted"
         />
       </span>
       {error ? (
         <span className="mt-1.5 block font-mono text-[10px] text-red-300">{error}</span>
       ) : hint ? (
-        <span className="mt-1.5 block font-mono text-[10px] text-cream/35">{hint}</span>
+        <span className="mt-1.5 block font-mono text-[10px] text-muted">{hint}</span>
       ) : null}
     </label>
   )
@@ -529,21 +529,21 @@ function SelectField({
 }) {
   return (
     <label className="block" data-error={Boolean(error)}>
-      <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wide text-cream/50">
+      <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wide text-muted">
         {label}
       </span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full rounded-[12px] border bg-white/5 px-3 py-2.5 font-mono text-[12px] text-cream outline-none transition-colors focus:border-white/45 ${
-          error ? 'border-red-400/60' : 'border-white/15'
+        className={`w-full rounded-[12px] border bg-ink/5 px-3 py-2.5 font-mono text-[12px] text-ink outline-none transition-colors focus:border-ink/45 ${
+          error ? 'border-red-400/60' : 'border-ink/15'
         }`}
       >
-        <option value="" className="bg-[#060d2e]">
+        <option value="" className="bg-background">
           {placeholder}
         </option>
         {options.map((option) => (
-          <option key={option} value={option} className="bg-[#060d2e]">
+          <option key={option} value={option} className="bg-background">
             {option}
           </option>
         ))}

@@ -29,14 +29,14 @@ export default function CartPage() {
     return (
       <div className="mx-auto max-w-3xl px-4 py-24 sm:px-6">
         <Seo title="Your cart" description="Review the items in your Orbis Store cart." path="/cart" noindex />
-        <h1 className="mb-8 text-center font-grotesk text-[34px] uppercase text-cream">Your cart</h1>
+        <h1 className="mb-8 text-center font-grotesk text-[34px] uppercase text-ink">Your cart</h1>
         <EmptyState
           title="Nothing here yet"
           body={`Your ${config.country} cart is empty. Anything you add is priced in ${config.currency.code} and ships from our local warehouse.`}
           action={
             <Link
               to={href('/shop')}
-              className="inline-flex items-center gap-2 rounded-full bg-neon px-7 py-3 font-grotesk text-[12px] uppercase text-background"
+              className="inline-flex items-center gap-2 rounded-full bg-neon px-7 py-3 font-grotesk text-[12px] uppercase text-ink"
             >
               Browse the collection <ArrowRight size={15} />
             </Link>
@@ -55,13 +55,13 @@ export default function CartPage() {
         noindex
       />
       <div className="mb-10 flex items-end justify-between">
-        <h1 className="font-grotesk text-[34px] uppercase leading-none text-cream sm:text-[44px]">
+        <h1 className="font-grotesk text-[34px] uppercase leading-none text-ink sm:text-[44px]">
           Your cart
         </h1>
         <button
           type="button"
           onClick={clear}
-          className="flex items-center gap-1.5 font-mono text-[11px] uppercase text-cream/40 hover:text-cream"
+          className="flex items-center gap-1.5 font-mono text-[11px] uppercase text-muted hover:text-ink"
         >
           <Trash2 size={13} /> Empty cart
         </button>
@@ -70,12 +70,12 @@ export default function CartPage() {
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.6fr_1fr] lg:gap-14">
         {/* lines */}
         <div>
-          <ul className="divide-y divide-white/10 border-y border-white/10">
+          <ul className="divide-y divide-ink/10 border-y border-ink/10">
             {resolved.map(({ line, product, variant, unitPrice, lineTotal, stock }) => (
               <li key={variant.id} className="flex gap-4 py-5">
                 <Link
                   to={href(`/product/${product.slug}`)}
-                  className="h-[104px] w-[104px] flex-none overflow-hidden rounded-[16px] bg-[#03081c] sm:h-[128px] sm:w-[128px]"
+                  className="h-[104px] w-[104px] flex-none overflow-hidden rounded-[16px] bg-surface sm:h-[128px] sm:w-[128px]"
                 >
                   <Media item={product.media[0]} autoPlay={false} />
                 </Link>
@@ -83,11 +83,11 @@ export default function CartPage() {
                 <div className="flex min-w-0 flex-1 flex-col">
                   <Link
                     to={href(`/product/${product.slug}`)}
-                    className="font-grotesk text-[14px] uppercase text-cream hover:text-neon"
+                    className="font-grotesk text-[14px] uppercase text-ink hover:text-accent"
                   >
                     {product.name}
                   </Link>
-                  <div className="mt-1 font-mono text-[11px] uppercase text-cream/45">
+                  <div className="mt-1 font-mono text-[11px] uppercase text-muted">
                     {variant.label} · {variant.sku}
                   </div>
                   {stock <= 5 && (
@@ -105,7 +105,7 @@ export default function CartPage() {
                     <button
                       type="button"
                       onClick={() => remove(variant.id)}
-                      className="font-mono text-[11px] uppercase text-cream/40 underline underline-offset-2 hover:text-cream"
+                      className="font-mono text-[11px] uppercase text-muted underline underline-offset-2 hover:text-ink"
                     >
                       Remove
                     </button>
@@ -113,9 +113,9 @@ export default function CartPage() {
                 </div>
 
                 <div className="flex-none text-right">
-                  <Price amount={lineTotal} className="font-mono text-[15px] text-neon" compact={false} />
+                  <Price amount={lineTotal} className="font-mono text-[15px] text-accent" compact={false} />
                   {line.quantity > 1 && (
-                    <div className="mt-1 font-mono text-[10px] text-cream/40">
+                    <div className="mt-1 font-mono text-[10px] text-muted">
                       <Price amount={unitPrice} compact={false} /> each
                     </div>
                   )}
@@ -126,7 +126,7 @@ export default function CartPage() {
 
           <Link
             to={href('/shop')}
-            className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase text-cream/55 hover:text-cream"
+            className="mt-6 inline-flex items-center gap-2 font-mono text-[11px] uppercase text-muted hover:text-ink"
           >
             ← Continue shopping
           </Link>
@@ -134,10 +134,10 @@ export default function CartPage() {
 
         {/* summary */}
         <aside className="lg:sticky lg:top-24 lg:self-start">
-          <div className="rounded-[20px] border border-white/10 bg-white/[0.02] p-6">
-            <h2 className="mb-5 font-grotesk text-[14px] uppercase text-cream">
+          <div className="rounded-[20px] border border-ink/10 bg-ink/[0.02] p-6">
+            <h2 className="mb-5 font-grotesk text-[14px] uppercase text-ink">
               Summary
-              <span className="ml-2 font-mono text-[11px] normal-case text-cream/40">
+              <span className="ml-2 font-mono text-[11px] normal-case text-muted">
                 {count} item{count === 1 ? '' : 's'}
               </span>
             </h2>
@@ -156,17 +156,17 @@ export default function CartPage() {
             {quote.data ? (
               <TotalsRows totals={quote.data.totals} shippingPending />
             ) : (
-              <div className="h-32 animate-pulse rounded bg-white/5" />
+              <div className="h-32 animate-pulse rounded bg-ink/5" />
             )}
 
             <Link
               to={href('/checkout')}
-              className="press mt-6 flex items-center justify-center gap-2 rounded-full bg-neon py-3.5 font-grotesk text-[13px] uppercase text-background transition-opacity hover:opacity-90"
+              className="press mt-6 flex items-center justify-center gap-2 rounded-full bg-neon py-3.5 font-grotesk text-[13px] uppercase text-ink transition-opacity hover:opacity-90"
             >
               Checkout <ArrowRight size={15} />
             </Link>
 
-            <p className="mt-4 font-mono text-[10px] leading-relaxed text-cream/40">
+            <p className="mt-4 font-mono text-[10px] leading-relaxed text-muted">
               {config.taxNote}. Delivery is chosen at checkout — {config.shipping.length} options for{' '}
               {config.country}. Pay by{' '}
               {config.paymentMethods

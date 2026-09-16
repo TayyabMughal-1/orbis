@@ -21,22 +21,22 @@ export function QuantityStepper({
   const box = size === 'sm' ? 'text-[12px]' : 'text-[14px]'
 
   return (
-    <div className="inline-flex items-center rounded-full border border-white/15 bg-white/5">
+    <div className="inline-flex items-center rounded-full border border-ink/15 bg-ink/5">
       <button
         type="button"
         aria-label="Decrease quantity"
         onClick={() => onChange(value - 1)}
-        className={`${dim} flex items-center justify-center rounded-full text-cream/70 transition-colors hover:text-cream disabled:opacity-30`}
+        className={`${dim} flex items-center justify-center rounded-full text-ink/80 transition-colors hover:text-ink disabled:opacity-30`}
         disabled={value <= 1}
       >
         <Minus size={14} strokeWidth={2} />
       </button>
-      <span className={`${box} w-8 text-center font-mono tabular-nums text-cream`}>{value}</span>
+      <span className={`${box} w-8 text-center font-mono tabular-nums text-ink`}>{value}</span>
       <button
         type="button"
         aria-label="Increase quantity"
         onClick={() => onChange(value + 1)}
-        className={`${dim} flex items-center justify-center rounded-full text-cream/70 transition-colors hover:text-cream disabled:opacity-30`}
+        className={`${dim} flex items-center justify-center rounded-full text-ink/80 transition-colors hover:text-ink disabled:opacity-30`}
         disabled={value >= max}
       >
         <Plus size={14} strokeWidth={2} />
@@ -75,7 +75,7 @@ export function Stars({
       >
         <span className="flex gap-[1px]">
           {[0, 1, 2, 3, 4].map((i) => (
-            <Star key={i} size={size} className="text-cream/20" fill="currentColor" strokeWidth={0} />
+            <Star key={i} size={size} className="text-muted" fill="currentColor" strokeWidth={0} />
           ))}
         </span>
         <span
@@ -84,13 +84,13 @@ export function Stars({
           aria-hidden="true"
         >
           {[0, 1, 2, 3, 4].map((i) => (
-            <Star key={i} size={size} className="flex-none text-neon" fill="currentColor" strokeWidth={0} />
+            <Star key={i} size={size} className="flex-none text-accent" fill="currentColor" strokeWidth={0} />
           ))}
         </span>
       </span>
-      <span className="font-mono text-[10px] text-cream/60">
+      <span className="font-mono text-[10px] text-muted">
         {rating.average.toFixed(1)}
-        {showCount && <span className="text-cream/35"> ({rating.count})</span>}
+        {showCount && <span className="text-muted"> ({rating.count})</span>}
       </span>
     </span>
   )
@@ -98,8 +98,8 @@ export function Stars({
 
 export function Pill({ children, tone = 'default' }: { children: ReactNode; tone?: 'default' | 'neon' | 'warn' }) {
   const tones = {
-    default: 'border-white/15 bg-white/5 text-cream/70',
-    neon: 'border-neon/40 bg-neon/10 text-neon',
+    default: 'border-ink/15 bg-ink/5 text-ink/80',
+    neon: 'border-accent/40 bg-accent/10 text-accent',
     warn: 'border-amber-400/40 bg-amber-400/10 text-amber-200',
   }
   return (
@@ -114,9 +114,9 @@ export function Pill({ children, tone = 'default' }: { children: ReactNode; tone
 export function CardSkeleton() {
   return (
     <div className="liquid-glass shimmer rounded-[24px] p-4">
-      <div className="aspect-square w-full rounded-[18px] bg-white/5" />
-      <div className="mt-4 h-3 w-2/3 rounded bg-white/10" />
-      <div className="mt-2 h-3 w-1/3 rounded bg-white/5" />
+      <div className="aspect-square w-full rounded-[18px] bg-ink/5" />
+      <div className="mt-4 h-3 w-2/3 rounded bg-ink/10" />
+      <div className="mt-2 h-3 w-1/3 rounded bg-ink/5" />
     </div>
   )
 }
@@ -141,9 +141,9 @@ export function EmptyState({
   action?: ReactNode
 }) {
   return (
-    <div className="rounded-[20px] border border-white/10 bg-white/[0.02] px-6 py-14 text-center">
-      <h3 className="font-grotesk text-[16px] uppercase text-cream">{title}</h3>
-      <p className="mx-auto mt-3 max-w-md font-mono text-[12px] leading-relaxed text-cream/60">{body}</p>
+    <div className="rounded-[20px] border border-ink/10 bg-ink/[0.02] px-6 py-14 text-center">
+      <h3 className="font-grotesk text-[16px] uppercase text-ink">{title}</h3>
+      <p className="mx-auto mt-3 max-w-md font-mono text-[12px] leading-relaxed text-muted">{body}</p>
       {action && <div className="mt-6">{action}</div>}
     </div>
   )
@@ -157,7 +157,7 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
         <button
           type="button"
           onClick={onRetry}
-          className="mt-4 font-mono text-[11px] uppercase text-neon underline underline-offset-4"
+          className="mt-4 font-mono text-[11px] uppercase text-accent underline underline-offset-4"
         >
           Try again
         </button>
@@ -181,13 +181,13 @@ export function SectionHeading({
     <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
       <div className="relative">
         {eyebrow && (
-          <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-cream/50">{eyebrow}</div>
+          <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">{eyebrow}</div>
         )}
-        <h2 className="font-grotesk text-[30px] uppercase leading-[1.05] text-cream sm:text-[40px] lg:text-[52px]">
+        <h2 className="font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[40px] lg:text-[52px]">
           {title}
         </h2>
         {script && (
-          <span className="pointer-events-none absolute -bottom-6 right-0 -rotate-1 font-condiment text-[30px] normal-case text-neon opacity-90 mix-blend-exclusion sm:text-[40px]">
+          <span className="pointer-events-none absolute -bottom-6 right-0 -rotate-1 font-condiment text-[30px] normal-case text-accent opacity-90 mix-blend-exclusion sm:text-[40px]">
             {script}
           </span>
         )}

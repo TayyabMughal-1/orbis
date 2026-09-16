@@ -374,16 +374,16 @@ export default function CategoryCarousel({ intro }: { intro?: React.ReactNode })
         {/* Reads out whichever card is at the front. The fixed height
             stops the column jumping as blurbs of different lengths swap
             in, and re-keying replays the fade on each change. */}
-        <div className="mt-7 min-h-[104px] border-l-2 border-neon/40 pl-4">
+        <div className="mt-7 min-h-[104px] border-l-2 border-accent/40 pl-4">
           <div key={activeCategory.id} className="animate-fade-in">
-            <div className="font-grotesk text-[14px] uppercase tracking-wide text-neon">
+            <div className="font-grotesk text-[14px] uppercase tracking-wide text-accent">
               {activeCategory.label}
             </div>
-            <p className="mt-1.5 max-w-[32rem] font-mono text-[12px] leading-relaxed text-cream/60">
+            <p className="mt-1.5 max-w-[32rem] font-mono text-[12px] leading-relaxed text-muted">
               {activeCategory.blurb}
             </p>
             {activeStats && (
-              <div className="mt-2 font-mono text-[11px] uppercase text-cream/40">
+              <div className="mt-2 font-mono text-[11px] uppercase text-muted">
                 {activeStats.count} product{activeStats.count === 1 ? '' : 's'}
                 {activeStats.from != null && <> · from {formatMoney(activeStats.from, config, true)}</>}
               </div>
@@ -404,8 +404,8 @@ export default function CategoryCarousel({ intro }: { intro?: React.ReactNode })
               aria-current={active === i ? 'true' : undefined}
               className={`group flex items-center gap-1.5 rounded-full border px-4 py-2 font-mono text-[11px] uppercase transition-colors ${
                 active === i
-                  ? 'border-neon/50 bg-neon/10 text-neon'
-                  : 'border-white/15 text-cream/60 hover:border-white/35 hover:text-cream'
+                  ? 'border-accent/50 bg-accent/10 text-accent'
+                  : 'border-white/15 text-muted hover:border-white/35 hover:text-ink'
               }`}
             >
               {cat.label}
@@ -440,7 +440,9 @@ export default function CategoryCarousel({ intro }: { intro?: React.ReactNode })
             className="pointer-events-none absolute inset-0 z-[500]"
             style={{
               background:
-                'linear-gradient(to bottom, #010828 0%, rgba(1,8,40,0) 9%, rgba(1,8,40,0) 91%, #010828 100%)',
+                // Fades the strip into the page at both ends, so it must be the
+                // page colour rather than a colour of its own.
+                'linear-gradient(to bottom, #ffffff 0%, rgba(255,255,255,0) 9%, rgba(255,255,255,0) 91%, #ffffff 100%)',
             }}
           />
 
@@ -637,7 +639,7 @@ function StepButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="press flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-background/70 text-cream backdrop-blur-sm transition-colors hover:border-white/40 hover:text-neon"
+      className="press flex h-9 w-9 items-center justify-center rounded-full border border-white/15 bg-background/70 text-ink backdrop-blur-sm transition-colors hover:border-white/40 hover:text-accent"
     >
       {children}
     </button>

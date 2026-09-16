@@ -43,9 +43,9 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <Link
       to={href(`/product/${product.slug}`)}
-      className="liquid-glass group flex h-full flex-col rounded-[24px] p-4 transition-all duration-300 hover:-translate-y-1 hover:bg-white/[0.08]"
+      className="group flex h-full flex-col rounded-[24px] border border-ink/[0.07] bg-background p-4 shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-ink/[0.12] hover:shadow-card-hover"
     >
-      <div className="relative aspect-square w-full overflow-hidden rounded-[18px] bg-[#03081c]">
+      <div className="relative aspect-square w-full overflow-hidden rounded-[18px] bg-surface">
         <Media item={product.media[0]} className="transition-transform duration-700 group-hover:scale-[1.04]" />
 
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
@@ -71,12 +71,12 @@ export default function ProductCard({ product }: { product: Product }) {
                 type="button"
                 onClick={quickAdd}
                 aria-label={`Add ${product.name} to cart`}
-                className="press flex h-10 w-10 items-center justify-center rounded-full bg-neon text-background shadow-lg shadow-neon/25"
+                className="press flex h-10 w-10 items-center justify-center rounded-full bg-neon text-ink shadow-lg shadow-accent/25"
               >
                 <Plus size={18} strokeWidth={2.4} />
               </button>
             ) : (
-              <span className="flex h-10 items-center gap-1.5 rounded-full bg-neon px-4 font-grotesk text-[11px] uppercase text-background shadow-lg shadow-neon/25">
+              <span className="flex h-10 items-center gap-1.5 rounded-full bg-neon px-4 font-grotesk text-[11px] uppercase text-ink shadow-lg shadow-accent/25">
                 Choose options
                 <ArrowUpRight size={14} strokeWidth={2.4} />
               </span>
@@ -86,19 +86,19 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
 
       <div className="mt-4 flex flex-1 flex-col">
-        <h3 className="font-grotesk text-[14px] uppercase leading-tight text-cream transition-colors group-hover:text-neon">
+        <h3 className="font-grotesk text-[14px] uppercase leading-tight text-ink transition-colors group-hover:text-accent">
           {product.name}
         </h3>
         {product.rating && <Stars rating={product.rating} className="mt-1.5" />}
-        <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-cream/50">{product.tagline}</p>
+        <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-muted">{product.tagline}</p>
 
         <div className="mt-4 flex items-end justify-between">
           <div>
-            {varies && <span className="mr-1 font-mono text-[10px] uppercase text-cream/40">From</span>}
-            <Price amount={from} className="font-mono text-[15px] text-neon" />
+            {varies && <span className="mr-1 font-mono text-[10px] uppercase text-muted">From</span>}
+            <Price amount={from} className="font-mono text-[15px] text-accent" />
           </div>
           {config.taxIncludedInPrice && (
-            <span className="font-mono text-[9px] uppercase text-cream/35">Incl. {config.taxLabel}</span>
+            <span className="font-mono text-[9px] uppercase text-muted">Incl. {config.taxLabel}</span>
           )}
         </div>
       </div>

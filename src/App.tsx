@@ -74,10 +74,10 @@ function StoreLayout() {
     <RegionProvider region={region}>
       <ToastProvider>
         <CartProvider>
-          <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background font-mono text-cream">
+          <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background font-mono text-ink">
             <a
               href="#main"
-              className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-neon focus:px-5 focus:py-2.5 focus:font-grotesk focus:text-[12px] focus:uppercase focus:text-background"
+              className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-neon focus:px-5 focus:py-2.5 focus:font-grotesk focus:text-[12px] focus:uppercase focus:text-ink"
             >
               Skip to content
             </a>

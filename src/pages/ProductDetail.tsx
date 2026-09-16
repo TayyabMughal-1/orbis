@@ -33,7 +33,7 @@ export default function ProductDetail() {
       <div className="mx-auto max-w-2xl px-4 py-24">
         <ErrorState message={state.error ?? 'Product not found.'} onRetry={state.reload} />
         <div className="mt-6 text-center">
-          <Link to={href('/shop')} className="font-mono text-[12px] uppercase text-neon underline underline-offset-4">
+          <Link to={href('/shop')} className="font-mono text-[12px] uppercase text-accent underline underline-offset-4">
             Back to the shop
           </Link>
         </div>
@@ -46,7 +46,7 @@ export default function ProductDetail() {
       <ProductBody key={state.data.id} product={state.data} />
       {related.data && related.data.length > 0 && (
         <section className="mx-auto max-w-[1600px] px-4 pb-20 sm:px-6 lg:px-10">
-          <h2 className="mb-8 font-grotesk text-[24px] uppercase text-cream sm:text-[32px]">
+          <h2 className="mb-8 font-grotesk text-[24px] uppercase text-ink sm:text-[32px]">
             Goes with it
           </h2>
           <RevealGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -232,22 +232,22 @@ function ProductBody({ product }: { product: Product }) {
         type="product"
         jsonLd={schema}
       />
-      <nav className="mb-8 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase text-cream/40">
-        <Link to={href('/')} className="hover:text-cream">
+      <nav className="mb-8 flex flex-wrap items-center gap-2 font-mono text-[11px] uppercase text-muted">
+        <Link to={href('/')} className="hover:text-ink">
           {config.storeName}
         </Link>
         <span>/</span>
-        <Link to={href(`/shop/${product.category}`)} className="hover:text-cream">
+        <Link to={href(`/shop/${product.category}`)} className="hover:text-ink">
           {product.category}
         </Link>
         <span>/</span>
-        <span className="text-cream/70">{product.name}</span>
+        <span className="text-ink/80">{product.name}</span>
       </nav>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
         {/* ------------------------------------------------ gallery */}
         <div>
-          <div className="aspect-square w-full overflow-hidden rounded-[26px] bg-[#03081c]">
+          <div className="aspect-square w-full overflow-hidden rounded-[26px] bg-surface">
             <Media item={product.media[mediaIndex]} />
           </div>
           {product.media.length > 1 && (
@@ -259,7 +259,7 @@ function ProductBody({ product }: { product: Product }) {
                   onClick={() => setMediaIndex(i)}
                   aria-label={`View image ${i + 1}`}
                   className={`h-20 w-20 overflow-hidden rounded-[14px] border transition-colors ${
-                    i === mediaIndex ? 'border-neon' : 'border-white/15 hover:border-white/40'
+                    i === mediaIndex ? 'border-accent' : 'border-ink/15 hover:border-ink/40'
                   }`}
                 >
                   <Media item={item} autoPlay={false} />
@@ -281,17 +281,17 @@ function ProductBody({ product }: { product: Product }) {
             </div>
           )}
 
-          <h1 className="font-grotesk text-[30px] uppercase leading-tight text-cream sm:text-[40px]">
+          <h1 className="font-grotesk text-[30px] uppercase leading-tight text-ink sm:text-[40px]">
             {product.name}
           </h1>
-          <p className="mt-2 font-mono text-[12px] uppercase text-cream/50">{product.tagline}</p>
+          <p className="mt-2 font-mono text-[12px] uppercase text-muted">{product.tagline}</p>
 
           {product.rating && (
             <div className="mt-3 flex items-center gap-2">
               {/* Stars already prints the average — this only adds the
                   sample size, which is the part that builds trust. */}
               <Stars rating={product.rating} size={14} showCount={false} />
-              <span className="font-mono text-[11px] text-cream/50">
+              <span className="font-mono text-[11px] text-muted">
                 · {product.rating.count} reviews
               </span>
             </div>
@@ -300,19 +300,19 @@ function ProductBody({ product }: { product: Product }) {
           <div className="mt-6 flex items-baseline gap-3">
             <Price
               amount={selected ? selected.price[region] : product.variants[0].price[region]}
-              className="font-grotesk text-[30px] text-neon"
+              className="font-grotesk text-[30px] text-accent"
               compact={false}
             />
-            <span className="font-mono text-[11px] uppercase text-cream/45">{config.taxNote}</span>
+            <span className="font-mono text-[11px] uppercase text-muted">{config.taxNote}</span>
           </div>
 
-          <p className="mt-6 font-mono text-[13px] leading-relaxed text-cream/70">{product.description}</p>
+          <p className="mt-6 font-mono text-[13px] leading-relaxed text-ink/80">{product.description}</p>
 
           {product.highlights.length > 0 && (
             <ul className="mt-5 space-y-2">
               {product.highlights.map((point) => (
-                <li key={point} className="flex gap-2.5 font-mono text-[12px] leading-relaxed text-cream/75">
-                  <Check size={14} className="mt-0.5 flex-none text-neon" strokeWidth={2.5} />
+                <li key={point} className="flex gap-2.5 font-mono text-[12px] leading-relaxed text-ink/80">
+                  <Check size={14} className="mt-0.5 flex-none text-accent" strokeWidth={2.5} />
                   {point}
                 </li>
               ))}
@@ -322,8 +322,8 @@ function ProductBody({ product }: { product: Product }) {
           {/* colour */}
           {colors.length > 0 && (
             <div className="mt-8">
-              <div className="mb-3 font-mono text-[11px] uppercase tracking-wide text-cream/50">
-                Finish{color ? <span className="text-cream"> · {color}</span> : null}
+              <div className="mb-3 font-mono text-[11px] uppercase tracking-wide text-muted">
+                Finish{color ? <span className="text-ink"> · {color}</span> : null}
               </div>
               <div className="flex flex-wrap gap-2">
                 {colors.map((c) => {
@@ -336,12 +336,12 @@ function ProductBody({ product }: { product: Product }) {
                       onClick={() => setColor(c.name)}
                       disabled={!available}
                       className={`flex items-center gap-2 rounded-full border px-3 py-2 font-mono text-[11px] uppercase transition-colors ${
-                        isActive ? 'border-neon text-cream' : 'border-white/15 text-cream/60 hover:border-white/40'
+                        isActive ? 'border-accent text-ink' : 'border-ink/15 text-muted hover:border-ink/40'
                       } ${!available ? 'cursor-not-allowed opacity-35 line-through' : ''}`}
                     >
                       {c.hex && (
                         <span
-                          className="h-3.5 w-3.5 rounded-full border border-white/25"
+                          className="h-3.5 w-3.5 rounded-full border border-ink/25"
                           style={{ backgroundColor: c.hex }}
                         />
                       )}
@@ -356,8 +356,8 @@ function ProductBody({ product }: { product: Product }) {
           {/* size */}
           {sizes.length > 0 && (
             <div className="mt-6">
-              <div className="mb-3 font-mono text-[11px] uppercase tracking-wide text-cream/50">
-                Size{size ? <span className="text-cream"> · {size}</span> : null}
+              <div className="mb-3 font-mono text-[11px] uppercase tracking-wide text-muted">
+                Size{size ? <span className="text-ink"> · {size}</span> : null}
               </div>
               <div className="flex flex-wrap gap-2">
                 {sizes.map((sz) => {
@@ -370,7 +370,7 @@ function ProductBody({ product }: { product: Product }) {
                       onClick={() => setSize(sz)}
                       disabled={!available}
                       className={`min-w-[54px] rounded-full border px-4 py-2 font-mono text-[11px] uppercase transition-colors ${
-                        isActive ? 'border-neon bg-neon/10 text-neon' : 'border-white/15 text-cream/60 hover:border-white/40'
+                        isActive ? 'border-accent bg-accent/10 text-accent' : 'border-ink/15 text-muted hover:border-ink/40'
                       } ${!available ? 'cursor-not-allowed opacity-35 line-through' : ''}`}
                     >
                       {sz}
@@ -388,9 +388,9 @@ function ProductBody({ product }: { product: Product }) {
             ) : stock <= 5 ? (
               <span className="text-amber-300">Only {stock} left in the {config.country} warehouse</span>
             ) : (
-              <span className="text-neon">In stock · ships from {config.country}</span>
+              <span className="text-accent">In stock · ships from {config.country}</span>
             )}
-            {inCart > 0 && <span className="ml-2 text-cream/40">({inCart} already in your cart)</span>}
+            {inCart > 0 && <span className="ml-2 text-muted">({inCart} already in your cart)</span>}
           </div>
 
           {/* add to cart */}
@@ -404,7 +404,7 @@ function ProductBody({ product }: { product: Product }) {
               type="button"
               onClick={handleAdd}
               disabled={maxAddable <= 0}
-              className={`press flex flex-1 items-center justify-center gap-2 rounded-full bg-neon px-8 py-3.5 font-grotesk text-[13px] uppercase text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-30 ${
+              className={`press flex flex-1 items-center justify-center gap-2 rounded-full bg-neon px-8 py-3.5 font-grotesk text-[13px] uppercase text-ink transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-30 ${
                 justAdded ? 'animate-pulse-ring' : ''
               }`}
             >
@@ -421,14 +421,14 @@ function ProductBody({ product }: { product: Product }) {
           </div>
 
           {stock === 0 && (
-            <p className="mt-3 font-mono text-[11px] leading-relaxed text-cream/45">
+            <p className="mt-3 font-mono text-[11px] leading-relaxed text-muted">
               This option is out of stock here. It may still be available in one of our other
               stores — use the store switcher in the header.
             </p>
           )}
 
           {/* delivery, per region */}
-          <div className="mt-8 space-y-3 rounded-[18px] border border-white/10 bg-white/[0.02] p-5">
+          <div className="mt-8 space-y-3 rounded-[18px] border border-ink/10 bg-ink/[0.02] p-5">
             <Line
               icon={Truck}
               title={
@@ -455,17 +455,17 @@ function ProductBody({ product }: { product: Product }) {
           </div>
 
           {/* specs */}
-          <dl className="mt-8 divide-y divide-white/10 border-t border-white/10">
+          <dl className="mt-8 divide-y divide-ink/10 border-t border-ink/10">
             {product.specs.map((spec) => (
               <div key={spec.label} className="flex justify-between gap-6 py-3">
-                <dt className="font-mono text-[11px] uppercase text-cream/45">{spec.label}</dt>
-                <dd className="text-right font-mono text-[12px] text-cream/80">{spec.value}</dd>
+                <dt className="font-mono text-[11px] uppercase text-muted">{spec.label}</dt>
+                <dd className="text-right font-mono text-[12px] text-ink/80">{spec.value}</dd>
               </div>
             ))}
             {selected && (
               <div className="flex justify-between gap-6 py-3">
-                <dt className="font-mono text-[11px] uppercase text-cream/45">SKU</dt>
-                <dd className="text-right font-mono text-[12px] text-cream/80">{selected.sku}</dd>
+                <dt className="font-mono text-[11px] uppercase text-muted">SKU</dt>
+                <dd className="text-right font-mono text-[12px] text-ink/80">{selected.sku}</dd>
               </div>
             )}
           </dl>
@@ -474,16 +474,16 @@ function ProductBody({ product }: { product: Product }) {
 
       {/* Sticky buy bar - phones only, once the real button has scrolled off */}
       <div
-        className={`fixed inset-x-0 bottom-0 z-[70] border-t border-white/10 bg-surface/95 px-4 py-3 backdrop-blur-md transition-transform duration-300 ease-arrive lg:hidden ${
+        className={`fixed inset-x-0 bottom-0 z-[70] border-t border-ink/10 bg-surface/95 px-4 py-3 backdrop-blur-md transition-transform duration-300 ease-arrive lg:hidden ${
           showStickyBar ? 'translate-y-0' : 'translate-y-full'
         }`}
       >
         <div className="flex items-center gap-3">
           <div className="min-w-0 flex-1">
-            <div className="truncate font-grotesk text-[11px] uppercase text-cream">{product.name}</div>
+            <div className="truncate font-grotesk text-[11px] uppercase text-ink">{product.name}</div>
             <Price
               amount={selected ? selected.price[region] : product.variants[0].price[region]}
-              className="font-mono text-[13px] text-neon"
+              className="font-mono text-[13px] text-accent"
               compact={false}
             />
           </div>
@@ -491,7 +491,7 @@ function ProductBody({ product }: { product: Product }) {
             type="button"
             onClick={handleAdd}
             disabled={maxAddable <= 0}
-            className="press flex-none rounded-full bg-neon px-6 py-3 font-grotesk text-[12px] uppercase text-background disabled:opacity-30"
+            className="press flex-none rounded-full bg-neon px-6 py-3 font-grotesk text-[12px] uppercase text-ink disabled:opacity-30"
           >
             {maxAddable <= 0 ? 'Sold out' : 'Add to cart'}
           </button>
@@ -512,10 +512,10 @@ function Line({
 }) {
   return (
     <div className="flex gap-3">
-      <Icon size={15} className="mt-0.5 flex-none text-neon" strokeWidth={1.7} />
+      <Icon size={15} className="mt-0.5 flex-none text-accent" strokeWidth={1.7} />
       <div>
-        <div className="font-mono text-[11px] uppercase text-cream">{title}</div>
-        <p className="mt-0.5 font-mono text-[11px] leading-relaxed text-cream/45">{body}</p>
+        <div className="font-mono text-[11px] uppercase text-ink">{title}</div>
+        <p className="mt-0.5 font-mono text-[11px] leading-relaxed text-muted">{body}</p>
       </div>
     </div>
   )
@@ -525,13 +525,13 @@ function DetailSkeleton() {
   return (
     <div className="mx-auto max-w-[1600px] animate-pulse px-4 py-16 sm:px-6 lg:px-10">
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-16">
-        <div className="aspect-square w-full rounded-[26px] bg-white/5" />
+        <div className="aspect-square w-full rounded-[26px] bg-ink/5" />
         <div className="space-y-4 pt-6">
-          <div className="h-8 w-2/3 rounded bg-white/10" />
-          <div className="h-4 w-1/3 rounded bg-white/5" />
-          <div className="h-10 w-1/4 rounded bg-white/10" />
-          <div className="h-24 w-full rounded bg-white/5" />
-          <div className="h-12 w-full rounded-full bg-white/10" />
+          <div className="h-8 w-2/3 rounded bg-ink/10" />
+          <div className="h-4 w-1/3 rounded bg-ink/5" />
+          <div className="h-10 w-1/4 rounded bg-ink/10" />
+          <div className="h-24 w-full rounded bg-ink/5" />
+          <div className="h-12 w-full rounded-full bg-ink/10" />
         </div>
       </div>
     </div>

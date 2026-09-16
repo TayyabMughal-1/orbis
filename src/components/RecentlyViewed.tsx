@@ -25,7 +25,7 @@ export default function RecentlyViewed({ excludeId }: { excludeId?: string }) {
 
   return (
     <section className="mx-auto max-w-[1600px] px-4 pb-20 sm:px-6 lg:px-10">
-      <h2 className="mb-6 font-grotesk text-[16px] uppercase text-cream">Recently viewed</h2>
+      <h2 className="mb-6 font-grotesk text-[16px] uppercase text-ink">Recently viewed</h2>
       <div className="-mx-4 flex gap-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
         {items.map((product) => {
           const from = Math.min(...product.variants.map((v) => v.price[region]))
@@ -35,17 +35,17 @@ export default function RecentlyViewed({ excludeId }: { excludeId?: string }) {
               to={href(`/product/${product.slug}`)}
               className="group w-[160px] flex-none sm:w-[180px]"
             >
-              <div className="aspect-square overflow-hidden rounded-[16px] bg-[#03081c]">
+              <div className="aspect-square overflow-hidden rounded-[16px] bg-surface">
                 <Media
                   item={product.media[0]}
                   autoPlay={false}
                   className="transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <div className="mt-2.5 truncate font-grotesk text-[11px] uppercase text-cream group-hover:text-neon">
+              <div className="mt-2.5 truncate font-grotesk text-[11px] uppercase text-ink group-hover:text-accent">
                 {product.name}
               </div>
-              <Price amount={from} className="font-mono text-[11px] text-cream/55" />
+              <Price amount={from} className="font-mono text-[11px] text-muted" />
             </Link>
           )
         })}

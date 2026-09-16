@@ -43,13 +43,13 @@ export function TotalsRows({ totals, shippingPending }: { totals: OrderTotals; s
         />
       )}
 
-      <div className="border-t border-white/10 pt-3">
-        <div className="flex items-center justify-between font-grotesk text-[15px] uppercase text-cream">
+      <div className="border-t border-ink/10 pt-3">
+        <div className="flex items-center justify-between font-grotesk text-[15px] uppercase text-ink">
           <dt>Total</dt>
-          <dd className="text-neon">{money(totals.total)}</dd>
+          <dd className="text-accent">{money(totals.total)}</dd>
         </div>
         {totals.taxIncluded > 0 && (
-          <p className="mt-1.5 text-right font-mono text-[10px] uppercase text-cream/40">
+          <p className="mt-1.5 text-right font-mono text-[10px] uppercase text-muted">
             Includes {money(totals.taxIncluded)} {totals.taxLabel} at{' '}
             {formatPercent(totals.taxRate, config.locale)}
           </p>
@@ -62,8 +62,8 @@ export function TotalsRows({ totals, shippingPending }: { totals: OrderTotals; s
 function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="flex items-center justify-between">
-      <dt className="text-cream/55">{label}</dt>
-      <dd className={accent ? 'text-neon' : 'text-cream'}>{value}</dd>
+      <dt className="text-muted">{label}</dt>
+      <dd className={accent ? 'text-accent' : 'text-ink'}>{value}</dd>
     </div>
   )
 }
@@ -93,17 +93,17 @@ export function PromoField({
 
   if (code && appliedLabel) {
     return (
-      <div className="flex items-center gap-2 rounded-[12px] border border-neon/35 bg-neon/[0.07] px-3 py-2.5">
-        <Tag size={13} className="flex-none text-neon" />
+      <div className="flex items-center gap-2 rounded-[12px] border border-accent/35 bg-accent/[0.07] px-3 py-2.5">
+        <Tag size={13} className="flex-none text-accent" />
         <div className="min-w-0 flex-1">
-          <div className="font-mono text-[11px] uppercase text-neon">{code}</div>
-          <div className="truncate font-mono text-[10px] text-cream/50">{appliedLabel}</div>
+          <div className="font-mono text-[11px] uppercase text-accent">{code}</div>
+          <div className="truncate font-mono text-[10px] text-muted">{appliedLabel}</div>
         </div>
         <button
           type="button"
           onClick={onClear}
           aria-label="Remove promo code"
-          className="flex-none text-cream/50 hover:text-cream"
+          className="flex-none text-muted hover:text-ink"
         >
           <X size={14} />
         </button>
@@ -118,12 +118,12 @@ export function PromoField({
           value={draft}
           onChange={(e) => setDraft(e.target.value.toUpperCase())}
           placeholder="Promo code"
-          className="min-w-0 flex-1 rounded-[12px] border border-white/15 bg-white/5 px-3 py-2.5 font-mono text-[12px] uppercase text-cream outline-none placeholder:text-cream/30 focus:border-white/40"
+          className="min-w-0 flex-1 rounded-[12px] border border-ink/15 bg-ink/5 px-3 py-2.5 font-mono text-[12px] uppercase text-ink outline-none placeholder:text-muted focus:border-ink/40"
         />
         <button
           type="submit"
           disabled={busy || !draft.trim()}
-          className="flex-none rounded-[12px] border border-white/20 px-4 py-2.5 font-mono text-[11px] uppercase text-cream transition-colors hover:border-white/45 disabled:opacity-35"
+          className="flex-none rounded-[12px] border border-ink/20 px-4 py-2.5 font-mono text-[11px] uppercase text-ink transition-colors hover:border-ink/45 disabled:opacity-35"
         >
           {busy ? '…' : 'Apply'}
         </button>

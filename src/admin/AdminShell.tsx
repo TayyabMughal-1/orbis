@@ -74,22 +74,22 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <form onSubmit={submit} noValidate className="w-full max-w-sm">
         <div className="mb-8 text-center">
-          <div className="font-grotesk text-[22px] uppercase text-cream">
-            Orbis <span className="text-cream/55">Store</span>
+          <div className="font-grotesk text-[22px] uppercase text-ink">
+            Orbis <span className="text-muted">Store</span>
           </div>
-          <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.2em] text-cream/40">
+          <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
             Dashboard
           </div>
         </div>
 
         <label
           htmlFor="admin-email"
-          className="mb-2 block font-mono text-[10px] uppercase tracking-wide text-cream/50"
+          className="mb-2 block font-mono text-[10px] uppercase tracking-wide text-muted"
         >
           Email
         </label>
-        <div className="mb-4 flex items-center gap-2 rounded-[12px] border border-white/15 bg-white/5 px-3 focus-within:border-white/40">
-          <AtSign size={14} className="flex-none text-cream/45" />
+        <div className="mb-4 flex items-center gap-2 rounded-[12px] border border-ink/15 bg-ink/5 px-3 focus-within:border-ink/40">
+          <AtSign size={14} className="flex-none text-muted" />
           <input
             id="admin-email"
             type="email"
@@ -100,18 +100,18 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
               setEmail(e.target.value)
               setError(null)
             }}
-            className="w-full bg-transparent py-3 font-mono text-[13px] text-cream outline-none"
+            className="w-full bg-transparent py-3 font-mono text-[13px] text-ink outline-none"
           />
         </div>
 
         <label
           htmlFor="admin-password"
-          className="mb-2 block font-mono text-[10px] uppercase tracking-wide text-cream/50"
+          className="mb-2 block font-mono text-[10px] uppercase tracking-wide text-muted"
         >
           Password
         </label>
-        <div className="flex items-center gap-2 rounded-[12px] border border-white/15 bg-white/5 px-3 focus-within:border-white/40">
-          <Lock size={14} className="flex-none text-cream/45" />
+        <div className="flex items-center gap-2 rounded-[12px] border border-ink/15 bg-ink/5 px-3 focus-within:border-ink/40">
+          <Lock size={14} className="flex-none text-muted" />
           <input
             id="admin-password"
             type="password"
@@ -121,7 +121,7 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
               setPassword(e.target.value)
               setError(null)
             }}
-            className="w-full bg-transparent py-3 font-mono text-[13px] text-cream outline-none"
+            className="w-full bg-transparent py-3 font-mono text-[13px] text-ink outline-none"
           />
         </div>
 
@@ -155,14 +155,14 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
         <button
           type="submit"
           disabled={busy || !password}
-          className="press mt-5 w-full rounded-full bg-neon py-3 font-grotesk text-[13px] uppercase text-background disabled:opacity-40"
+          className="press mt-5 w-full rounded-full bg-neon py-3 font-grotesk text-[13px] uppercase text-ink disabled:opacity-40"
         >
           {busy ? 'Checking…' : 'Sign in'}
         </button>
 
-        <p className="mt-5 font-mono text-[10px] leading-relaxed text-cream/35">
-          Set <code className="text-cream/55">ADMIN_PASSWORD</code> (or{' '}
-          <code className="text-cream/55">ADMIN_PASSWORD_HASH</code>) on the API to enable this. With
+        <p className="mt-5 font-mono text-[10px] leading-relaxed text-muted">
+          Set <code className="text-muted">ADMIN_PASSWORD</code> (or{' '}
+          <code className="text-muted">ADMIN_PASSWORD_HASH</code>) on the API to enable this. With
           neither set, the dashboard stays locked.
         </p>
       </form>
@@ -183,16 +183,16 @@ function Dashboard({ onSignOut }: { onSignOut: () => void }) {
 
   const link = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 font-mono text-[12px] transition-colors ${
-      isActive ? 'bg-neon/10 text-neon' : 'text-cream/60 hover:bg-white/5 hover:text-cream'
+      isActive ? 'bg-accent/10 text-accent' : 'text-muted hover:bg-ink/5 hover:text-ink'
     }`
 
   return (
-    <div className="min-h-screen bg-background text-cream">
+    <div className="min-h-screen bg-background text-ink">
       <div className="mx-auto flex max-w-[1500px] flex-col gap-6 px-4 py-6 lg:flex-row lg:gap-10 lg:px-8">
         <aside className="lg:w-56 lg:flex-none">
-          <div className="mb-6 font-grotesk text-[16px] uppercase text-cream">
-            Orbis <span className="text-cream/55">Store</span>
-            <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.2em] text-cream/35">
+          <div className="mb-6 font-grotesk text-[16px] uppercase text-ink">
+            Orbis <span className="text-muted">Store</span>
+            <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">
               Dashboard
             </div>
           </div>
@@ -212,17 +212,17 @@ function Dashboard({ onSignOut }: { onSignOut: () => void }) {
             </NavLink>
           </nav>
 
-          <div className="mt-6 flex flex-col gap-2 border-t border-white/10 pt-4">
+          <div className="mt-6 flex flex-col gap-2 border-t border-ink/10 pt-4">
             <a
               href="/"
-              className="font-mono text-[11px] text-cream/45 transition-colors hover:text-cream"
+              className="font-mono text-[11px] text-muted transition-colors hover:text-ink"
             >
               ← View the shop
             </a>
             <button
               type="button"
               onClick={signOut}
-              className="flex items-center gap-2 font-mono text-[11px] text-cream/45 transition-colors hover:text-cream"
+              className="flex items-center gap-2 font-mono text-[11px] text-muted transition-colors hover:text-ink"
             >
               <LogOut size={13} /> Sign out
             </button>
@@ -249,11 +249,11 @@ export function AdminHeading({
   action?: ReactNode
 }) {
   return (
-    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/10 pb-4">
+    <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-ink/10 pb-4">
       <div>
-        <h1 className="font-grotesk text-[24px] uppercase leading-none text-cream">{title}</h1>
+        <h1 className="font-grotesk text-[24px] uppercase leading-none text-ink">{title}</h1>
         {subtitle && (
-          <p className="mt-2 font-mono text-[11px] leading-relaxed text-cream/50">{subtitle}</p>
+          <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">{subtitle}</p>
         )}
       </div>
       {action}
@@ -277,25 +277,25 @@ export function Field({
   return (
     <div className="block">
       <label className="block">
-        <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wide text-cream/50">
+        <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wide text-muted">
           {label}
         </span>
         {children}
       </label>
-      {hint && <span className="mt-1 block font-mono text-[10px] text-cream/35">{hint}</span>}
+      {hint && <span className="mt-1 block font-mono text-[10px] text-muted">{hint}</span>}
     </div>
   )
 }
 
 export const inputClass =
-  'w-full rounded-[10px] border border-white/15 bg-white/5 px-3 py-2.5 font-mono text-[12px] text-cream outline-none transition-colors focus:border-white/40 placeholder:text-cream/25'
+  'w-full rounded-[10px] border border-ink/15 bg-ink/5 px-3 py-2.5 font-mono text-[12px] text-ink outline-none transition-colors focus:border-ink/40 placeholder:text-muted'
 
 export function Banner({ tone, children }: { tone: 'ok' | 'error'; children: ReactNode }) {
   return (
     <div
       className={`mb-5 rounded-[12px] border p-3 font-mono text-[11px] leading-relaxed ${
         tone === 'ok'
-          ? 'border-neon/35 bg-neon/[0.07] text-cream/80'
+          ? 'border-accent/35 bg-accent/[0.07] text-ink/80'
           : 'border-red-400/30 bg-red-500/10 text-red-200'
       }`}
     >
@@ -318,8 +318,8 @@ export function AdminButton({
   disabled?: boolean
 }) {
   const tones = {
-    primary: 'bg-neon text-background hover:opacity-90',
-    ghost: 'border border-white/20 text-cream hover:border-white/45',
+    primary: 'bg-neon text-ink hover:opacity-90',
+    ghost: 'border border-ink/20 text-ink hover:border-ink/45',
     danger: 'border border-red-400/40 text-red-200 hover:bg-red-500/10',
   }
   return (

@@ -14,11 +14,11 @@ export default function NotFound() {
         path="/404"
         noindex
       />
-      <div className="font-grotesk text-[64px] uppercase leading-none text-cream sm:text-[92px]">404</div>
-      <h1 className="mt-4 font-grotesk text-[20px] uppercase text-cream sm:text-[26px]">
+      <div className="font-grotesk text-[64px] uppercase leading-none text-ink sm:text-[92px]">404</div>
+      <h1 className="mt-4 font-grotesk text-[20px] uppercase text-ink sm:text-[26px]">
         That page drifted off
       </h1>
-      <p className="mx-auto mt-4 max-w-sm font-mono text-[12px] leading-relaxed text-cream/55">
+      <p className="mx-auto mt-4 max-w-sm font-mono text-[12px] leading-relaxed text-muted">
         We could not find that page in the {config.country} store. It may have moved, or the run may
         have sold out and been retired.
       </p>
@@ -26,7 +26,7 @@ export default function NotFound() {
       <div className="mt-8 flex flex-wrap justify-center gap-2">
         <Link
           to={href('/shop')}
-          className="rounded-full bg-neon px-6 py-2.5 font-grotesk text-[12px] uppercase text-background"
+          className="rounded-full bg-neon px-6 py-2.5 font-grotesk text-[12px] uppercase text-ink"
         >
           Shop everything
         </Link>
@@ -34,7 +34,7 @@ export default function NotFound() {
           <Link
             key={cat.id}
             to={href(`/shop/${cat.id}`)}
-            className="rounded-full border border-white/18 px-5 py-2.5 font-mono text-[11px] uppercase text-cream/65 transition-colors hover:border-white/40 hover:text-cream"
+            className="rounded-full border border-ink/18 px-5 py-2.5 font-mono text-[11px] uppercase text-muted transition-colors hover:border-ink/40 hover:text-ink"
           >
             {cat.label}
           </Link>

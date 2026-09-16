@@ -198,7 +198,7 @@ function Grid({ uid, accentColor }: { uid: string; accentColor: string }) {
               cx={116 + c * 28}
               cy={116 + r * 34}
               r={2 + ((r + c) % 3) * 1.5}
-              fill={(r + c) % 4 === 0 ? accentColor : '#EFF4FF'}
+              fill={(r + c) % 4 === 0 ? accentColor : '#0C1322'}
             />
           )),
         )}

@@ -4,11 +4,25 @@ export default {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
+      // Light theme. Every pairing below meets WCAG AA against the
+      // surface it is used on — see the contrast note in AGENTS.md.
       colors: {
-        background: '#010828',
-        surface: '#040a24',
-        cream: '#EFF4FF',
-        neon: '#6FFF00',
+        // Page and raised surfaces.
+        background: '#FFFFFF',
+        surface: '#F5F6F8',
+        // Primary text. Named ink because it is a text colour, not a
+        // tint — it is also the source of every hairline (ink/10) and
+        // wash (ink/[0.03]) in the UI.
+        ink: '#0C1322',
+        // Secondary text. A real token rather than ink/60, so quiet text
+        // keeps a guaranteed 5.95:1 instead of drifting with opacity.
+        muted: '#5A6478',
+        // Links, prices, active states. Dark enough to read as text on
+        // white (5.18:1), unlike the fill below.
+        accent: '#2F7D00',
+        // The brand fill. Only ever a background, always with ink on top
+        // (15.4:1). As text on white it would be illegible.
+        neon: '#B9FF3C',
       },
       fontFamily: {
         grotesk: ['Anton', 'sans-serif'],
@@ -24,6 +38,13 @@ export default {
           '"Courier New"',
           'monospace',
         ],
+      },
+      boxShadow: {
+        // Two-layer shadows: a tight contact shadow plus a soft ambient
+        // one. A single large blur reads as fog on a white page.
+        card: '0 1px 2px rgba(12, 19, 34, 0.04), 0 8px 24px -12px rgba(12, 19, 34, 0.12)',
+        'card-hover': '0 2px 4px rgba(12, 19, 34, 0.06), 0 18px 40px -16px rgba(12, 19, 34, 0.18)',
+        pop: '0 4px 8px rgba(12, 19, 34, 0.06), 0 24px 56px -20px rgba(12, 19, 34, 0.22)',
       },
       transitionTimingFunction: {
         // A slightly overshooting ease for anything that "arrives".
@@ -63,9 +84,9 @@ export default {
           '100%': { transform: 'translateX(-50%)' },
         },
         'pulse-ring': {
-          '0%': { boxShadow: '0 0 0 0 rgba(111, 255, 0, 0.45)' },
-          '70%': { boxShadow: '0 0 0 12px rgba(111, 255, 0, 0)' },
-          '100%': { boxShadow: '0 0 0 0 rgba(111, 255, 0, 0)' },
+          '0%': { boxShadow: '0 0 0 0 rgba(47, 125, 0, 0.35)' },
+          '70%': { boxShadow: '0 0 0 12px rgba(47, 125, 0, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(47, 125, 0, 0)' },
         },
       },
       animation: {

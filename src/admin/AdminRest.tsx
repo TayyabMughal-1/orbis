@@ -85,7 +85,7 @@ export function AdminPromos() {
       {saved && <Banner tone="ok">{saved}</Banner>}
 
       {draft && (
-        <div className="mb-8 rounded-[14px] border border-neon/25 bg-neon/[0.04] p-5">
+        <div className="mb-8 rounded-[14px] border border-accent/25 bg-accent/[0.04] p-5">
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Field label="Code" hint="Letters and digits. Saved upper-case.">
               <input
@@ -114,8 +114,8 @@ export function AdminPromos() {
                 value={draft.active ? 'yes' : 'no'}
                 onChange={(e) => setDraft({ ...draft, active: e.target.value === 'yes' })}
               >
-                <option value="yes" className="bg-[#060d2e]">Live</option>
-                <option value="no" className="bg-[#060d2e]">Paused</option>
+                <option value="yes" className="bg-background">Live</option>
+                <option value="no" className="bg-background">Paused</option>
               </select>
             </Field>
           </div>
@@ -124,8 +124,8 @@ export function AdminPromos() {
             {REGION_CODES.map((region) => {
               const on = draft.regions.includes(region)
               return (
-                <div key={region} className="rounded-[10px] border border-white/10 p-3">
-                  <label className="flex cursor-pointer items-center gap-2 font-mono text-[11px] uppercase text-cream/70">
+                <div key={region} className="rounded-[10px] border border-ink/10 p-3">
+                  <label className="flex cursor-pointer items-center gap-2 font-mono text-[11px] uppercase text-ink/80">
                     <input
                       type="checkbox"
                       checked={on}
@@ -137,7 +137,7 @@ export function AdminPromos() {
                             : draft.regions.filter((r) => r !== region),
                         })
                       }
-                      className="h-3.5 w-3.5 accent-[#6FFF00]"
+                      className="h-3.5 w-3.5 accent-[#2F7D00]"
                     />
                     {REGIONS[region].country}
                   </label>
@@ -179,7 +179,7 @@ export function AdminPromos() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse">
             <thead>
-              <tr className="border-b border-white/10 text-left font-mono text-[10px] uppercase tracking-wide text-cream/40">
+              <tr className="border-b border-ink/10 text-left font-mono text-[10px] uppercase tracking-wide text-muted">
                 <th className="py-2 pr-4">Code</th>
                 <th className="py-2 pr-4">Discount</th>
                 <th className="py-2 pr-4">Stores</th>
@@ -190,22 +190,22 @@ export function AdminPromos() {
             </thead>
             <tbody>
               {promos.map((promo) => (
-                <tr key={promo.code} className="border-b border-white/5">
+                <tr key={promo.code} className="border-b border-ink/5">
                   <td className="py-3 pr-4">
                     <button
                       type="button"
                       onClick={() => setDraft(promo)}
-                      className="font-grotesk text-[13px] uppercase text-cream hover:text-neon"
+                      className="font-grotesk text-[13px] uppercase text-ink hover:text-accent"
                     >
                       {promo.code}
                     </button>
-                    <div className="mt-0.5 font-mono text-[10px] text-cream/35">{promo.label}</div>
+                    <div className="mt-0.5 font-mono text-[10px] text-muted">{promo.label}</div>
                   </td>
-                  <td className="py-3 pr-4 font-mono text-[12px] text-neon">{promo.percentOff}%</td>
-                  <td className="py-3 pr-4 font-mono text-[11px] uppercase text-cream/60">
+                  <td className="py-3 pr-4 font-mono text-[12px] text-accent">{promo.percentOff}%</td>
+                  <td className="py-3 pr-4 font-mono text-[11px] uppercase text-muted">
                     {promo.regions.join(', ')}
                   </td>
-                  <td className="py-3 pr-4 font-mono text-[11px] text-cream/60">
+                  <td className="py-3 pr-4 font-mono text-[11px] text-muted">
                     {promo.regions
                       .map((r) =>
                         promo.minSubtotal[r]
@@ -215,7 +215,7 @@ export function AdminPromos() {
                       .join(' / ')}
                   </td>
                   <td className="py-3 pr-4 font-mono text-[11px]">
-                    <span className={promo.active ? 'text-neon' : 'text-cream/35'}>
+                    <span className={promo.active ? 'text-accent' : 'text-muted'}>
                       {promo.active ? 'Live' : 'Paused'}
                     </span>
                   </td>
@@ -224,7 +224,7 @@ export function AdminPromos() {
                       type="button"
                       onClick={() => remove(promo.code)}
                       aria-label={`Delete ${promo.code}`}
-                      className="text-cream/30 transition-colors hover:text-red-300"
+                      className="text-muted transition-colors hover:text-red-300"
                     >
                       <Trash2 size={14} />
                     </button>
@@ -233,7 +233,7 @@ export function AdminPromos() {
               ))}
               {promos.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-6 font-mono text-[11px] text-cream/35">
+                  <td colSpan={6} className="py-6 font-mono text-[11px] text-muted">
                     No promo codes yet.
                   </td>
                 </tr>
@@ -279,34 +279,34 @@ export function AdminOrders() {
           {orders.map((order) => {
             const config = REGIONS[order.region]
             return (
-              <div key={order.number} className="rounded-[14px] border border-white/10 bg-white/[0.02] p-4">
+              <div key={order.number} className="rounded-[14px] border border-ink/10 bg-ink/[0.02] p-4">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
-                    <div className="font-grotesk text-[14px] uppercase text-cream">{order.number}</div>
-                    <div className="mt-1 font-mono text-[11px] text-cream/50">
+                    <div className="font-grotesk text-[14px] uppercase text-ink">{order.number}</div>
+                    <div className="mt-1 font-mono text-[11px] text-muted">
                       {new Date(order.placedAt).toLocaleString(config.locale)} · {order.address.fullName} ·{' '}
                       {order.email}
                     </div>
-                    <div className="mt-1 font-mono text-[11px] text-cream/40">
+                    <div className="mt-1 font-mono text-[11px] text-muted">
                       {order.address.city}, {order.address.region}, {config.country} · {order.shipping.label}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-mono text-[15px] text-neon">
+                    <div className="font-mono text-[15px] text-accent">
                       {formatMoney(order.totals.total, config, false)}
                     </div>
-                    <div className="mt-1 font-mono text-[10px] uppercase text-cream/40">
+                    <div className="mt-1 font-mono text-[10px] uppercase text-muted">
                       {order.paymentMethodLabel}
                     </div>
                   </div>
                 </div>
 
-                <ul className="mt-3 border-t border-white/10 pt-3">
+                <ul className="mt-3 border-t border-ink/10 pt-3">
                   {order.lines.map((line) => (
-                    <li key={line.sku} className="flex justify-between font-mono text-[11px] text-cream/60">
+                    <li key={line.sku} className="flex justify-between font-mono text-[11px] text-muted">
                       <span>
                         {line.quantity} × {line.productName}{' '}
-                        <span className="text-cream/35">({line.variantLabel})</span>
+                        <span className="text-muted">({line.variantLabel})</span>
                       </span>
                       <span>{formatMoney(line.lineTotal, config, false)}</span>
                     </li>
@@ -321,7 +321,7 @@ export function AdminOrders() {
                       onChange={(e) => move(order, { status: e.target.value })}
                     >
                       {['confirmed', 'processing', 'shipped'].map((s) => (
-                        <option key={s} value={s} className="bg-[#060d2e]">
+                        <option key={s} value={s} className="bg-background">
                           {s}
                         </option>
                       ))}
@@ -334,7 +334,7 @@ export function AdminOrders() {
                       onChange={(e) => move(order, { paymentStatus: e.target.value })}
                     >
                       {['pending', 'paid', 'due_on_delivery'].map((s) => (
-                        <option key={s} value={s} className="bg-[#060d2e]">
+                        <option key={s} value={s} className="bg-background">
                           {s.replace(/_/g, ' ')}
                         </option>
                       ))}
@@ -345,7 +345,7 @@ export function AdminOrders() {
             )
           })}
           {orders.length === 0 && (
-            <p className="font-mono text-[12px] text-cream/40">No orders yet.</p>
+            <p className="font-mono text-[12px] text-muted">No orders yet.</p>
           )}
         </div>
       )}
@@ -430,8 +430,8 @@ export function AdminSettings() {
             onClick={() => setRegion(r)}
             className={`rounded-full border px-4 py-2 font-mono text-[11px] uppercase transition-colors ${
               r === region
-                ? 'border-neon/50 bg-neon/10 text-neon'
-                : 'border-white/15 text-cream/55 hover:border-white/35'
+                ? 'border-accent/50 bg-accent/10 text-accent'
+                : 'border-ink/15 text-muted hover:border-ink/35'
             }`}
           >
             {REGIONS[r].country}
@@ -495,12 +495,12 @@ export function AdminSettings() {
             </Field>
           </div>
 
-          <h2 className="mb-3 mt-10 font-grotesk text-[15px] uppercase text-cream">
+          <h2 className="mb-3 mt-10 font-grotesk text-[15px] uppercase text-ink">
             Delivery options — {base.country}
           </h2>
           <div className="space-y-3">
             {(settings.shipping ?? []).map((tier, index) => (
-              <div key={tier.id} className="rounded-[12px] border border-white/10 bg-white/[0.02] p-4">
+              <div key={tier.id} className="rounded-[12px] border border-ink/10 bg-ink/[0.02] p-4">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
                   <Field label="Name">
                     <input
@@ -541,7 +541,7 @@ export function AdminSettings() {
             ))}
           </div>
 
-          <div className="mt-8 border-t border-white/10 pt-5">
+          <div className="mt-8 border-t border-ink/10 pt-5">
             <AdminButton onClick={save}>Save {base.countryCode} settings</AdminButton>
           </div>
         </>

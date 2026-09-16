@@ -108,16 +108,16 @@ export default function Help() {
 
       <div className="mx-auto max-w-[900px] px-4 py-16 sm:px-6">
         <Reveal>
-          <h1 className="font-grotesk text-[34px] uppercase leading-none text-cream sm:text-[46px]">
+          <h1 className="font-grotesk text-[34px] uppercase leading-none text-ink sm:text-[46px]">
             Help
           </h1>
-          <p className="mt-4 max-w-lg font-mono text-[12px] leading-relaxed text-cream/55">
+          <p className="mt-4 max-w-lg font-mono text-[12px] leading-relaxed text-muted">
             Everything below is specific to the {config.country} store — delivery, payment,{' '}
             {config.taxLabel} and returns all work differently in our other markets.
           </p>
         </Reveal>
 
-        <div className="mt-12 divide-y divide-white/10 border-y border-white/10">
+        <div className="mt-12 divide-y divide-ink/10 border-y border-ink/10">
           {faq.map((item, i) => {
             const isOpen = open === i
             return (
@@ -128,11 +128,11 @@ export default function Help() {
                   aria-expanded={isOpen}
                   className="flex w-full items-center justify-between gap-4 py-5 text-left"
                 >
-                  <span className="font-grotesk text-[14px] uppercase text-cream">{item.q}</span>
+                  <span className="font-grotesk text-[14px] uppercase text-ink">{item.q}</span>
                   <ChevronDown
                     size={17}
-                    className={`flex-none text-cream/50 transition-transform duration-300 ${
-                      isOpen ? 'rotate-180 text-neon' : ''
+                    className={`flex-none text-muted transition-transform duration-300 ${
+                      isOpen ? 'rotate-180 text-accent' : ''
                     }`}
                   />
                 </button>
@@ -143,7 +143,7 @@ export default function Help() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="pb-6 pr-8 font-mono text-[12px] leading-relaxed text-cream/65">
+                    <p className="pb-6 pr-8 font-mono text-[12px] leading-relaxed text-muted">
                       {item.a}
                     </p>
                   </div>
@@ -168,7 +168,7 @@ export default function Help() {
           <div className="mt-8 text-center">
             <Link
               to={href('/shop')}
-              className="press inline-flex rounded-full bg-neon px-7 py-3 font-grotesk text-[12px] uppercase text-background"
+              className="press inline-flex rounded-full bg-neon px-7 py-3 font-grotesk text-[12px] uppercase text-ink"
             >
               Back to the shop
             </Link>
@@ -192,13 +192,13 @@ function Contact({
 }) {
   const body = (
     <>
-      <Icon size={16} className="mb-3 text-neon" strokeWidth={1.7} />
-      <div className="font-mono text-[10px] uppercase tracking-wide text-cream/45">{label}</div>
-      <div className="mt-1 font-mono text-[12px] text-cream">{value}</div>
+      <Icon size={16} className="mb-3 text-accent" strokeWidth={1.7} />
+      <div className="font-mono text-[10px] uppercase tracking-wide text-muted">{label}</div>
+      <div className="mt-1 font-mono text-[12px] text-ink">{value}</div>
     </>
   )
   const className =
-    'block rounded-[16px] border border-white/12 bg-white/[0.02] p-5 transition-colors hover:border-white/30'
+    'block rounded-[16px] border border-ink/12 bg-ink/[0.02] p-5 transition-colors hover:border-ink/30'
   return href ? (
     <a href={href} className={className}>
       {body}

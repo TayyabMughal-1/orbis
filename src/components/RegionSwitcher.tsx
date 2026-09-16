@@ -37,7 +37,7 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-2 font-mono text-[11px] uppercase text-cream transition-colors hover:border-white/30"
+        className="flex items-center gap-2 rounded-full border border-ink/15 bg-ink/5 px-3 py-2 font-mono text-[11px] uppercase text-ink transition-colors hover:border-ink/30"
       >
         {/* Windows has no country-flag glyphs and falls back to the
             letters "AE"/"PK" — which is exactly the country code, so
@@ -45,7 +45,7 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
         <span aria-hidden="true" className="text-[14px] leading-none">
           {config.flag}
         </span>
-        <span className="text-cream/50">{config.currency.code}</span>
+        <span className="text-muted">{config.currency.code}</span>
         <span className="sr-only">Change store. Currently {config.country}.</span>
         <ChevronDown size={13} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -53,9 +53,9 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
       {open && (
         <div
           role="listbox"
-          className="animate-scale-in absolute right-0 z-50 mt-2 w-[268px] origin-top-right overflow-hidden rounded-[16px] border border-white/15 bg-[#060d2e] shadow-2xl shadow-black/60"
+          className="animate-scale-in absolute right-0 z-50 mt-2 w-[268px] origin-top-right overflow-hidden rounded-[16px] border border-ink/15 bg-background shadow-2xl shadow-black/60"
         >
-          <div className="flex items-center gap-2 border-b border-white/10 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-cream/45">
+          <div className="flex items-center gap-2 border-b border-ink/10 px-4 py-3 font-mono text-[10px] uppercase tracking-[0.15em] text-muted">
             <Globe size={12} />
             Choose your store
           </div>
@@ -72,25 +72,25 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
                   setOpen(false)
                 }}
                 className={`flex w-full items-center gap-3 px-4 py-3 text-left transition-colors ${
-                  active ? 'bg-white/[0.07]' : 'hover:bg-white/5'
+                  active ? 'bg-ink/[0.07]' : 'hover:bg-ink/5'
                 }`}
               >
                 <span aria-hidden="true" className="text-[18px] leading-none">
                   {r.flag}
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-grotesk text-[12px] uppercase text-cream">
+                  <span className="block truncate font-grotesk text-[12px] uppercase text-ink">
                     {r.country}
                   </span>
-                  <span className="block font-mono text-[10px] uppercase text-cream/50">
+                  <span className="block font-mono text-[10px] uppercase text-muted">
                     Prices in {r.currency.code} · {r.taxLabel}
                   </span>
                 </span>
-                {active && <Check size={15} className="flex-none text-neon" />}
+                {active && <Check size={15} className="flex-none text-accent" />}
               </button>
             )
           })}
-          <p className="border-t border-white/10 px-4 py-3 font-mono text-[10px] leading-relaxed text-cream/40">
+          <p className="border-t border-ink/10 px-4 py-3 font-mono text-[10px] leading-relaxed text-muted">
             Each store has its own prices, delivery options and payment methods. Your basket stays with
             the store you built it in.
           </p>

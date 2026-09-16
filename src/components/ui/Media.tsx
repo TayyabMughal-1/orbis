@@ -16,7 +16,7 @@ export default function Media({
   autoPlay?: boolean
 }) {
   if (!item) {
-    return <div className={`bg-white/5 ${className}`} />
+    return <div className={`bg-ink/5 ${className}`} />
   }
 
   if (item.kind === 'video') {

@@ -88,32 +88,32 @@ export default function Catalog() {
         noindex={Boolean(search)}
         jsonLd={schema}
       />
-      <nav className="mb-6 flex items-center gap-2 font-mono text-[11px] uppercase text-cream/40">
-        <Link to={href('/')} className="hover:text-cream">
+      <nav className="mb-6 flex items-center gap-2 font-mono text-[11px] uppercase text-muted">
+        <Link to={href('/')} className="hover:text-ink">
           {config.storeName}
         </Link>
         <span>/</span>
-        <Link to={href('/shop')} className="hover:text-cream">
+        <Link to={href('/shop')} className="hover:text-ink">
           Shop
         </Link>
         {active && (
           <>
             <span>/</span>
-            <span className="text-cream/70">{active.label}</span>
+            <span className="text-ink/80">{active.label}</span>
           </>
         )}
       </nav>
 
       <div className="mb-8 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <h1 className="font-grotesk text-[34px] uppercase leading-none text-cream sm:text-[46px]">
+          <h1 className="font-grotesk text-[34px] uppercase leading-none text-ink sm:text-[46px]">
             {title}
           </h1>
-          <p className="mt-3 max-w-lg font-mono text-[12px] leading-relaxed text-cream/55">
+          <p className="mt-3 max-w-lg font-mono text-[12px] leading-relaxed text-muted">
             {active ? active.blurb : `Every piece we ship to ${config.country}, priced in ${config.currency.code}.`}
           </p>
         </div>
-        <div className="font-mono text-[11px] uppercase text-cream/40">
+        <div className="font-mono text-[11px] uppercase text-muted">
           {state.data ? `${state.data.length} product${state.data.length === 1 ? '' : 's'}` : '—'}
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function Catalog() {
         <Link
           to={href('/shop')}
           className={`rounded-full border px-4 py-2 font-mono text-[11px] uppercase transition-colors ${
-            !active ? 'border-neon/50 bg-neon/10 text-neon' : 'border-white/15 text-cream/60 hover:border-white/35'
+            !active ? 'border-accent/50 bg-accent/10 text-accent' : 'border-ink/15 text-muted hover:border-ink/35'
           }`}
         >
           All
@@ -134,8 +134,8 @@ export default function Catalog() {
             to={href(`/shop/${cat.id}`)}
             className={`rounded-full border px-4 py-2 font-mono text-[11px] uppercase transition-colors ${
               active?.id === cat.id
-                ? 'border-neon/50 bg-neon/10 text-neon'
-                : 'border-white/15 text-cream/60 hover:border-white/35'
+                ? 'border-accent/50 bg-accent/10 text-accent'
+                : 'border-ink/15 text-muted hover:border-ink/35'
             }`}
           >
             {cat.label}
@@ -144,28 +144,28 @@ export default function Catalog() {
       </div>
 
       {/* sort + stock */}
-      <div className="mb-10 flex flex-wrap items-center gap-3 border-y border-white/10 py-3">
-        <label className="flex items-center gap-2 font-mono text-[11px] uppercase text-cream/50">
+      <div className="mb-10 flex flex-wrap items-center gap-3 border-y border-ink/10 py-3">
+        <label className="flex items-center gap-2 font-mono text-[11px] uppercase text-muted">
           Sort
           <select
             value={sort}
             onChange={(e) => updateParam('sort', e.target.value)}
-            className="rounded-full border border-white/15 bg-white/5 px-3 py-1.5 font-mono text-[11px] text-cream outline-none focus:border-white/40"
+            className="rounded-full border border-ink/15 bg-ink/5 px-3 py-1.5 font-mono text-[11px] text-ink outline-none focus:border-ink/40"
           >
             {SORTS.map((s) => (
-              <option key={s.id} value={s.id} className="bg-[#060d2e]">
+              <option key={s.id} value={s.id} className="bg-background">
                 {s.label}
               </option>
             ))}
           </select>
         </label>
 
-        <label className="flex cursor-pointer items-center gap-2 font-mono text-[11px] uppercase text-cream/50">
+        <label className="flex cursor-pointer items-center gap-2 font-mono text-[11px] uppercase text-muted">
           <input
             type="checkbox"
             checked={inStockOnly}
             onChange={(e) => updateParam('stock', e.target.checked ? '1' : null)}
-            className="h-3.5 w-3.5 accent-[#6FFF00]"
+            className="h-3.5 w-3.5 accent-[#2F7D00]"
           />
           In stock only
         </label>
@@ -174,7 +174,7 @@ export default function Catalog() {
           <button
             type="button"
             onClick={() => updateParam('q', null)}
-            className="ml-auto rounded-full border border-white/15 px-3 py-1.5 font-mono text-[11px] uppercase text-cream/60 hover:border-white/35"
+            className="ml-auto rounded-full border border-ink/15 px-3 py-1.5 font-mono text-[11px] uppercase text-muted hover:border-ink/35"
           >
             Clear “{search}” ×
           </button>
@@ -194,7 +194,7 @@ export default function Catalog() {
           action={
             <Link
               to={href('/shop')}
-              className="rounded-full bg-neon px-6 py-2.5 font-grotesk text-[12px] uppercase text-background"
+              className="rounded-full bg-neon px-6 py-2.5 font-grotesk text-[12px] uppercase text-ink"
             >
               Browse everything
             </Link>
