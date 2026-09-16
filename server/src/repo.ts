@@ -466,3 +466,86 @@ export async function listOrdersByEmail(region: RegionCode, email: string): Prom
 }
 
 export { toOrder, type OrderRow, ORDER_SELECT }
+
+/**
+ * Every order for an address, across all three stores.
+ *
+ * listOrdersByEmail is scoped to one region because the storefront's
+ * lookup page is; an account is not, so someone who ordered in one store
+ * and now browses another still sees their history.
+ */
+export async function listOrdersForEmail(email: string): Promise<Order[]> {
+  const { rows } = await query<OrderRow>(
+    `${ORDER_SELECT} WHERE lower(o.email) = lower($1) ORDER BY o.placed_at DESC LIMIT 100`,
+    [email.trim()],
+  )
+  return rows.map(toOrder)
+}
+
+// ------------------------------------------------------------- search
+
+export type SearchResult = {
+  query: string
+  /** Products that actually matched the phrase. */
+  exact: Product[]
+  /**
+   * What to offer when `exact` is empty: products matching any single word
+   * of the query, and failing that the best sellers. Never empty on a
+   * stocked catalogue, so a search always has somewhere to go.
+   */
+  related: Product[]
+  /** Why `related` is what it is, so the page can word itself honestly. */
+  relatedReason: 'none' | 'partial' | 'popular'
+}
+
+/**
+ * Search with a fallback, rather than a dead end.
+ *
+ * A shop that answers "no results" and stops has lost the sale. Three
+ * passes, narrow to broad:
+ *
+ *   1. the whole phrase, which is what listProducts already does;
+ *   2. any single word of it — "brass lamp" finds the lamps and the brass
+ *      things even when nothing is both;
+ *   3. best sellers, so the page always has something to show.
+ */
+export async function searchProducts(
+  region: RegionCode,
+  raw: string,
+  limit = 24,
+): Promise<SearchResult> {
+  const q = raw.trim()
+  if (!q) return { query: q, exact: [], related: [], relatedReason: 'none' }
+
+  const exact = await listProducts({ region, search: q, limit })
+  if (exact.length > 0) return { query: q, exact, related: [], relatedReason: 'none' }
+
+  // Words worth matching on their own. One- and two-letter fragments match
+  // most of the catalogue and would make the suggestions meaningless.
+  const words = q
+    .split(/\s+/)
+    .map((w) => w.replace(/[^\p{L}\p{N}]/gu, ''))
+    .filter((w) => w.length >= 3)
+
+  if (words.length > 0) {
+    const params: unknown[] = []
+    const clauses = words.map((w) => {
+      params.push(`%${w.replace(/[\%_]/g, '\$&')}%`)
+      const p = `$${params.length}`
+      return `(p.name ILIKE ${p} OR p.tagline ILIKE ${p} OR p.description ILIKE ${p} OR p.category ILIKE ${p})`
+    })
+    const { rows } = await query<{ id: string }>(
+      `SELECT id FROM products p WHERE ${clauses.join(' OR ')} LIMIT $${params.length + 1}`,
+      [...params, limit],
+    )
+    if (rows.length > 0) {
+      const ids = new Set(rows.map((r) => r.id))
+      const all = await listProducts({ region })
+      const related = all.filter((p) => ids.has(p.id)).slice(0, limit)
+      if (related.length > 0) return { query: q, exact: [], related, relatedReason: 'partial' }
+    }
+  }
+
+  const popular = await listProducts({ region, sort: 'featured', inStockOnly: true, limit: 8 })
+  return { query: q, exact: [], related: popular, relatedReason: 'popular' }
+}

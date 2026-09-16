@@ -171,6 +171,31 @@ CREATE TABLE IF NOT EXISTS settings (
   updated_at timestamptz NOT NULL DEFAULT now()
 );
 
+-- Shoppers. Separate from "users", which is staff: the two have different
+-- lifecycles, different volumes and very different blast radii if one is
+-- compromised, and merging them is how a customer ends up one role column
+-- away from the dashboard.
+--
+-- Orders are not foreign-keyed to a customer. An order is placed with an
+-- email address and stands on its own, whether or not an account existed
+-- at the time — so history is matched on the address, which is what the
+-- orders_region_email index is already for. Registering later surfaces
+-- orders placed before the account existed, which is the behaviour a
+-- shopper expects.
+CREATE TABLE IF NOT EXISTS customers (
+  id            text PRIMARY KEY,
+  email         text NOT NULL,
+  name          text NOT NULL DEFAULT '',
+  -- scrypt:salt:key, same as staff. The plain password is never stored.
+  password_hash text NOT NULL,
+  -- Which store they signed up in. Only a default; history spans regions.
+  region        text,
+  created_at    timestamptz NOT NULL DEFAULT now(),
+  last_login_at timestamptz
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS customers_email_idx ON customers (lower(email));
+
 CREATE TABLE IF NOT EXISTS users (
   id            text PRIMARY KEY,
   email         text NOT NULL,

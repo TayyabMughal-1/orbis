@@ -1,7 +1,10 @@
+import { useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { api, type SortKey } from '../api/client'
 import { CATEGORIES } from '../api/db'
 import { useAsync } from '../lib/useAsync'
+import { search as searchProducts, type SearchResult } from '../api/account'
+import type { Product } from '../types'
 import { useRegion } from '../regions/RegionContext'
 import ProductCard from '../components/ProductCard'
 import { RevealGroup } from '../components/ui/Reveal'
@@ -32,6 +35,27 @@ export default function Catalog() {
     () => api.listProducts({ region, category: categoryFilter, sort, search, inStockOnly }),
     [region, categoryFilter, sort, search, inStockOnly],
   )
+
+  // A shop that answers "no results" and stops has lost the sale. When a
+  // search comes back empty the API is asked what to show instead — first
+  // products matching any single word of the query, then the best sellers
+  // — and it says which, so the copy below can be honest about it.
+  const noResults = Boolean(search) && state.data !== null && state.data.length === 0
+  const [suggestions, setSuggestions] = useState<SearchResult | null>(null)
+
+  useEffect(() => {
+    if (!noResults) {
+      setSuggestions(null)
+      return
+    }
+    let alive = true
+    searchProducts(region, search)
+      .then((r) => alive && setSuggestions(r))
+      .catch(() => alive && setSuggestions(null))
+    return () => {
+      alive = false
+    }
+  }, [noResults, region, search])
 
   function updateParam(key: string, value: string | null) {
     const next = new URLSearchParams(params)
@@ -201,6 +225,26 @@ export default function Catalog() {
           }
         />
       )}
+      {suggestions && suggestions.related.length > 0 && (
+        <div className="mt-12">
+          <h2 className="font-grotesk text-[15px] uppercase text-ink">
+            {suggestions.relatedReason === 'partial'
+              ? 'Closest things we have'
+              : 'What people are buying instead'}
+          </h2>
+          <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">
+            {suggestions.relatedReason === 'partial'
+              ? `Nothing matches “${search}” exactly, but these share part of it.`
+              : `We do not stock anything matching “${search}” yet. These are our best sellers.`}
+          </p>
+          <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {suggestions.related.map((product: Product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </div>
+      )}
+
       {state.data && state.data.length > 0 && (
         <RevealGroup
           key={`${categoryFilter}-${sort}-${search}`}

@@ -19,6 +19,7 @@ import CartPage from './pages/CartPage'
 import Checkout from './pages/Checkout'
 import OrderConfirmation from './pages/OrderConfirmation'
 import OrderLookup from './pages/OrderLookup'
+import Account from './pages/Account'
 import Help from './pages/Help'
 import NotFound from './pages/NotFound'
 
@@ -124,6 +125,7 @@ export default function App() {
           <Route path="cart" element={<CartPage />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="orders" element={<OrderLookup />} />
+          <Route path="account" element={<Account />} />
           <Route path="help" element={<Help />} />
           <Route path="order/:number" element={<OrderConfirmation />} />
           <Route path="*" element={<NotFound />} />

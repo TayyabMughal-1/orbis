@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, NavLink, useNavigate } from 'react-router-dom'
-import { Menu, Search, ShoppingBag, X } from 'lucide-react'
+import { Menu, Search, ShoppingBag, User, X } from 'lucide-react'
 import { CATEGORIES } from '../api/db'
 import { useCart } from '../context/CartContext'
 import { useRegion } from '../regions/RegionContext'
@@ -86,33 +86,43 @@ export default function Header() {
 
           <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <form onSubmit={submitSearch} className="hidden items-center md:flex">
+              <label className="sr-only" htmlFor="site-search">
+                Search products
+              </label>
               <div
-                className={`flex items-center overflow-hidden rounded-full border border-ink/15 bg-ink/5 transition-all ${
-                  searchOpen ? 'w-56 px-3' : 'w-9 px-0'
+                className={`flex items-center overflow-hidden rounded-full border bg-ink/5 px-3 transition-all ${
+                  searchOpen ? 'w-72 border-accent' : 'w-52 border-ink/15'
                 }`}
               >
                 <button
-                  type={searchOpen ? 'submit' : 'button'}
-                  onClick={() => !searchOpen && setSearchOpen(true)}
+                  type="submit"
                   aria-label="Search products"
-                  className="flex h-9 w-9 flex-none items-center justify-center text-ink/80 hover:text-ink"
+                  className="flex h-9 w-6 flex-none items-center justify-center text-muted transition-colors hover:text-ink"
                 >
                   <Search size={16} strokeWidth={1.8} />
                 </button>
-                {searchOpen && (
-                  <input
-                    autoFocus
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onBlur={() => !query && setSearchOpen(false)}
-                    placeholder="Search the store"
-                    className="w-full bg-transparent py-2 font-mono text-[12px] text-ink outline-none placeholder:text-muted"
-                  />
-                )}
+                <input
+                  id="site-search"
+                  type="search"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onFocus={() => setSearchOpen(true)}
+                  onBlur={() => setSearchOpen(false)}
+                  placeholder="Search the store"
+                  className="w-full bg-transparent py-2 pl-2 font-mono text-[12px] text-ink outline-none placeholder:text-muted"
+                />
               </div>
             </form>
 
             <RegionSwitcher />
+
+            <Link
+              to={href('/account')}
+              aria-label="Your account"
+              className="press flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 bg-ink/5 text-ink transition-colors hover:border-ink/30"
+            >
+              <User size={16} strokeWidth={1.8} />
+            </Link>
 
             <button
               type="button"

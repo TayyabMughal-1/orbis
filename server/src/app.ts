@@ -11,11 +11,13 @@ import {
   getPromo,
   listOrdersByEmail,
   listProducts,
+  searchProducts,
 } from './repo.js'
 import { assertInStock, priceOrder } from './service.js'
 import { authorizePayment } from './payments.js'
 import { asAddress, asCartLines, asEmail, asOptionalString, asRegion, asString } from './validate.js'
 import { admin } from './admin.js'
+import { account } from './customers.js'
 import { adminEnabled } from './auth.js'
 import { listCategories, listCollections, publicSettings, resolveRegionConfig } from './adminRepo.js'
 import { REGIONS } from '../../src/regions/config.js'
@@ -239,6 +241,19 @@ app.get(
   }),
 )
 
+// Search, with suggestions when nothing matches. Separate from
+// /api/products because the response is a shape, not a list: the page has
+// to know whether it is showing results or consolation.
+app.get(
+  '/api/search',
+  route(async (req, res) => {
+    const region = asRegion(req.query.region)
+    limit(`search:${clientKey(req)}`, 120, 60_000)
+    res.set('Cache-Control', 'no-store')
+    res.json(await searchProducts(region, asOptionalString(req.query.q, 'q', 120) || ''))
+  }),
+)
+
 app.get(
   '/api/products/:slug',
   route(async (req, res) => {
@@ -410,6 +425,7 @@ app.get(
 // ------------------------------------------------------------- admin
 
 app.use('/api/admin', admin)
+app.use('/api/account', account)
 
 // ----------------------------------------------------------- fallbacks
 
