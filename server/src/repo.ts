@@ -431,6 +431,15 @@ function toOrder(row: OrderRow): Order {
   }
 }
 
+/**
+ * The order a previous request with this Idempotency-Key created, if
+ * there is one. Checked before anything else the checkout route does.
+ */
+export async function getOrderByIdempotencyKey(key: string): Promise<Order | null> {
+  const { rows } = await query<OrderRow>(`${ORDER_SELECT} WHERE o.idempotency_key = $1`, [key])
+  return rows.length > 0 ? toOrder(rows[0]) : null
+}
+
 export async function getOrder(number: string): Promise<Order> {
   const { rows } = await query<OrderRow>(`${ORDER_SELECT} WHERE o.number = $1`, [
     number.trim().toUpperCase(),

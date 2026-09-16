@@ -187,15 +187,21 @@ try {
       {
         region: 'pk',
         email: 'verify@orbis.test',
+        // Shapes come from asAddress() in validate.ts: fullName not name,
+        // `region` is the province and must be one the store delivers to,
+        // and the phone is validated against /^3\d{9}$/ after the +92 is
+        // stripped. postalCode is required for pk. Shipping ids are
+        // region-prefixed (pk-standard).
         address: {
-          name: 'Verify Run',
+          fullName: 'Verify Run',
+          email: 'verify@orbis.test',
           line1: '1 Test Street',
           city: 'Lahore',
-          postcode: '54000',
-          country: 'PK',
-          phone: '+92 300 0000000',
+          region: 'Punjab',
+          postalCode: '54000',
+          phone: '+92 300 1234567',
         },
-        shippingId: 'standard',
+        shippingId: 'pk-standard',
         paymentMethodId: 'cod',
         lines: [{ productId: one.id, variantId: target.id, quantity: 1 }],
       },
@@ -204,9 +210,10 @@ try {
 
   const [a, b] = await Promise.all([order('verify-race-a'), order('verify-race-b')])
   const codes = [a.status, b.status].sort()
+  // 201 for the winner (the order was created), 409 for the loser.
   check(
     'exactly one of two concurrent buyers wins',
-    codes[0] === 200 && codes[1] === 409,
+    codes[0] === 201 && codes[1] === 409,
     `got ${codes.join(' and ')}`,
   )
 
@@ -216,7 +223,7 @@ try {
   )
   check('stock landed at 0, never negative', after[0]?.stock === 0, `got ${after[0]?.stock}`)
 
-  const winner = a.status === 200 ? a : b
+  const winner = a.status === 201 ? a : b
   const placed = await winner.json().catch(() => ({}))
   check('order has a number', Boolean(placed.number))
   check('order lines came back', Array.isArray(placed.lines) && placed.lines.length === 1)
@@ -225,7 +232,7 @@ try {
   check('GET /api/orders/:number → 200', fetched.status === 200)
 
   // Idempotency: the same key must return the same order, not a second one.
-  const repeat = await order('verify-race-' + (a.status === 200 ? 'a' : 'b'))
+  const repeat = await order('verify-race-' + (a.status === 201 ? 'a' : 'b'))
   const repeatBody = await repeat.json().catch(() => ({}))
   check('same Idempotency-Key returns the same order', repeatBody.number === placed.number)
 

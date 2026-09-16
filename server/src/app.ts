@@ -5,6 +5,7 @@ import { connect, ping, stats as dbStats } from './db.js'
 import {
   createOrder,
   getOrder,
+  getOrderByIdempotencyKey,
   getProductBySlug,
   getRelated,
   getPromo,
@@ -290,6 +291,22 @@ app.post(
   route(async (req, res) => {
     limit(`order:${clientKey(req)}`, ORDER_LIMIT, 60 * 60_000)
 
+    // A retry after a dropped response must return the original order
+    // rather than doing any of this again. That has to happen first:
+    // further down, assertInStock would reject the retry as sold out —
+    // the customer's own purchase having taken the last one — and
+    // authorizePayment would run a second time before the idempotency
+    // check inside createOrder was ever reached.
+    const replayKey = req.get('idempotency-key') ?? null
+    if (replayKey) {
+      const already = await getOrderByIdempotencyKey(replayKey)
+      if (already) {
+        res.set('Cache-Control', 'no-store')
+        res.json(already)
+        return
+      }
+    }
+
     const region = asRegion(req.body?.region)
     const lines = asCartLines(req.body?.lines)
     const address = asAddress(req.body?.address, region)
@@ -325,8 +342,6 @@ app.post(
       orderEmail: address.email,
     })
 
-    const idempotencyKey = req.get('idempotency-key') ?? null
-
     const order = await createOrder({
       region,
       email: address.email,
@@ -339,7 +354,10 @@ app.post(
       promoCode: quote.promo?.code ?? null,
       lines: quote.priced.map(({ stock: _stock, ...line }) => line),
       totals: quote.totals,
-      idempotencyKey,
+      // createOrder checks this again, which closes the window between
+      // the lookup above and this insert for two genuinely simultaneous
+      // retries.
+      idempotencyKey: replayKey,
     })
 
     res.status(201).json({ ...order, paymentInstructions: payment.instructions })
