@@ -158,6 +158,40 @@ export default function Home() {
         </div>
       </section>
 
+      {/* -------------------------------------------------- featured */}
+      <section className="mx-auto max-w-[1600px] px-4 py-20 sm:px-6 lg:px-10">
+        <SectionHeading
+          eyebrow={`Best sellers in ${config.country}`}
+          title={
+            <>
+              What people
+              <br />
+              <span className="ml-10 sm:ml-20">
+                are <span className="font-condiment normal-case text-accent">actually</span> buying
+              </span>
+            </>
+          }
+        >
+          <Link
+            to={href('/shop')}
+            className="group flex items-center gap-2 font-grotesk text-[13px] uppercase text-ink hover:text-accent"
+          >
+            See everything
+            <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
+          </Link>
+        </SectionHeading>
+
+        {featured.loading && <ProductGridSkeleton count={6} />}
+        {featured.error && <ErrorState message={featured.error} onRetry={featured.reload} />}
+        {featured.data && (
+          <RevealGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {featured.data.slice(0, 6).map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </RevealGroup>
+        )}
+      </section>
+
       {/* ------------------------------- region-specific value props */}
       <section className="border-y border-ink/10 bg-ink/[0.02]">
         <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-px px-4 sm:px-6 lg:grid-cols-4 lg:px-10">
@@ -193,40 +227,6 @@ export default function Home() {
             </Reveal>
           ))}
         </div>
-      </section>
-
-      {/* -------------------------------------------------- featured */}
-      <section className="mx-auto max-w-[1600px] px-4 py-20 sm:px-6 lg:px-10">
-        <SectionHeading
-          eyebrow={`Best sellers in ${config.country}`}
-          title={
-            <>
-              What people
-              <br />
-              <span className="ml-10 sm:ml-20">
-                are <span className="font-condiment normal-case text-accent">actually</span> buying
-              </span>
-            </>
-          }
-        >
-          <Link
-            to={href('/shop')}
-            className="group flex items-center gap-2 font-grotesk text-[13px] uppercase text-ink hover:text-accent"
-          >
-            See everything
-            <ArrowRight size={15} className="transition-transform group-hover:translate-x-1" />
-          </Link>
-        </SectionHeading>
-
-        {featured.loading && <ProductGridSkeleton count={6} />}
-        {featured.error && <ErrorState message={featured.error} onRetry={featured.reload} />}
-        {featured.data && (
-          <RevealGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featured.data.slice(0, 6).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </RevealGroup>
-        )}
       </section>
 
       {/* ------------------------------------------------ categories */}

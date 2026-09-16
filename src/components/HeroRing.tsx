@@ -29,8 +29,16 @@ import Media from './ui/Media'
 // whole hero sixty times a second to move nine elements.
 // ---------------------------------------------------------------------
 
-/** Ring radius. Also the perspective depth — camera sits at the centre. */
-const R = 660
+/**
+ * Ring radius. Also the perspective depth — the camera sits at the centre.
+ *
+ * It sets the spacing between cards, which is the arc between neighbouring
+ * slots: R * 2PI / SLOTS. At 660 with 34 slots that arc was 122px against a
+ * 150px card, so every card overlapped its neighbour by 28px. At 940 the
+ * arc is 174px, leaving a 24px gap. Widening the ring rather than thinning
+ * the slots keeps nine cards on screen.
+ */
+const R = 940
 /**
  * Cards beyond this angle from the front are hidden, not drawn.
  *
@@ -60,11 +68,11 @@ const CARD_TOP = 24
  * no vertical skew at all. Drop the camera and a shear creeps in, which
  * is what tips the outer cards into parallelograms.
  *
- * Expressed against the radius: 116/660 = 0.18, against the 0.34 of the
+ * Expressed against the radius: 169/940 = 0.18, against the 0.34 of the
  * reference this is copied from. It was 0.55 before, and at that ratio
  * the outer cards read as falling rather than turning.
  */
-const CAMERA_DROP = 116
+const CAMERA_DROP = 169
 
 export default function HeroRing({ products }: { products: Product[] }) {
   const ringRef = useRef<HTMLDivElement>(null)
