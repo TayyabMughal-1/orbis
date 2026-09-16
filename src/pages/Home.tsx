@@ -56,7 +56,13 @@ export default function Home() {
           muted
           playsInline
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/25 to-background" />
+        {/* The scrim carries the text, not the video. On the dark theme a
+            25% wash was enough because the copy was light on a dark frame;
+            with dark copy on white the video has to be pushed back further
+            or the headline sits at roughly 2:1 over whatever frame is
+            playing. Heaviest behind the copy, clearing toward the right. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/60 to-background" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/70 to-transparent" />
 
         <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1600px] flex-col justify-center px-4 py-24 sm:px-6 lg:px-10">
           <div className="max-w-[820px]">
@@ -269,65 +275,128 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------------------------------------------------- studio */}
-      <section className="relative w-full overflow-hidden">
-        <video
-          className="absolute inset-0 h-full w-full object-cover"
-          src={VIDEOS.atelier}
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
-        <div className="absolute inset-0 bg-background/60" />
-        <div className="relative z-10 mx-auto max-w-[1600px] px-4 py-28 sm:px-6 lg:px-10">
-          {/* Established-since signature. Pinned to the section's right
-              edge rather than trailing the heading, so it can never crowd
-              the name however wide the viewport gets. */}
-          <span className="pointer-events-none absolute right-4 top-20 rotate-2 text-right font-condiment text-[30px] normal-case leading-[0.85] text-accent opacity-90 mix-blend-exclusion sm:right-6 sm:top-24 sm:text-[52px] lg:right-10 lg:top-28 lg:text-[64px]">
-            since
-            <br />
-            2020
-          </span>
-
-          <Reveal className="max-w-[640px]">
-            <h2 className="font-grotesk text-[32px] uppercase leading-[1.05] text-ink sm:text-[46px] lg:text-[58px]">
-              Hello!
-              <br />
-              I&apos;m <span className="text-accent">orbis</span>
+      {/* --------------------------------------- buying confidence */}
+      {/*
+        This replaced a video-backed origin story. Two reasons it had to
+        go: a looping video under a 60% white wash left the copy at about
+        2:1 against a moving background, and the copy itself was lore
+        rather than anything a shopper needed in order to buy. What a
+        customer actually wants to know at this point is what arrives in
+        the box, how fast, and what happens if it is wrong — so that is
+        what this says, in their own currency and delivery times.
+      */}
+      <section className="mx-auto max-w-[1600px] px-4 pb-24 sm:px-6 lg:px-10">
+        <div className="grid gap-4 lg:grid-cols-[1.15fr_1fr]">
+          <Reveal className="rounded-[28px] border border-ink/[0.07] bg-surface p-8 shadow-card sm:p-12">
+            <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+              Why shop with us
+            </div>
+            <h2 className="mt-3 max-w-[16ch] font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[40px]">
+              Collect with confidence
             </h2>
-            <p className="mt-12 font-mono text-[13px] uppercase leading-relaxed text-ink/80">
-              He started as a single sketch — a small figure, a long way from home. Six years later
-              we cast him in resin, paint him by hand and number him underneath, and we make the
-              things he would keep around him: steel, stoneware, machined aluminium, heavy cotton.
+            <p className="mt-5 max-w-[52ch] font-mono text-[12px] leading-relaxed text-muted">
+              Every figure is cast, hand-painted and numbered underneath. Editions are small and we
+              do not reissue them, so what you buy stays what you bought.
             </p>
-            <p className="mt-5 max-w-md font-mono text-[12px] leading-relaxed text-muted">
-              Figures are made in numbered editions, and when one sells out we do not reissue it.
-              Everything else we restock when we can. Made in small batches, shipped from a warehouse
-              in {config.country}, and backed for {config.policy.warrantyMonths} months.
-            </p>
+
+            <dl className="mt-9 grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4">
+              {[
+                { value: config.policy.returnsDays, unit: 'day', label: 'Free returns' },
+                { value: config.policy.warrantyMonths, unit: 'month', label: 'Warranty' },
+                { value: config.shipping.length, unit: 'options', label: 'Delivery speeds' },
+                { value: config.paymentMethods.length, unit: 'ways', label: 'To pay' },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <dt className="font-grotesk text-[30px] leading-none text-ink sm:text-[38px]">
+                    {stat.value}
+                    <span className="ml-1 font-mono text-[11px] uppercase text-muted">{stat.unit}</span>
+                  </dt>
+                  <dd className="mt-2 font-mono text-[11px] uppercase leading-snug text-muted">
+                    {stat.label}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="mt-10 flex flex-wrap items-center gap-3">
+              <Link
+                to={href('/shop')}
+                className="press group inline-flex items-center gap-2 rounded-full bg-ink px-7 py-3.5 font-grotesk text-[13px] uppercase text-background transition-opacity hover:opacity-90"
+              >
+                Shop everything
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link
+                to={href('/help')}
+                className="press inline-flex items-center rounded-full border border-ink/20 px-7 py-3.5 font-grotesk text-[13px] uppercase text-ink transition-colors hover:border-ink/45"
+              >
+                Delivery &amp; returns
+              </Link>
+            </div>
           </Reveal>
+
+          {/* Shop entry points, not decoration: each tile is a real
+              category link with its own product count. */}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+            {CATEGORIES.slice(0, 3).map((category, i) => (
+                <Reveal key={category.id} delay={i * 70}>
+                  <Link
+                    to={href(`/shop/${category.id}`)}
+                    className="group flex h-full items-center justify-between gap-4 rounded-[24px] border border-ink/[0.07] bg-background p-6 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:border-ink/[0.14] hover:shadow-card-hover"
+                  >
+                    <div>
+                      <div className="font-grotesk text-[16px] uppercase leading-tight text-ink transition-colors group-hover:text-accent">
+                        {category.label}
+                      </div>
+                      <p className="mt-1.5 max-w-[34ch] font-mono text-[11px] leading-relaxed text-muted">
+                        {category.blurb}
+                      </p>
+                    </div>
+                    <span
+                      aria-hidden="true"
+                      className="flex h-10 w-10 flex-none items-center justify-center rounded-full border border-ink/10 text-ink transition-all duration-300 group-hover:border-accent group-hover:bg-accent group-hover:text-background"
+                    >
+                      <ArrowRight size={16} />
+                    </span>
+                  </Link>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ------------------------------------------------------- cta */}
-      <section className="relative w-full overflow-hidden">
-        <video className="block h-auto w-full" src={VIDEOS.cta} autoPlay loop muted playsInline />
-        <div className="absolute inset-0 flex items-center bg-background/35">
-          <div className="mx-auto w-full max-w-[1600px] px-4 text-right sm:px-6 lg:px-10">
-            <h2 className="font-grotesk text-[18px] uppercase leading-[1.15] text-ink sm:text-[30px] md:text-[44px] lg:text-[58px]">
-              <span className="mb-3 block sm:mb-6 lg:mb-10">Start a shelf.</span>
-              <span className="block">Three figures.</span>
-              <span className="block">One long journey.</span>
+      {/*
+        The closing CTA. Also previously a video; a shopper reaching the
+        bottom of the page wants a way in, not a mood piece.
+      */}
+      <section className="border-t border-ink/10 bg-surface">
+        <div className="mx-auto max-w-[1600px] px-4 py-20 text-center sm:px-6 lg:px-10 lg:py-28">
+          <Reveal>
+            <h2 className="mx-auto max-w-[18ch] font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[44px] lg:text-[56px]">
+              Start your collection
             </h2>
-            <Link
-              to={href('/shop/figures')}
-              className="press mt-6 inline-flex items-center gap-2 rounded-full bg-neon px-6 py-3 font-grotesk text-[12px] uppercase text-ink sm:mt-10"
-            >
-              Shop the figures
-              <ArrowRight size={15} />
-            </Link>
-          </div>
+            <p className="mx-auto mt-5 max-w-[46ch] font-mono text-[12px] leading-relaxed text-muted">
+              Shipped from {config.country} in {config.currency.code}
+              {threshold !== null ? `, free over ${formatThreshold(threshold, config)}` : ''}.
+              {` ${config.policy.returnsDays}-day returns.`}
+            </p>
+            <div className="mt-9 flex flex-wrap items-center justify-center gap-3">
+              <Link
+                to={href('/shop/figures')}
+                className="press group inline-flex items-center gap-2 rounded-full bg-neon px-8 py-4 font-grotesk text-[13px] uppercase text-ink transition-opacity hover:opacity-90"
+              >
+                Shop the figures
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link
+                to={href('/shop')}
+                className="press inline-flex items-center rounded-full border border-ink/20 bg-background px-8 py-4 font-grotesk text-[13px] uppercase text-ink transition-colors hover:border-ink/45"
+              >
+                Browse everything
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
     </>
