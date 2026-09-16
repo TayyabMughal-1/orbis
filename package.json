@@ -15,7 +15,7 @@
     "dev:all": "concurrently -n api,web -c cyan,magenta \"npm run api:dev\" \"cross-env ORBIS_SAME_ORIGIN_API=1 vite\"",
     "build:live": "cross-env ORBIS_SAME_ORIGIN_API=1 npm run build",
     "admin:hash": "node server/hash-password.mjs",
-    "verify": "esbuild \"api/[...slug].ts\" --bundle --platform=node --format=cjs --target=node20 --packages=external --outfile=server/dist/verify-fn.cjs --log-level=warning && node --env-file-if-exists=.env server/verify.mjs"
+    "verify": "esbuild \"api/index.ts\" --bundle --platform=node --format=cjs --target=node20 --packages=external --outfile=server/dist/verify-fn.cjs --log-level=warning && node --env-file-if-exists=.env server/verify.mjs"
   },
   "dependencies": {
     "cors": "^2.8.6",
