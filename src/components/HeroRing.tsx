@@ -26,14 +26,40 @@ import Media from './ui/Media'
 
 /** Ring radius. Also the perspective depth — camera sits at the centre. */
 const R = 660
-/** Cards beyond this angle from the front are hidden, not drawn. */
-const CULL = 52
+/**
+ * Cards beyond this angle from the front are hidden, not drawn.
+ *
+ * It also fixes how big the outermost card gets: perspective magnifies
+ * the edge card by 1/cos(CULL), independent of the radius. At 44 that is
+ * 1.39x, which pushed a 240px card to 334px and out through the bottom of
+ * a 300px band. 44 with 34 slots keeps nine cards on screen and holds the
+ * tallest to 215px.
+ */
+const CULL = 44
 /** Degrees per second of constant drift. Deliberately slow. */
 const DRIFT = 2.4
 /** Degrees of rotation per pixel scrolled. */
 const PER_PIXEL = 0.055
 /** How many card slots go round the ring. */
-const SLOTS = 22
+const SLOTS = 34
+/** Card box, and where it sits inside the band. */
+const CARD_W = 150
+const CARD_H = 212
+const CARD_TOP = 24
+/**
+ * How far below the cards' own centre the camera sits.
+ *
+ * This single number decides whether the cards stand up or fall over. A
+ * rotateY is a rotation about a vertical axis, so with the camera level
+ * with the card centres it produces pure horizontal foreshortening and
+ * no vertical skew at all. Drop the camera and a shear creeps in, which
+ * is what tips the outer cards into parallelograms.
+ *
+ * Expressed against the radius: 116/660 = 0.18, against the 0.34 of the
+ * reference this is copied from. It was 0.55 before, and at that ratio
+ * the outer cards read as falling rather than turning.
+ */
+const CAMERA_DROP = 116
 
 export default function HeroRing({ products }: { products: Product[] }) {
   const ringRef = useRef<HTMLDivElement>(null)
@@ -124,7 +150,7 @@ export default function HeroRing({ products }: { products: Product[] }) {
 
   return (
     <div
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-[330px] sm:h-[380px]"
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-[300px] sm:h-[330px]"
       aria-hidden="true"
     >
       <div
@@ -132,10 +158,8 @@ export default function HeroRing({ products }: { products: Product[] }) {
         className="absolute left-1/2 top-0 h-full w-0"
         style={{
           perspective: `${R}px`,
-          // The vanishing point sits well below the cards, so the ring is
-          // seen slightly from above and the cards stand up rather than
-          // fanning out flat.
-          perspectiveOrigin: '50% 150%',
+          // Just below the cards' own centre — see CAMERA_DROP.
+          perspectiveOrigin: `50% ${CARD_TOP + CARD_H / 2 + CAMERA_DROP}px`,
           transformStyle: 'preserve-3d',
         }}
       >
@@ -149,10 +173,17 @@ export default function HeroRing({ products }: { products: Product[] }) {
               ref={(el) => {
                 cardRefs.current[i] = el
               }}
-              className="pointer-events-auto absolute left-0 top-6 -ml-[75px] block h-[252px] w-[150px] overflow-hidden rounded-[16px] border border-ink/[0.07] bg-background shadow-card"
-              style={{ backfaceVisibility: 'hidden', willChange: 'transform' }}
+              className="pointer-events-auto absolute left-0 block overflow-hidden rounded-[16px] border border-ink/[0.07] bg-background shadow-card"
+              style={{
+                top: CARD_TOP,
+                width: CARD_W,
+                height: CARD_H,
+                marginLeft: -CARD_W / 2,
+                backfaceVisibility: 'hidden',
+                willChange: 'transform',
+              }}
             >
-              <div className="relative h-[176px] w-full overflow-hidden bg-surface">
+              <div className="relative h-[146px] w-full overflow-hidden bg-surface">
                 <Media item={product.media[0]} />
               </div>
               <div className="px-3 pt-2.5">

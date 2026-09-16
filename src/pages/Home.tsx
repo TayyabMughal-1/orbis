@@ -72,7 +72,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-background/45 via-transparent to-background" />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent lg:via-background/35 lg:to-transparent" />
 
-        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-[1600px] flex-col justify-start px-4 pb-[360px] pt-24 sm:px-6 sm:pb-[400px] lg:px-10">
+        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-[1600px] flex-col justify-start px-4 pb-[330px] pt-20 sm:px-6 sm:pb-[370px] lg:px-10">
           <div className="max-w-[820px]">
             <div className="animate-fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-ink/20 bg-ink/5 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.15em] text-ink/80">
               <span aria-hidden="true">{config.flag}</span>
