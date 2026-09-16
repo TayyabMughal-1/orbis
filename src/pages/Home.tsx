@@ -52,7 +52,7 @@ export default function Home() {
         jsonLd={schema}
       />
       {/* ------------------------------------------------------ hero */}
-      <section className="relative min-h-[92vh] w-full overflow-hidden">
+      <section className="relative min-h-[86vh] w-full overflow-hidden">
         <video
           className="absolute inset-0 h-full w-full object-cover"
           src={VIDEOS.hero}
@@ -72,7 +72,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-background/45 via-transparent to-background" />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent lg:via-background/35 lg:to-transparent" />
 
-        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-[1600px] flex-col justify-start px-4 pb-[330px] pt-20 sm:px-6 sm:pb-[370px] lg:px-10">
+        <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1600px] flex-col justify-center px-4 py-24 sm:px-6 lg:px-10">
           <div className="max-w-[820px]">
             <div className="animate-fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-ink/20 bg-ink/5 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.15em] text-ink/80">
               <span aria-hidden="true">{config.flag}</span>
@@ -80,19 +80,29 @@ export default function Home() {
             </div>
 
             <h1
-              className="animate-fade-up relative font-grotesk text-[42px] uppercase leading-[1.02] text-ink sm:text-[64px] md:text-[78px] lg:text-[92px]"
+              className="animate-fade-up font-grotesk text-[42px] uppercase leading-[1.02] text-ink sm:text-[64px] md:text-[78px] lg:text-[92px]"
               style={{ animationDelay: '90ms' }}
             >
               Meet Orbis
               <br />
               take him home
-              <span className="absolute -bottom-7 right-0 -rotate-1 font-condiment text-[26px] normal-case text-accent opacity-90 mix-blend-exclusion sm:-bottom-11 sm:text-[40px] lg:-bottom-14 lg:text-[52px]">
-                small runs only
-              </span>
             </h1>
 
+            {/* In flow, on the same left edge as everything else. It used to
+                be absolutely positioned against the right edge of an 820px
+                box, which left it stranded away from the headline it belongs
+                to and forced a 96px top margin on the paragraph below simply
+                to clear it. mix-blend-exclusion went with it: that was there
+                to punch through a dark page. */}
+            <div
+              className="animate-fade-up mt-3 -rotate-1 font-condiment text-[26px] normal-case leading-none text-accent sm:text-[38px] lg:text-[46px]"
+              style={{ animationDelay: '140ms' }}
+            >
+              small runs only
+            </div>
+
             <p
-              className="animate-fade-up mt-16 max-w-md font-mono text-[13px] uppercase leading-relaxed text-ink/80 sm:mt-20 lg:mt-24"
+              className="animate-fade-up mt-7 max-w-md font-mono text-[13px] uppercase leading-relaxed text-muted sm:mt-8"
               style={{ animationDelay: '200ms' }}
             >
               Hand-painted collectible figures, plus the homeware, lighting, apparel and prints that
@@ -117,16 +127,35 @@ export default function Home() {
             </div>
           </div>
         </div>
+      </section>
 
-        {/*
-          The carousel stands in the lower half of the hero, in front of
-          the video. It turns on its own at a slow constant drift so the
-          section is alive when nothing is happening, and scroll position
-          adds to that — moving down the page turns the ring. Cards are
-          real products from the catalogue and each one links to its
-          product page.
-        */}
-        <HeroRing products={featured.data ?? []} />
+      {/* ------------------------------------------------- shop ring */}
+      {/*
+        The carousel has a band to itself. Over the hero it covered the
+        artwork and crowded the buttons: the composition this borrows from
+        works because its background is empty, and the hero's is not.
+
+        It turns on a slow constant drift so the section is alive when
+        nothing is happening, and scroll position adds to that, so moving
+        down the page turns the ring. Cards are real products and each one
+        links to its product page.
+      */}
+      <section className="overflow-hidden border-b border-ink/10 bg-surface pb-4 pt-16 sm:pt-20">
+        <div className="mx-auto max-w-[1600px] px-4 text-center sm:px-6 lg:px-10">
+          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+            The collection
+          </div>
+          <h2 className="mt-3 font-grotesk text-[26px] uppercase leading-[1.05] text-ink sm:text-[34px]">
+            Turn the shelf
+          </h2>
+          <p className="mx-auto mt-4 max-w-[44ch] font-mono text-[12px] leading-relaxed text-muted">
+            Every piece in the {config.country} store, priced in {config.currency.code}. Scroll to
+            turn it, or pick one up.
+          </p>
+        </div>
+        <div className="mt-10">
+          <HeroRing products={featured.data ?? []} />
+        </div>
       </section>
 
       {/* ------------------------------- region-specific value props */}

@@ -6,7 +6,12 @@ import Price from './ui/Price'
 import Media from './ui/Media'
 
 // ---------------------------------------------------------------------
-// The hero carousel: product cards standing on a cylinder.
+// The shop carousel: product cards standing on a cylinder.
+//
+// It owns a band of its own rather than sitting over the hero. Laid over
+// the hero it covered the artwork, crowded the buttons and gave the
+// section six things competing for the same attention — the composition
+// this copies works because its background is empty.
 //
 // Not a flat slider. Each card is placed on a ring of radius R with the
 // camera at the ring's centre, so cards are tangent to the cylinder and
@@ -149,10 +154,7 @@ export default function HeroRing({ products }: { products: Product[] }) {
   if (products.length === 0) return null
 
   return (
-    <div
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-[300px] sm:h-[330px]"
-      aria-hidden="true"
-    >
+    <div className="pointer-events-none relative h-[300px] w-full overflow-hidden sm:h-[330px]">
       <div
         ref={ringRef}
         className="absolute left-1/2 top-0 h-full w-0"

@@ -186,10 +186,15 @@ export function SectionHeading({
         <h2 className="font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[40px] lg:text-[52px]">
           {title}
         </h2>
+        {/* In flow under the title, on the same left edge. Absolutely
+            positioned against the right edge it drifted away from the
+            heading it annotates and overlapped whatever followed;
+            mix-blend-exclusion was there to punch through a dark page and
+            only muddies a white one. */}
         {script && (
-          <span className="pointer-events-none absolute -bottom-6 right-0 -rotate-1 font-condiment text-[30px] normal-case text-accent opacity-90 mix-blend-exclusion sm:text-[40px]">
+          <div className="pointer-events-none mt-2 -rotate-1 font-condiment text-[26px] normal-case leading-none text-accent sm:text-[34px]">
             {script}
-          </span>
+          </div>
         )}
       </div>
       {children}
