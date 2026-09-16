@@ -14,6 +14,10 @@
       "destination": "/api?__path=$1"
     },
     {
+      "source": "/:region(us|ae|pk)/product/:slug",
+      "destination": "/api/product?region=:region&slug=:slug"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

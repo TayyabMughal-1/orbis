@@ -177,49 +177,12 @@ for (const region of REGION_CODES) {
     count += 1
   }
 
-  for (const product of PRODUCTS) {
-    const price = money(product, region)
-    write(
-      `${region}/product/${product.slug}`,
-      head({
-        region,
-        path: `/product/${product.slug}`,
-        title: product.name,
-        type: 'product',
-        description: `${product.tagline} ${product.description}`.trim().slice(0, 300),
-        jsonLd: {
-          '@context': 'https://schema.org',
-          '@type': 'Product',
-          name: product.name,
-          description: product.description,
-          sku: product.variants[0]?.sku,
-          category: product.category,
-          ...(product.rating
-            ? {
-                aggregateRating: {
-                  '@type': 'AggregateRating',
-                  ratingValue: product.rating.average,
-                  reviewCount: product.rating.count,
-                },
-              }
-            : {}),
-          offers: {
-            '@type': 'AggregateOffer',
-            // schema.org wants a major-unit decimal; the catalogue stores
-            // minor units, and PKR has none.
-            lowPrice: (price / 10 ** config.currency.decimals).toFixed(config.currency.decimals),
-            priceCurrency: config.currency.code,
-            offerCount: product.variants.length,
-            availability: inStock(product, region)
-              ? 'https://schema.org/InStock'
-              : 'https://schema.org/OutOfStock',
-            url: abs(region, `/product/${product.slug}`),
-          },
-        },
-      }),
-    )
-    count += 1
-  }
+  // Product pages are deliberately NOT prerendered. Their head carries
+  // price and availability, which change in the dashboard between
+  // deploys, and Google treats Product markup that disagrees with the
+  // page as a violation — so a baked-in price is worse than none the
+  // moment somebody edits one. api/product.ts renders those per request
+  // against the live catalogue instead, cached at the edge.
 
   write(
     `${region}/help`,
