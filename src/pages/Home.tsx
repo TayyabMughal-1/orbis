@@ -8,6 +8,7 @@ import { freeShippingThreshold } from '../lib/pricing'
 import { formatThreshold } from '../lib/money'
 import ProductCard from '../components/ProductCard'
 import CategoryCarousel from '../components/CategoryCarousel'
+import HeroRing from '../components/HeroRing'
 import Reveal, { RevealGroup } from '../components/ui/Reveal'
 import { ErrorState, ProductGridSkeleton, SectionHeading, Stars } from '../components/ui/Atoms'
 import { Seo, absoluteUrl, graph, organizationSchema } from '../lib/seo'
@@ -15,8 +16,12 @@ import { Seo, absoluteUrl, graph, organizationSchema } from '../lib/seo'
 export default function Home() {
   const { region, config, href } = useRegion()
 
+  // One request feeds both the hero ring and the featured grid. The ring
+  // wants as many distinct products as it can get — 22 card slots cycling
+  // six products puts the same photo on screen twice — so this fetches the
+  // catalogue and the grid takes the first six.
   const featured = useAsync(
-    () => api.listProducts({ region, sort: 'featured', inStockOnly: true, limit: 6 }),
+    () => api.listProducts({ region, sort: 'featured', inStockOnly: true }),
     [region],
   )
 
@@ -47,7 +52,7 @@ export default function Home() {
         jsonLd={schema}
       />
       {/* ------------------------------------------------------ hero */}
-      <section className="relative min-h-[86vh] w-full overflow-hidden">
+      <section className="relative min-h-[92vh] w-full overflow-hidden">
         <video
           className="absolute inset-0 h-full w-full object-cover"
           src={VIDEOS.hero}
@@ -67,7 +72,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-background/45 via-transparent to-background" />
         <div className="absolute inset-0 bg-gradient-to-r from-background via-background/60 to-transparent lg:via-background/35 lg:to-transparent" />
 
-        <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1600px] flex-col justify-center px-4 py-24 sm:px-6 lg:px-10">
+        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-[1600px] flex-col justify-start px-4 pb-[360px] pt-24 sm:px-6 sm:pb-[400px] lg:px-10">
           <div className="max-w-[820px]">
             <div className="animate-fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-ink/20 bg-ink/5 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.15em] text-ink/80">
               <span aria-hidden="true">{config.flag}</span>
@@ -112,6 +117,16 @@ export default function Home() {
             </div>
           </div>
         </div>
+
+        {/*
+          The carousel stands in the lower half of the hero, in front of
+          the video. It turns on its own at a slow constant drift so the
+          section is alive when nothing is happening, and scroll position
+          adds to that — moving down the page turns the ring. Cards are
+          real products from the catalogue and each one links to its
+          product page.
+        */}
+        <HeroRing products={featured.data ?? []} />
       </section>
 
       {/* ------------------------------- region-specific value props */}
@@ -178,7 +193,7 @@ export default function Home() {
         {featured.error && <ErrorState message={featured.error} onRetry={featured.reload} />}
         {featured.data && (
           <RevealGroup className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featured.data.map((product) => (
+            {featured.data.slice(0, 6).map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </RevealGroup>
