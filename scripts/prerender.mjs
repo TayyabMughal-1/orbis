@@ -19,35 +19,26 @@
 // canonical and a second set of hreflangs next to them.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
-import { execFileSync } from 'node:child_process'
-import { createRequire } from 'node:module'
+import { createServer } from 'vite'
 
-const require = createRequire(import.meta.url)
 const DIST = 'dist'
 const SITE_URL = (process.env.VITE_SITE_URL ?? 'https://orbis.example').replace(/\/$/, '')
 
 // --- load the app's own data, so the prerender cannot drift from it ----
-const TMP = 'node_modules/.tmp-prerender.cjs'
-mkdirSync(dirname(TMP), { recursive: true })
-writeFileSync(
-  'node_modules/.tmp-prerender-entry.ts',
-  `export { REGIONS, REGION_CODES } from '${process.cwd().replace(/\\/g, '/')}/src/regions/config'
-   export { PRODUCTS, CATEGORIES } from '${process.cwd().replace(/\\/g, '/')}/src/api/db'`,
-)
-execFileSync(
-  'node',
-  [
-    'node_modules/esbuild/bin/esbuild',
-    'node_modules/.tmp-prerender-entry.ts',
-    '--bundle',
-    '--platform=node',
-    '--format=cjs',
-    `--outfile=${TMP}`,
-    '--log-level=warning',
-  ],
-  { stdio: 'inherit' },
-)
-const { REGIONS, REGION_CODES, PRODUCTS, CATEGORIES } = require(`${process.cwd()}/${TMP}`)
+//
+// Through Vite's own SSR loader rather than a separate bundler step. It
+// resolves TypeScript, path aliases and import.meta.env exactly as the
+// app does, and needs no binary of its own — invoking esbuild's CLI here
+// failed on the build machine, where its postinstall is skipped and the
+// platform binary is never fetched.
+const vite = await createServer({
+  server: { middlewareMode: true },
+  appType: 'custom',
+  logLevel: 'error',
+})
+const { REGIONS, REGION_CODES } = await vite.ssrLoadModule('/src/regions/config.ts')
+const { PRODUCTS, CATEGORIES } = await vite.ssrLoadModule('/src/api/db.ts')
+await vite.close()
 
 const esc = (s) =>
   String(s ?? '')
