@@ -129,7 +129,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ------------------------------------------------- shop ring */}
+      {/* ------------------------------------------ featured products */}
       {/*
         The carousel has a band to itself. Over the hero it covered the
         artwork and crowded the buttons: the composition this borrows from
@@ -143,14 +143,14 @@ export default function Home() {
       <section className="overflow-hidden border-b border-ink/10 bg-surface pb-4 pt-16 sm:pt-20">
         <div className="mx-auto max-w-[1600px] px-4 text-center sm:px-6 lg:px-10">
           <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
-            The collection
+            Featured
           </div>
           <h2 className="mt-3 font-grotesk text-[26px] uppercase leading-[1.05] text-ink sm:text-[34px]">
-            Turn the shelf
+            Featured products
           </h2>
           <p className="mx-auto mt-4 max-w-[44ch] font-mono text-[12px] leading-relaxed text-muted">
-            Every piece in the {config.country} store, priced in {config.currency.code}. Scroll to
-            turn it, or pick one up.
+            Our pick of the {config.country} store, priced in {config.currency.code}. Scroll to turn
+            the shelf, or pick one up.
           </p>
         </div>
         <div className="mt-10">
