@@ -10,3 +10,5 @@ server/dist
 
 # MongoDB binaries downloaded by npm run db:dev
 .cache
+.vercel
+.env*
