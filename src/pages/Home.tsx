@@ -89,12 +89,12 @@ export default function Home() {
             </div>
 
             <h1
-              className="animate-fade-up font-grotesk text-[40px] uppercase leading-[1.02] text-ink sm:text-[60px] md:text-[72px] lg:text-[86px]"
+              className="animate-fade-up font-grotesk text-[42px] uppercase leading-[1.02] text-ink sm:text-[64px] md:text-[78px] lg:text-[92px]"
               style={{ animationDelay: '90ms' }}
             >
-              Meet Orbis
+              Meet Orbis Deliver
               <br />
-              Your stars, delivered.
+              Your Stars
             </h1>
 
             {/* In flow, on the same left edge as everything else. It used to
