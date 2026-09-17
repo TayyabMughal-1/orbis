@@ -310,8 +310,8 @@ export const REGIONS: Record<RegionCode, RegionConfig> = {
         {
           id: 'pk-import-sea',
           label: 'Sea freight + courier',
-          eta: '12–20 business days',
-          etaDays: [12, 20],
+          eta: '10–18 business days',
+          etaDays: [10, 18],
           amount: 600,
           freeOver: 40000,
         },
