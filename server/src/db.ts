@@ -204,19 +204,33 @@ async function ensureSchema(pool: pg.Pool): Promise<void> {
  * the same reason.
  */
 async function seed(pool: pg.Pool): Promise<void> {
-  const { rows } = await pool.query<{ count: string }>('SELECT count(*)::text AS count FROM products')
-  if (Number(rows[0].count) > 0) return
+  // Insert what is missing rather than bailing out on a non-empty table.
+  //
+  // This used to return early once there were any products at all, which
+  // meant a product added to the bundled catalogue reached a fresh
+  // database and never reached a live one — the imported range was in
+  // the repo and absent from production.
+  //
+  // The trade, stated plainly: deleting a bundled product through the
+  // dashboard brings it back on the next deploy, because the repo still
+  // lists it. Remove it from src/api/db.ts as well and it stays gone.
+  // Products created in the dashboard are not in the repo, so nothing
+  // here touches them.
+  const existing = await pool.query<{ id: string }>('SELECT id FROM products')
+  const have = new Set(existing.rows.map((r) => r.id))
+  const missing = PRODUCTS.filter((p) => !have.has(p.id))
+  if (missing.length === 0) return
 
   const client = await pool.connect()
   try {
     await client.query('BEGIN')
 
-    for (const product of PRODUCTS) {
+    for (const product of missing) {
       await client.query(
         `INSERT INTO products (id, slug, name, tagline, description, highlights,
                                rating_average, rating_count, category, badges,
-                               media, specs, featured, weight_grams)
-         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+                               media, specs, featured, weight_grams, origin)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
          ON CONFLICT (id) DO NOTHING`,
         [
           product.id,
@@ -233,6 +247,7 @@ async function seed(pool: pg.Pool): Promise<void> {
           JSON.stringify(product.specs ?? []),
           product.featured ?? 0,
           product.weightGrams ?? 0,
+          product.origin ?? 'local',
         ],
       )
 
@@ -298,10 +313,7 @@ async function seed(pool: pg.Pool): Promise<void> {
     client.release()
   }
 
-  console.log(
-    `[db] seeded ${PRODUCTS.length} products, ${PROMOS.length} promo codes ` +
-      `and ${CATEGORIES.length} categories`,
-  )
+  console.log(`[db] seeded ${missing.length} products from the catalogue`)
 }
 
 // --------------------------------------------------------- admin user

@@ -6,7 +6,7 @@ import { useAsync } from '../lib/useAsync'
 import { useRegion } from '../regions/RegionContext'
 import { useCart } from '../context/CartContext'
 import { freeShippingThreshold } from '../lib/pricing'
-import { formatThreshold } from '../lib/money'
+import { formatMoney, formatThreshold } from '../lib/money'
 import { formatDeliveryEstimate } from '../lib/delivery'
 import Media from '../components/ui/Media'
 import Price from '../components/ui/Price'
@@ -148,7 +148,15 @@ function ProductBody({ product }: { product: Product }) {
   }
 
   const threshold = freeShippingThreshold(config)
-  const cheapestShipping = config.shipping[0]
+  // Must follow the product's origin. Reading config.shipping[0]
+  // unconditionally promised local delivery on an imported product — the
+  // page would say three days while the checkout charged for three
+  // weeks.
+  const deliveryTiers =
+    product?.origin === 'import' && config.importShipping
+      ? config.importShipping.tiers
+      : config.shipping
+  const cheapestShipping = deliveryTiers[0]
 
   function handleAdd() {
     if (!selected || maxAddable <= 0) return
@@ -425,6 +433,32 @@ function ProductBody({ product }: { product: Product }) {
               This option is out of stock here. It may still be available in one of our other
               stores — use the store switcher in the header.
             </p>
+          )}
+
+          {/* An imported product quotes different delivery entirely, so
+              the promise on this page has to come from the same table
+              the checkout will charge from — otherwise the page says
+              three days and the basket says three weeks. */}
+          {product.origin === 'import' && config.importShipping && (
+            <div className="mt-8 rounded-[18px] border border-accent/25 bg-accent/[0.05] p-5">
+              <div className="font-grotesk text-[12px] uppercase text-ink">
+                Ships from {config.importShipping.from}
+              </div>
+              <ul className="mt-3 space-y-1.5">
+                {config.importShipping.tiers.map((tier) => (
+                  <li key={tier.id} className="font-body text-[11px] leading-relaxed text-muted">
+                    <span className="text-ink">{tier.label}</span> · {tier.eta} ·{' '}
+                    {formatMoney(tier.amount, config)}
+                    {tier.freeOver !== undefined
+                      ? `, free over ${formatMoney(tier.freeOver, config)}`
+                      : ''}
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-3 font-body text-[11px] leading-relaxed text-muted">
+                {config.importShipping.note}
+              </p>
+            </div>
           )}
 
           {/* delivery, per region */}

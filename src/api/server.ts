@@ -275,7 +275,13 @@ export async function quote(req: QuoteRequest): Promise<Quote> {
   }
 
   const discountedSubtotal = promo ? subtotal - Math.round(subtotal * (promo.percentOff / 100)) : subtotal
-  const shippingOptions = shippingQuotesFor(config, discountedSubtotal)
+  // Mirrors the server: any imported line and the whole basket quotes
+  // the import tiers. The mock and the real service share the pricing
+  // function precisely so these cannot disagree.
+  const hasImported = req.lines.some(
+    (line) => PRODUCTS.find((p) => p.id === line.productId)?.origin === 'import',
+  )
+  const shippingOptions = shippingQuotesFor(config, discountedSubtotal, hasImported)
   const selectedShipping =
     shippingOptions.find((o) => o.id === req.shippingId) ?? shippingOptions[0]
 

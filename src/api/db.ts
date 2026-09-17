@@ -554,6 +554,97 @@ export const PRODUCTS: Product[] = [
     featured: 55,
     weightGrams: 700,
   },
+  // ------------------------------------- imported, Pakistan only
+  //
+  // Brought in from the Guangzhou partner rather than held in Lahore, so
+  // they carry origin 'import' and quote the import delivery table — see
+  // importShipping in regions/config.ts. Stocked at zero in the US and
+  // UAE because the route only exists into Pakistan; the catalogue is
+  // shared across stores and stock is what decides where a thing sells.
+  {
+    id: 'orbis-display-case',
+    slug: 'orbis-display-case',
+    name: 'Acrylic Display Case',
+    tagline: 'Dust cover for a single figure, 220mm',
+    description:
+      'A five-sided cast acrylic cover on a weighted base, sized so a Classic or an Explorer clears the roof with room above the helmet. Keeps the dust off without hiding anything — the walls are 3mm and optically clear rather than the milky extruded sheet these usually come in.',
+    highlights: [
+      'Fits figures up to 210 mm tall',
+      '3 mm cast acrylic, optically clear',
+      'Weighted base — will not slide',
+      'Felt underside, safe on a finished shelf',
+    ],
+    rating: { average: 4.6, count: 58 },
+    category: 'homeware',
+    badges: ['Imported'],
+    media: [{ kind: 'render', shape: 'prism', hue: 200 }],
+    specs: [
+      { label: 'External size', value: '150 x 150 x 220 mm' },
+      { label: 'Material', value: 'Cast acrylic, weighted MDF base' },
+      { label: 'Weight', value: '900 g' },
+      { label: 'Ships from', value: 'Guangzhou' },
+    ],
+    variants: buildVariants('ORB-CASE', p(4900, 18000, 13900), ONE(s(0, 0, 14))),
+    featured: 62,
+    weightGrams: 900,
+    origin: 'import',
+  },
+  {
+    id: 'orbis-light-panel',
+    slug: 'orbis-shelf-light-panel',
+    name: 'Shelf Light Panel',
+    tagline: 'Rechargeable LED bar, warm and cool',
+    description:
+      'A slim aluminium bar that sticks or magnets under a shelf and lights whatever is standing on the one below. Two temperatures and a dimmer, charged over USB-C, and it runs about a fortnight on a charge at the level you would actually use.',
+    highlights: [
+      'Warm 2700K and cool 5000K',
+      'Stepless dimming, remembers the last level',
+      'USB-C, roughly two weeks per charge',
+      'Magnetic mount plus adhesive strip',
+    ],
+    rating: { average: 4.4, count: 91 },
+    category: 'lighting',
+    badges: ['Imported'],
+    media: [{ kind: 'render', shape: 'monolith', hue: 44 }],
+    specs: [
+      { label: 'Length', value: '300 mm' },
+      { label: 'Colour temperature', value: '2700K / 5000K' },
+      { label: 'Battery', value: '2000 mAh, USB-C' },
+      { label: 'Ships from', value: 'Guangzhou' },
+    ],
+    variants: buildVariants('ORB-LED', p(3200, 11800, 8900), ONE(s(0, 0, 26))),
+    featured: 58,
+    weightGrams: 240,
+    origin: 'import',
+  },
+  {
+    id: 'orbis-riser-set',
+    slug: 'orbis-acrylic-riser-set',
+    name: 'Acrylic Riser Set',
+    tagline: 'Three heights, for staging a shelf',
+    description:
+      'Three clear risers at 40, 70 and 100 mm so a row of figures reads as a group rather than a line. Edges are flame-polished, not sawn, which is the difference between a display piece and an offcut.',
+    highlights: [
+      'Three heights: 40, 70 and 100 mm',
+      'Flame-polished edges',
+      'Holds a 2 kg figure without flexing',
+      'Stacks flat when not in use',
+    ],
+    rating: { average: 4.7, count: 43 },
+    category: 'homeware',
+    badges: ['Imported', 'Set of three'],
+    media: [{ kind: 'render', shape: 'grid', hue: 286 }],
+    specs: [
+      { label: 'Heights', value: '40 / 70 / 100 mm' },
+      { label: 'Top plate', value: '120 x 120 mm' },
+      { label: 'Material', value: '5 mm cast acrylic' },
+      { label: 'Ships from', value: 'Guangzhou' },
+    ],
+    variants: buildVariants('ORB-RISE', p(3900, 14500, 10900), ONE(s(0, 0, 19))),
+    featured: 54,
+    weightGrams: 680,
+    origin: 'import',
+  },
 ]
 
 // --------------------------------------------------------------- promos

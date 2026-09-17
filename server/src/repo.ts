@@ -42,6 +42,7 @@ type ProductJoinRow = {
   specs: unknown
   featured: number
   weight_grams: number
+  origin: 'local' | 'import'
   collections: string[] | null
   v_id: string | null
   v_sku: string | null
@@ -57,7 +58,7 @@ type ProductJoinRow = {
 const PRODUCT_SELECT = `
   SELECT p.id, p.slug, p.name, p.tagline, p.description, p.highlights,
          p.rating_average, p.rating_count, p.category, p.badges,
-         p.media, p.specs, p.featured, p.weight_grams,
+         p.media, p.specs, p.featured, p.weight_grams, p.origin,
          v.id AS v_id, v.sku AS v_sku, v.label AS v_label,
          v.options AS v_options, v.position AS v_position,
          vr.region, vr.price, vr.compare_at, vr.stock,
@@ -99,6 +100,7 @@ function assemble(rows: ProductJoinRow[]): Product[] {
         specs: (row.specs ?? []) as Product['specs'],
         featured: row.featured ?? 0,
         weightGrams: row.weight_grams ?? 0,
+        origin: row.origin ?? 'local',
         collections: row.collections ?? [],
         variants: [],
       }

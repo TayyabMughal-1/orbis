@@ -81,6 +81,22 @@ export type RegionConfig = {
   /** Line printed under prices, e.g. "Incl. 5% VAT". */
   taxNote: string
   shipping: ShippingTier[]
+  /**
+   * Delivery options for goods brought in from abroad, where a store
+   * sells them. Only Pakistan does today.
+   *
+   * An order containing any imported line quotes these instead of the
+   * local tiers — not both. Splitting a basket into two shipments with
+   * two charges and two arrival dates is a fulfilment model this shop
+   * does not have, so the honest simplification is that the whole order
+   * travels the slower way and the checkout says so.
+   */
+  importShipping?: {
+    /** Country of origin, shown to the customer. */
+    from: string
+    tiers: ShippingTier[]
+    note: string
+  }
   paymentMethods: PaymentMethod[]
   address: AddressFormat
   support: { email: string; phone: string; hours: string }
@@ -288,6 +304,27 @@ export const REGIONS: Record<RegionCode, RegionConfig> = {
       { id: 'pk-standard', label: 'Standard courier', eta: '3–5 business days', etaDays: [3, 5], amount: 350, freeOver: 25000 },
       { id: 'pk-express', label: 'Express courier', eta: '1–2 business days', etaDays: [1, 2], amount: 750 },
     ],
+    importShipping: {
+      from: 'China',
+      tiers: [
+        {
+          id: 'pk-import-sea',
+          label: 'Sea freight + courier',
+          eta: '12–20 business days',
+          etaDays: [12, 20],
+          amount: 600,
+          freeOver: 40000,
+        },
+        {
+          id: 'pk-import-air',
+          label: 'Air freight + courier',
+          eta: '6–9 business days',
+          etaDays: [6, 9],
+          amount: 1900,
+        },
+      ],
+      note: 'Shipped from our partner in Guangzhou. Import duty and clearance are already in the price — there is nothing extra to pay when it arrives.',
+    },
     paymentMethods: [
       { id: 'cod', label: 'Cash on delivery', description: 'Pay the rider when your order arrives', surcharge: 150, offline: true },
       { id: 'easypaisa', label: 'Easypaisa', description: 'Pay from your Easypaisa mobile account' },

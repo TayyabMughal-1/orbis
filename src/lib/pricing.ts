@@ -8,8 +8,21 @@ import { applyRate, taxWithin } from './money.js'
 // and what gets stored can never drift apart.
 // ---------------------------------------------------------------------
 
-export function shippingQuotesFor(config: RegionConfig, goodsSubtotal: number): ShippingQuote[] {
-  return config.shipping.map((tier: ShippingTier) => {
+/**
+ * Delivery options for a basket.
+ *
+ * A basket holding any imported line quotes the region's import tiers
+ * instead of its local ones — not both. Two shipments, two charges and
+ * two arrival dates is a fulfilment model this shop does not have, so
+ * the whole order travels the slower way and the checkout says so.
+ */
+export function shippingQuotesFor(
+  config: RegionConfig,
+  goodsSubtotal: number,
+  hasImported = false,
+): ShippingQuote[] {
+  const tiers = hasImported && config.importShipping ? config.importShipping.tiers : config.shipping
+  return tiers.map((tier: ShippingTier) => {
     const free = tier.freeOver !== undefined && goodsSubtotal >= tier.freeOver
     return {
       id: tier.id,
@@ -23,6 +36,9 @@ export function shippingQuotesFor(config: RegionConfig, goodsSubtotal: number): 
 
 /** Cheapest tier that offers free delivery, for the promo banner. */
 export function freeShippingThreshold(config: RegionConfig): number | null {
+  // The banner advertises local delivery, which is what most of the
+  // catalogue is; the import threshold is shown on the products it
+  // applies to instead.
   const thresholds = config.shipping
     .map((t) => t.freeOver)
     .filter((v): v is number => typeof v === 'number')

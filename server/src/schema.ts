@@ -43,7 +43,13 @@ CREATE TABLE IF NOT EXISTS products (
   media        jsonb NOT NULL DEFAULT '[]'::jsonb,
   specs        jsonb NOT NULL DEFAULT '[]'::jsonb,
   featured     integer NOT NULL DEFAULT 0,
-  weight_grams integer NOT NULL DEFAULT 0
+  weight_grams integer NOT NULL DEFAULT 0,
+  -- Where the goods actually ship from. 'local' is the region's own
+  -- warehouse; 'import' is brought in from abroad and carries its own
+  -- delivery times and charges — see importShipping in regions/config.
+  -- A plain column rather than a lookup: there are two values and the
+  -- difference is in the shipping rules, not in a table of origins.
+  origin       text NOT NULL DEFAULT 'local'
 );
 
 CREATE INDEX IF NOT EXISTS products_category_idx ON products (category);
@@ -210,4 +216,27 @@ CREATE TABLE IF NOT EXISTS users (
 -- Sign-in lowercases the address before looking it up, so uniqueness has
 -- to be case-insensitive too or two accounts could differ only in case.
 CREATE UNIQUE INDEX IF NOT EXISTS users_email_idx ON users (lower(email));
+
+-- ---------------------------------------------------------------------
+-- Migrations.
+--
+-- Everything above is CREATE TABLE IF NOT EXISTS, which does nothing at
+-- all to a table that already exists — so a column added to one of those
+-- definitions reaches a fresh database and never reaches a live one.
+-- That is exactly what happened with products.origin: the code queried a
+-- column the deployed database did not have.
+--
+-- Anything that changes an existing table belongs here instead, written
+-- so it can run on every connect.
+-- ---------------------------------------------------------------------
+
+ALTER TABLE products ADD COLUMN IF NOT EXISTS origin text NOT NULL DEFAULT 'local';
+
+-- ADD CONSTRAINT has no IF NOT EXISTS, so the duplicate is caught instead.
+DO $$ BEGIN
+  ALTER TABLE products ADD CONSTRAINT products_origin_check
+    CHECK (origin IN ('local', 'import'));
+EXCEPTION
+  WHEN duplicate_object THEN NULL;
+END $$;
 `

@@ -93,7 +93,11 @@ export async function priceOrder(input: QuoteInput): Promise<QuoteResult> {
   }
 
   const discounted = promo ? subtotal - Math.round(subtotal * (promo.percentOff / 100)) : subtotal
-  const shippingOptions = shippingQuotesFor(config, discounted)
+  // Any imported line and the whole order ships the import way. Read off
+  // the products just loaded, never off the request: the client does not
+  // get to choose which delivery table it is charged from.
+  const hasImported = priced.some((line) => found.get(line.variantId)?.product.origin === 'import')
+  const shippingOptions = shippingQuotesFor(config, discounted, hasImported)
   const selectedShipping =
     shippingOptions.find((o) => o.id === input.shippingId) ?? shippingOptions[0]
 

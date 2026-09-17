@@ -211,6 +211,7 @@ export function AdminProductEditor() {
     description: '',
     highlights: '',
     category: CATEGORIES[0].id as string,
+    origin: 'local' as 'local' | 'import',
     badges: '',
     featured: '50',
     weightGrams: '500',
@@ -258,6 +259,7 @@ export function AdminProductEditor() {
           description: product.description,
           highlights: product.highlights.join('\n'),
           category: product.category,
+          origin: product.origin ?? 'local',
           badges: (product.badges ?? []).join(', '),
           featured: String(product.featured ?? 0),
           weightGrams: String(product.weightGrams),
@@ -296,6 +298,7 @@ export function AdminProductEditor() {
         ? { average: Number(form.ratingAverage), count: Number(form.ratingCount) || 0 }
         : null,
       category: form.category,
+      origin: form.origin,
       collections,
       badges: form.badges.split(',').map((b) => b.trim()).filter(Boolean),
       media,
@@ -386,6 +389,21 @@ export function AdminProductEditor() {
         {/* Collections are a checklist, not a select: a product can be in
             any number of them, and the empty state has to say where they
             come from or this reads as broken rather than unconfigured. */}
+        <Field label="Ships from">
+          <select
+            className={inputClass}
+            value={form.origin}
+            onChange={(e) => set('origin')(e.target.value)}
+          >
+            <option value="local" className="bg-background">
+              Our own warehouse
+            </option>
+            <option value="import" className="bg-background">
+              Imported — quotes the store's import delivery
+            </option>
+          </select>
+        </Field>
+
         <Field label="Collections">
           {taxonomy.loading && <p className="font-body text-[11px] text-muted">Loading…</p>}
           {taxonomy.data && taxonomy.data[1].length === 0 && (

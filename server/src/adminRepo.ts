@@ -43,6 +43,7 @@ export type ProductInput = {
   weightGrams: number
   /** Collection ids. Omitted leaves existing memberships alone. */
   collections?: string[]
+  origin?: 'local' | 'import'
   variants: VariantInput[]
 }
 
@@ -78,15 +79,15 @@ export async function saveProduct(input: ProductInput): Promise<Product> {
     await client.query(
       `INSERT INTO products (id, slug, name, tagline, description, highlights,
                              rating_average, rating_count, category, badges,
-                             media, specs, featured, weight_grams)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+                             media, specs, featured, weight_grams, origin)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
        ON CONFLICT (id) DO UPDATE SET
          slug = EXCLUDED.slug, name = EXCLUDED.name, tagline = EXCLUDED.tagline,
          description = EXCLUDED.description, highlights = EXCLUDED.highlights,
          rating_average = EXCLUDED.rating_average, rating_count = EXCLUDED.rating_count,
          category = EXCLUDED.category, badges = EXCLUDED.badges, media = EXCLUDED.media,
          specs = EXCLUDED.specs, featured = EXCLUDED.featured,
-         weight_grams = EXCLUDED.weight_grams`,
+         weight_grams = EXCLUDED.weight_grams, origin = EXCLUDED.origin`,
       [
         id,
         slug,
@@ -102,6 +103,7 @@ export async function saveProduct(input: ProductInput): Promise<Product> {
         JSON.stringify(input.specs ?? []),
         input.featured,
         input.weightGrams,
+        input.origin ?? 'local',
       ],
     )
 

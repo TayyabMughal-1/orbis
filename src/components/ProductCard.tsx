@@ -48,6 +48,14 @@ export default function ProductCard({ product }: { product: Product }) {
       <div className="relative aspect-square w-full overflow-hidden rounded-[18px] bg-surface">
         <Media item={product.media[0]} className="transition-transform duration-700 group-hover:scale-[1.04]" />
 
+        {/* Imported goods take a different route with a different price
+            and a much longer wait, so that belongs on the card rather
+            than as a surprise at checkout. */}
+        {product.origin === 'import' && config.importShipping && (
+          <div className="absolute right-3 top-3 rounded-full bg-ink/85 px-2.5 py-1 font-body text-[9px] font-medium uppercase tracking-wide text-background backdrop-blur">
+            From {config.importShipping.from}
+          </div>
+        )}
         <div className="absolute left-3 top-3 flex flex-wrap gap-1.5">
           {soldOut ? (
             <Pill tone="warn">Sold out</Pill>

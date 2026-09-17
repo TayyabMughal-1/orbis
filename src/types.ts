@@ -51,6 +51,11 @@ export type Product = {
   category: Category
   /** Collection ids this product is filed under. Any number, including none. */
   collections?: string[]
+  /**
+   * Where it ships from. 'import' goods travel further, so they quote
+   * their region's import delivery options rather than its local ones.
+   */
+  origin?: 'local' | 'import'
   /** Short marketing flags rendered as pills on the card. */
   badges?: string[]
   media: MediaItem[]

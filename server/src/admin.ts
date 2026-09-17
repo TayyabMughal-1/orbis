@@ -168,6 +168,7 @@ function asProductInput(body: unknown): ProductInput {
     // Undefined rather than [] when the field is absent: saveProduct
     // treats an empty array as "file this under nothing" and an absent one
     // as "leave the memberships alone".
+    origin: raw.origin === 'import' ? 'import' : 'local',
     collections: Array.isArray(raw.collections)
       ? raw.collections.filter((c: unknown): c is string => typeof c === 'string')
       : undefined,
