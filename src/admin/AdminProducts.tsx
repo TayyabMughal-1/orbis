@@ -9,6 +9,7 @@ import { REGIONS, REGION_CODES, type RegionCode } from '../regions/config'
 import { formatMoney, minorPerMajor } from '../lib/money'
 import { AdminButton, AdminHeading, Banner, Field, inputClass } from './AdminShell'
 import MediaEditor from './MediaEditor'
+import Flag from '../components/ui/Flag'
 import type { MediaItem, Product, Variant } from '../types'
 
 // ---------------------------------------------------------------------
@@ -227,6 +228,8 @@ export function AdminProductEditor() {
     [],
   )
   const [collections, setCollections] = useState<string[]>([])
+  // Every store by default: a new product is usually for all of them.
+  const [regions, setRegions] = useState<RegionCode[]>([...REGION_CODES])
 
   // A new product starts on the first department in the bundled catalogue,
   // which may have been renamed or removed since. A <select> whose value
@@ -268,6 +271,7 @@ export function AdminProductEditor() {
           ratingCount: product.rating ? String(product.rating.count) : '',
         })
         setCollections(product.collections ?? [])
+        setRegions(product.regions?.length ? product.regions : [...REGION_CODES])
         setMedia(product.media)
         setSpecs(product.specs)
         setVariants(product.variants.map(toDraft))
@@ -301,6 +305,7 @@ export function AdminProductEditor() {
       category: form.category,
       origin: form.origin,
       collections,
+      regions,
       badges: form.badges.split(',').map((b) => b.trim()).filter(Boolean),
       media,
       specs: specs.filter((s) => s.label && s.value),
@@ -390,6 +395,40 @@ export function AdminProductEditor() {
         {/* Collections are a checklist, not a select: a product can be in
             any number of them, and the empty state has to say where they
             come from or this reads as broken rather than unconfigured. */}
+        <Field label="Sold in">
+          <div className="flex flex-wrap gap-2">
+            {REGION_CODES.map((code) => {
+              const on = regions.includes(code)
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() =>
+                    setRegions((prev) =>
+                      prev.includes(code) ? prev.filter((r) => r !== code) : [...prev, code],
+                    )
+                  }
+                  className={`press inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-body text-[11px] transition-colors ${
+                    on
+                      ? 'border-accent bg-accent text-background'
+                      : 'border-ink/15 text-muted hover:border-ink/35 hover:text-ink'
+                  }`}
+                >
+                  <Flag code={code} className="h-2.5 w-4" />
+                  {REGIONS[code].country}
+                </button>
+              )
+            })}
+          </div>
+          {regions.length === 0 && (
+            <p className="mt-2 font-body text-[11px] text-red-700">
+              Pick at least one store, or this product will not appear anywhere.
+            </p>
+          )}
+        </Field>
+
+
         <Field label="Images and video">
           <MediaEditor media={media} onChange={setMedia} />
         </Field>

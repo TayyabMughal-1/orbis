@@ -120,6 +120,32 @@ CREATE TABLE IF NOT EXISTS product_collections (
 CREATE INDEX IF NOT EXISTS product_collections_collection_idx
   ON product_collections (collection_id);
 
+-- Which storefronts a product is sold in.
+--
+-- Availability used to be implied by stock: every product existed in
+-- every store and a zero count hid it. That conflates two different
+-- facts — "we do not sell this here" and "we have run out" — and the
+-- second is temporary. A product out of stock in Pakistan should still
+-- have a Pakistani product page; a product never offered there should
+-- not.
+CREATE TABLE IF NOT EXISTS product_regions (
+  product_id text NOT NULL REFERENCES products (id) ON DELETE CASCADE,
+  region     text NOT NULL,
+  PRIMARY KEY (product_id, region)
+);
+
+CREATE INDEX IF NOT EXISTS product_regions_region_idx ON product_regions (region);
+
+-- Departments are per storefront for the same reason: the Pakistani
+-- store carries ranges the others do not.
+CREATE TABLE IF NOT EXISTS category_regions (
+  category_id text NOT NULL REFERENCES categories (id) ON DELETE CASCADE,
+  region      text NOT NULL,
+  PRIMARY KEY (category_id, region)
+);
+
+CREATE INDEX IF NOT EXISTS category_regions_region_idx ON category_regions (region);
+
 CREATE TABLE IF NOT EXISTS promos (
   code         text PRIMARY KEY,
   label        text NOT NULL,
@@ -238,5 +264,39 @@ DO $$ BEGIN
     CHECK (origin IN ('local', 'import'));
 EXCEPTION
   WHEN duplicate_object THEN NULL;
+END $$;
+
+-- Backfill for databases seeded before regions were explicit.
+--
+-- Everything already in the catalogue was, by definition, offered
+-- everywhere — so it is assigned to all three storefronts and nothing
+-- disappears. Imported stock is the exception: the route only exists
+-- into Pakistan, so those go to pk alone.
+--
+-- Guarded on the table being empty rather than on each row, so an
+-- operator who later removes a product from a store does not have it
+-- put back on the next deploy.
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM product_regions) THEN
+    INSERT INTO product_regions (product_id, region)
+    SELECT p.id, r.region
+      FROM products p
+      CROSS JOIN (VALUES ('us'), ('ae'), ('pk')) AS r(region)
+     WHERE p.origin <> 'import'
+    ON CONFLICT DO NOTHING;
+
+    INSERT INTO product_regions (product_id, region)
+    SELECT p.id, 'pk' FROM products p WHERE p.origin = 'import'
+    ON CONFLICT DO NOTHING;
+  END IF;
+
+  IF NOT EXISTS (SELECT 1 FROM category_regions) THEN
+    INSERT INTO category_regions (category_id, region)
+    SELECT c.id, r.region
+      FROM categories c
+      CROSS JOIN (VALUES ('us'), ('ae'), ('pk')) AS r(region)
+    ON CONFLICT DO NOTHING;
+  END IF;
 END $$;
 `

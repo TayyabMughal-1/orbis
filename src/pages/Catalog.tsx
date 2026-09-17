@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { api, type SortKey } from '../api/client'
+import { api, type SortKey, type StoreCategory } from '../api/client'
 import { CATEGORIES } from '../api/db'
 import { useAsync } from '../lib/useAsync'
 import { search as searchProducts, type SearchResult } from '../api/account'
@@ -30,8 +30,15 @@ export default function Catalog() {
   const fromParam = params.get('from')
   const origin = fromParam === 'import' || fromParam === 'local' ? fromParam : undefined
 
-  const active = CATEGORIES.find((c) => c.id === category)
-  const categoryFilter: Category | 'all' = active ? active.id : 'all'
+  // Per storefront now, so it cannot come from the bundled list. Falls
+  // back to that list while the request is in flight, which keeps the
+  // filter row from popping in.
+  const categoryList = useAsync(() => api.listCategories(region), [region])
+  const categories: StoreCategory[] =
+    categoryList.data ??
+    CATEGORIES.map((c, i) => ({ id: c.id, label: c.label, blurb: c.blurb, position: i, active: true }))
+  const active = categories.find((c) => c.id === category)
+  const categoryFilter: Category | 'all' = active ? (active.id as Category) : 'all'
 
   const state = useAsync(
     () => api.listProducts({ region, category: categoryFilter, sort, search, inStockOnly, origin }),
@@ -161,7 +168,7 @@ export default function Catalog() {
         >
           All
         </Link>
-        {CATEGORIES.map((cat) => (
+        {categories.map((cat) => (
           <Link
             key={cat.id}
             to={href(`/shop/${cat.id}`)}

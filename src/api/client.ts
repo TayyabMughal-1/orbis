@@ -33,7 +33,17 @@ import type {
 export { ApiError }
 export type { ListQuery, Quote, QuoteRequest, CreateOrderRequest, PromoResult, SortKey } from './server'
 
+export type StoreCategory = {
+  id: string
+  label: string
+  blurb: string
+  position: number
+  active: boolean
+}
+
 export type StoreApi = {
+  /** Departments this storefront carries. Not the same list everywhere. */
+  listCategories(region: RegionCode): Promise<StoreCategory[]>
   listProducts(query: ListQuery): Promise<Product[]>
   getProduct(slug: string): Promise<Product>
   getRelated(slug: string, region: RegionCode): Promise<Product[]>
@@ -104,6 +114,8 @@ const toWireLines = (lines: QuoteRequest['lines']) =>
   lines.map((l) => ({ productId: l.productId, variantId: l.variantId, quantity: l.quantity }))
 
 const httpApi: StoreApi = {
+  listCategories: (region) => http<StoreCategory[]>(`/categories?region=${region}`),
+
   listProducts: (q) =>
     http<Product[]>(
       `/products${query({
@@ -151,6 +163,7 @@ const httpApi: StoreApi = {
 // ---------------------------------------------------------------- mock
 
 const mockApi: StoreApi = {
+  listCategories: () => mock.listCategories(),
   listProducts: mock.listProducts,
   getProduct: mock.getProduct,
   getRelated: mock.getRelated,

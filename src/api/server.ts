@@ -1,4 +1,4 @@
-import { PRODUCTS, PROMOS, findProductBySlug } from './db'
+import { CATEGORIES, PRODUCTS, PROMOS, findProductBySlug } from './db'
 import { REGIONS, type RegionCode } from '../regions/config'
 import { computeTotals, shippingQuotesFor } from '../lib/pricing'
 import { STORAGE_KEYS, readJson, writeJson } from '../lib/storage'
@@ -415,4 +415,21 @@ export async function listOrders(region: RegionCode, email?: string): Promise<Or
     (o) => o.region === region && (!needle || o.email.toLowerCase() === needle),
   )
   return delay(rows, LATENCY_MS.fast)
+}
+
+/**
+ * The bundled departments, for design work with no backend. Every one is
+ * offered in every store here — the real per-store assignment lives in
+ * the database and only the API knows it.
+ */
+export async function listCategories(): Promise<
+  { id: string; label: string; blurb: string; position: number; active: boolean }[]
+> {
+  return CATEGORIES.map((c, i) => ({
+    id: c.id,
+    label: c.label,
+    blurb: c.blurb,
+    position: i,
+    active: true,
+  }))
 }

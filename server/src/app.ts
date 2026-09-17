@@ -197,10 +197,15 @@ app.get(
 // for a department that has been switched off.
 app.get(
   '/api/categories',
-  route(async (_req, res) => {
+  route(async (req, res) => {
     res.set('Cache-Control', 'no-store')
+    const region = asRegion(req.query.region)
     const rows = await listCategories()
-    res.json(rows.filter((c) => c.active).map(({ productCount: _count, ...rest }) => rest))
+    res.json(
+      rows
+        .filter((c) => c.active && c.regions.includes(region))
+        .map(({ productCount: _count, ...rest }) => rest),
+    )
   }),
 )
 

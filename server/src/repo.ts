@@ -44,6 +44,7 @@ type ProductJoinRow = {
   weight_grams: number
   origin: 'local' | 'import'
   collections: string[] | null
+  regions: string[] | null
   v_id: string | null
   v_sku: string | null
   v_label: string | null
@@ -66,7 +67,12 @@ const PRODUCT_SELECT = `
            (SELECT array_agg(pc.collection_id ORDER BY pc.collection_id)
               FROM product_collections pc WHERE pc.product_id = p.id),
            '{}'
-         ) AS collections
+         ) AS collections,
+         COALESCE(
+           (SELECT array_agg(pr.region ORDER BY pr.region)
+              FROM product_regions pr WHERE pr.product_id = p.id),
+           '{}'
+         ) AS regions
     FROM products p
     LEFT JOIN variants v ON v.product_id = p.id
     LEFT JOIN variant_regions vr ON vr.variant_id = v.id`
@@ -102,6 +108,7 @@ function assemble(rows: ProductJoinRow[]): Product[] {
         weightGrams: row.weight_grams ?? 0,
         origin: row.origin ?? 'local',
         collections: row.collections ?? [],
+        regions: (row.regions ?? []) as RegionCode[],
         variants: [],
       }
       byId.set(row.id, product)
@@ -162,6 +169,14 @@ export type ListFilter = {
 export async function listProducts(filter: ListFilter): Promise<Product[]> {
   const clauses: string[] = []
   const params: unknown[] = []
+
+  // Only what this storefront sells. Availability used to be implied by
+  // stock, which conflated "not sold here" with "sold out" — the second
+  // being temporary.
+  params.push(filter.region)
+  clauses.push(
+    `EXISTS (SELECT 1 FROM product_regions pr WHERE pr.product_id = p.id AND pr.region = $${params.length})`,
+  )
 
   if (filter.category && filter.category !== 'all') {
     params.push(filter.category)

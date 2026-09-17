@@ -196,6 +196,8 @@ export type ProductPayload = Omit<Product, 'rating'> & {
 export type TaxonomyRow = {
   id: string
   label: string
+  /** Storefronts it appears in. Categories only; collections are global. */
+  regions?: RegionCode[]
   /** blurb on a category, description on a collection */
   body: string
   position: number
@@ -206,6 +208,7 @@ export type TaxonomyRow = {
 export type TaxonomyInput = {
   id?: string
   label: string
+  regions?: RegionCode[]
   body?: string
   position?: number
   active?: boolean

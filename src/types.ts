@@ -59,6 +59,8 @@ export type Product = {
    * their region's import delivery options rather than its local ones.
    */
   origin?: 'local' | 'import'
+  /** Storefronts this product is sold in. Empty means sold nowhere. */
+  regions?: RegionCode[]
   /** Short marketing flags rendered as pills on the card. */
   badges?: string[]
   media: MediaItem[]

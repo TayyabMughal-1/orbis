@@ -4,6 +4,8 @@ import { adminApi, type TaxonomyRow, type TaxonomyInput } from '../api/admin'
 import { errorMessage } from '../api/client'
 import { useAsync } from '../lib/useAsync'
 import { ErrorState } from '../components/ui/Atoms'
+import Flag from '../components/ui/Flag'
+import { REGIONS, REGION_CODES, type RegionCode } from '../regions/config'
 
 // ---------------------------------------------------------------------
 // Departments and collections.
@@ -66,7 +68,12 @@ function Panel({
   )
   const rows = useAsync(load, [kind])
 
-  const [draft, setDraft] = useState<TaxonomyInput>({ label: '', body: '', position: 0 })
+  const [draft, setDraft] = useState<TaxonomyInput>({
+    label: '',
+    body: '',
+    position: 0,
+    regions: [...REGION_CODES],
+  })
   const [editing, setEditing] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -81,7 +88,7 @@ function Panel({
     setError(null)
     try {
       await save(draft)
-      setDraft({ label: '', body: '', position: 0 })
+      setDraft({ label: '', body: '', position: 0, regions: [...REGION_CODES] })
       setEditing(null)
       rows.reload()
     } catch (err) {
@@ -106,7 +113,14 @@ function Panel({
 
   function edit(row: TaxonomyRow) {
     setEditing(row.id)
-    setDraft({ id: row.id, label: row.label, body: row.body, position: row.position, active: row.active })
+    setDraft({
+      id: row.id,
+      label: row.label,
+      body: row.body,
+      position: row.position,
+      active: row.active,
+      regions: row.regions?.length ? row.regions : [...REGION_CODES],
+    })
   }
 
   return (
@@ -127,6 +141,37 @@ function Panel({
           value={draft.body ?? ''}
           onChange={(e) => setDraft({ ...draft, body: e.target.value })}
         />
+        {kind === 'category' && (
+          <div className="flex flex-wrap gap-1.5">
+            {REGION_CODES.map((code) => {
+              const on = draft.regions?.includes(code) ?? false
+              return (
+                <button
+                  key={code}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() =>
+                    setDraft({
+                      ...draft,
+                      regions: on
+                        ? (draft.regions ?? []).filter((r) => r !== code)
+                        : [...(draft.regions ?? []), code as RegionCode],
+                    })
+                  }
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-body text-[10px] transition-colors ${
+                    on
+                      ? 'border-accent bg-accent text-background'
+                      : 'border-ink/15 text-muted hover:border-ink/35'
+                  }`}
+                >
+                  <Flag code={code} className="h-2 w-3" />
+                  {REGIONS[code].countryCode}
+                </button>
+              )
+            })}
+          </div>
+        )}
+
         <div className="flex items-center gap-2.5">
           <input
             className={`${input} w-24`}
@@ -157,7 +202,7 @@ function Panel({
               type="button"
               onClick={() => {
                 setEditing(null)
-                setDraft({ label: '', body: '', position: 0 })
+                setDraft({ label: '', body: '', position: 0, regions: [...REGION_CODES] })
               }}
               className="font-body text-[11px] text-muted underline"
             >
@@ -201,7 +246,11 @@ function Panel({
                     {row.body ? ` · ${row.body}` : ''}
                   </div>
                 </button>
-                <span className="whitespace-nowrap pt-0.5 font-body text-[10px] text-muted">
+                <span className="flex items-center gap-1.5 whitespace-nowrap pt-0.5 font-body text-[10px] text-muted">
+                  {kind === 'category' &&
+                    (row.regions ?? []).map((r) => (
+                      <Flag key={r} code={r} className="h-2 w-3" />
+                    ))}
                   {row.productCount} product{row.productCount === 1 ? '' : 's'}
                 </span>
                 <button

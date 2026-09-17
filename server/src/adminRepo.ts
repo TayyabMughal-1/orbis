@@ -44,6 +44,8 @@ export type ProductInput = {
   /** Collection ids. Omitted leaves existing memberships alone. */
   collections?: string[]
   origin?: 'local' | 'import'
+  /** Storefronts to sell it in. Omitted leaves the assignment alone. */
+  regions?: RegionCode[]
   variants: VariantInput[]
 }
 
@@ -116,6 +118,19 @@ export async function saveProduct(input: ProductInput): Promise<Product> {
       id,
       keep,
     ])
+
+    // Which storefronts sell it. Replaced wholesale like the rest, and
+    // skipped entirely when omitted so a partial update cannot quietly
+    // pull a product out of every store.
+    if (input.regions) {
+      await client.query('DELETE FROM product_regions WHERE product_id = $1', [id])
+      for (const region of [...new Set(input.regions)]) {
+        await client.query(
+          'INSERT INTO product_regions (product_id, region) VALUES ($1,$2) ON CONFLICT DO NOTHING',
+          [id, region],
+        )
+      }
+    }
 
     // Memberships are replaced wholesale, like variants: what the form
     // submits is the complete set. Skipped entirely when the caller omits
@@ -399,6 +414,8 @@ export type TaxonomyInput = {
   body?: string
   position?: number
   active?: boolean
+  /** Storefronts to show it in. Omitted leaves the assignment alone. */
+  regions?: RegionCode[]
 }
 
 export type CategoryRow = {
@@ -407,6 +424,8 @@ export type CategoryRow = {
   blurb: string
   position: number
   active: boolean
+  /** Storefronts this department appears in. */
+  regions: RegionCode[]
   /** How many products are filed under it. Read-only. */
   productCount: number
 }
@@ -441,8 +460,15 @@ export async function listCategories(): Promise<CategoryRow[]> {
     position: number
     active: boolean
     product_count: string
+    regions: string[] | null
   }>(
-    `SELECT c.*, (SELECT count(*) FROM products p WHERE p.category = c.id)::text AS product_count
+    `SELECT c.*,
+            (SELECT count(*) FROM products p WHERE p.category = c.id)::text AS product_count,
+            COALESCE(
+              (SELECT array_agg(cr.region ORDER BY cr.region)
+                 FROM category_regions cr WHERE cr.category_id = c.id),
+              '{}'
+            ) AS regions
        FROM categories c ORDER BY c.position, c.label`,
   )
   return rows.map((r) => ({
@@ -451,6 +477,7 @@ export async function listCategories(): Promise<CategoryRow[]> {
     blurb: r.blurb,
     position: r.position,
     active: r.active,
+    regions: (r.regions ?? []) as RegionCode[],
     productCount: Number(r.product_count),
   }))
 }
@@ -465,6 +492,16 @@ export async function saveCategory(input: TaxonomyInput): Promise<CategoryRow> {
        position = EXCLUDED.position, active = EXCLUDED.active`,
     [id, taxonomyLabel(input), input.body ?? '', Math.round(input.position ?? 0), input.active ?? true],
   )
+  if (input.regions) {
+    await query('DELETE FROM category_regions WHERE category_id = $1', [id])
+    for (const region of [...new Set(input.regions)]) {
+      await query(
+        'INSERT INTO category_regions (category_id, region) VALUES ($1,$2) ON CONFLICT DO NOTHING',
+        [id, region],
+      )
+    }
+  }
+
   const found = (await listCategories()).find((c) => c.id === id)
   if (!found) throw notFound('not_found', 'The category did not save.')
   return found

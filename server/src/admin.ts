@@ -170,6 +170,11 @@ function asProductInput(body: unknown): ProductInput {
     // treats an empty array as "file this under nothing" and an absent one
     // as "leave the memberships alone".
     origin: raw.origin === 'import' ? 'import' : 'local',
+    // Undefined when absent, so a partial update leaves the assignment
+    // alone rather than pulling the product out of every store.
+    regions: Array.isArray(raw.regions)
+      ? raw.regions.filter((r: unknown): r is RegionCode => isRegionCode(r))
+      : undefined,
     collections: Array.isArray(raw.collections)
       ? raw.collections.filter((c: unknown): c is string => typeof c === 'string')
       : undefined,
@@ -347,6 +352,9 @@ function asTaxonomyInput(body: unknown): TaxonomyInput {
     body: asOptionalString(raw.body, 'body', 400) || '',
     position: raw.position === undefined ? 0 : Number(raw.position),
     active: raw.active === undefined ? true : Boolean(raw.active),
+    regions: Array.isArray(raw.regions)
+      ? raw.regions.filter((r: unknown): r is RegionCode => isRegionCode(r))
+      : undefined,
   }
 }
 
