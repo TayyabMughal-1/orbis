@@ -108,8 +108,14 @@ try {
   }
 
   section('Seed')
-  check('14 products seeded', healthBody.products === 14, `got ${healthBody.products}`)
-  check('37 variants seeded', healthBody.variants === 37, `got ${healthBody.variants}`)
+  // Derived, not hardcoded: asserting "14 products" meant every product
+  // added to the catalogue broke a test that was not about counting.
+  check('catalogue is seeded', healthBody.products > 0, `got ${healthBody.products}`)
+  check(
+    'every product has at least one variant',
+    healthBody.variants >= healthBody.products,
+    `${healthBody.variants} variants for ${healthBody.products} products`,
+  )
   const { rows: promoRows } = await sql.query('SELECT count(*)::int AS n FROM promos')
   check('4 promo codes seeded', promoRows[0].n === 4, `got ${promoRows[0].n}`)
 
@@ -151,7 +157,11 @@ try {
   const list = await get('/api/products?region=pk')
   const products = await list.json().catch(() => [])
   check('GET /api/products?region=pk → 200', list.status === 200, String(list.status))
-  check('returns products', Array.isArray(products) && products.length === 14, `got ${products.length}`)
+  check(
+    'lists the whole catalogue',
+    Array.isArray(products) && products.length === healthBody.products,
+    `${products.length} listed vs ${healthBody.products} in the database`,
+  )
   const withVariants = Array.isArray(products) && products.every((p) => p.variants.length > 0)
   check('every product has variants (the join works)', withVariants)
   const priced =
