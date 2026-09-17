@@ -48,7 +48,7 @@ export default function Header() {
   return (
     <>
       {/* Market-specific promo strip — the first thing that differs per store */}
-      <div className="relative z-[70] bg-accent/90 px-4 py-2 text-center font-mono text-[10px] uppercase tracking-[0.12em] text-ink">
+      <div className="relative z-[70] bg-accent/90 px-4 py-2 text-center font-body text-[10px] uppercase tracking-[0.12em] text-ink">
         {config.hero.promo}
         <span className="hidden sm:inline">
           {' · '}
@@ -68,7 +68,7 @@ export default function Header() {
             className="flex-none font-grotesk text-[17px] uppercase leading-none text-ink"
           >
             Orbis <span className="text-muted">Store</span>
-            <span className="ml-1.5 font-mono text-[10px] tracking-widest text-muted">
+            <span className="ml-1.5 font-body text-[10px] tracking-widest text-muted">
               {config.countryCode}
             </span>
           </Link>
@@ -109,7 +109,7 @@ export default function Header() {
                   onFocus={() => setSearchOpen(true)}
                   onBlur={() => setSearchOpen(false)}
                   placeholder="Search the store"
-                  className="w-full bg-transparent py-2 pl-2 font-mono text-[12px] text-ink outline-none placeholder:text-muted"
+                  className="w-full bg-transparent py-2 pl-2 font-body text-[12px] text-ink outline-none placeholder:text-muted"
                 />
               </div>
             </form>
@@ -136,7 +136,7 @@ export default function Header() {
                 // badge visibly reacts every time something is added.
                 <span
                   key={count}
-                  className="animate-cart-pop absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-neon px-1 font-mono text-[10px] font-bold text-ink"
+                  className="animate-cart-pop absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-neon px-1 font-body text-[10px] font-bold text-ink"
                 >
                   {count}
                 </span>
@@ -179,7 +179,7 @@ export default function Header() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search the store"
-                className="w-full bg-transparent py-3 font-mono text-[13px] text-ink outline-none placeholder:text-muted"
+                className="w-full bg-transparent py-3 font-body text-[13px] text-ink outline-none placeholder:text-muted"
               />
             </div>
           </form>
@@ -212,7 +212,7 @@ export default function Header() {
           </nav>
 
           <div className="px-4 py-6">
-            <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Store</div>
+            <div className="mb-3 font-body text-[10px] uppercase tracking-[0.2em] text-muted">Store</div>
             <RegionSwitcher />
           </div>
         </div>

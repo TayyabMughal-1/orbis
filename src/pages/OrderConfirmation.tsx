@@ -29,7 +29,7 @@ export default function OrderConfirmation() {
       <div className="mx-auto max-w-2xl px-4 py-24">
         <ErrorState message={state.error ?? 'Order not found.'} />
         <div className="mt-6 text-center">
-          <Link to={href('/orders')} className="font-mono text-[12px] uppercase text-accent underline underline-offset-4">
+          <Link to={href('/orders')} className="font-body text-[12px] uppercase text-accent underline underline-offset-4">
             Look up another order
           </Link>
         </div>
@@ -57,10 +57,10 @@ export default function OrderConfirmation() {
         <h1 className="mt-6 font-grotesk text-[30px] uppercase leading-tight text-ink sm:text-[40px]">
           Order confirmed
         </h1>
-        <p className="mt-3 font-mono text-[12px] uppercase text-muted">
+        <p className="mt-3 font-body text-[12px] uppercase text-muted">
           {order.number} · {placed.toLocaleDateString(config.locale, { dateStyle: 'long' })}
         </p>
-        <p className="mx-auto mt-4 max-w-md font-mono text-[12px] leading-relaxed text-muted">
+        <p className="mx-auto mt-4 max-w-md font-body text-[12px] leading-relaxed text-muted">
           A confirmation is on its way to {order.email}. Keep the order number — it is how we find
           you if you need to change anything.
         </p>
@@ -69,7 +69,7 @@ export default function OrderConfirmation() {
       {/* what happens next, which genuinely differs by market */}
       <div className="mt-10 rounded-[18px] border border-accent/30 bg-accent/[0.05] p-5">
         <h2 className="mb-2 font-grotesk text-[13px] uppercase text-accent">What happens next</h2>
-        <p className="font-mono text-[12px] leading-relaxed text-ink/80">
+        <p className="font-body text-[12px] leading-relaxed text-ink/80">
           {order.paymentMethodId === 'cod' ? (
             <>
               Have {formatMoney(order.totals.total, config, false)} ready in cash. Your order ships{' '}
@@ -108,11 +108,11 @@ export default function OrderConfirmation() {
               <li key={line.sku} className="flex items-start justify-between gap-4 py-3">
                 <div className="min-w-0">
                   <div className="font-grotesk text-[12px] uppercase text-ink">{line.productName}</div>
-                  <div className="mt-0.5 font-mono text-[10px] uppercase text-muted">
+                  <div className="mt-0.5 font-body text-[10px] uppercase text-muted">
                     {line.variantLabel} · {line.sku} · Qty {line.quantity}
                   </div>
                 </div>
-                <div className="flex-none font-mono text-[12px] text-ink">
+                <div className="flex-none font-body text-[12px] text-ink">
                   {formatMoney(line.lineTotal, config, false)}
                 </div>
               </li>
@@ -185,14 +185,14 @@ export default function OrderConfirmation() {
             <h2 className="mb-5 font-grotesk text-[13px] uppercase text-ink">Total paid</h2>
             <TotalsRows totals={order.totals} />
             {order.promoCode && (
-              <p className="mt-3 font-mono text-[10px] uppercase text-accent">Code {order.promoCode} applied</p>
+              <p className="mt-3 font-body text-[10px] uppercase text-accent">Code {order.promoCode} applied</p>
             )}
             {order.paymentInstructions && (
-              <p className="mt-3 font-mono text-[10px] leading-relaxed text-amber-200/80">
+              <p className="mt-3 font-body text-[10px] leading-relaxed text-amber-200/80">
                 {order.paymentInstructions}
               </p>
             )}
-            <p className="mt-5 font-mono text-[10px] leading-relaxed text-muted">
+            <p className="mt-5 font-body text-[10px] leading-relaxed text-muted">
               {config.policy.returnsDays}-day returns ·{' '}
               {config.entity.name} · {config.entity.registration}
             </p>
@@ -221,10 +221,10 @@ function Block({
 }) {
   return (
     <div>
-      <div className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-wide text-muted">
+      <div className="mb-2 flex items-center gap-2 font-body text-[10px] uppercase tracking-wide text-muted">
         <Icon size={12} /> {title}
       </div>
-      <div className="font-mono text-[11px] leading-relaxed text-ink/80">{children}</div>
+      <div className="font-body text-[11px] leading-relaxed text-ink/80">{children}</div>
     </div>
   )
 }

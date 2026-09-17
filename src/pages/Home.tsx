@@ -82,7 +82,7 @@ export default function Home() {
 
         <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1600px] flex-col justify-center px-4 py-24 sm:px-6 lg:px-10">
           <div className="max-w-[820px]">
-            <div className="animate-fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-ink/20 bg-ink/5 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.15em] text-ink/80">
+            <div className="animate-fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-ink/20 bg-ink/5 px-4 py-2 font-body text-[11px] uppercase tracking-[0.15em] text-ink/80">
               <Flag code={config.code} className="h-3.5 w-5" />
               {config.hero.eyebrow}
             </div>
@@ -114,14 +114,14 @@ export default function Home() {
                 English and the fonts loaded here carry no Arabic glyphs,
                 so the real thing would render as boxes. */}
             <p
-              className="animate-fade-up mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-accent"
+              className="animate-fade-up mt-4 font-body text-[11px] uppercase tracking-[0.14em] text-accent"
               style={{ animationDelay: '170ms' }}
             >
               {config.theme.greeting}
             </p>
 
             <p
-              className="animate-fade-up mt-7 max-w-md font-mono text-[13px] uppercase leading-relaxed text-muted sm:mt-8"
+              className="animate-fade-up mt-7 max-w-md font-body text-[13px] uppercase leading-relaxed text-muted sm:mt-8"
               style={{ animationDelay: '200ms' }}
             >
               Hand-painted collectible figures, plus the homeware, lighting, apparel and prints that
@@ -174,7 +174,7 @@ export default function Home() {
             <Reveal key={title} delay={i * 80} className="px-2 py-8 sm:px-4 lg:px-6">
               <Icon size={18} className="mb-3 text-accent" strokeWidth={1.6} />
               <div className="font-grotesk text-[12px] uppercase text-ink">{title}</div>
-              <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-muted">{body}</p>
+              <p className="mt-1.5 font-body text-[11px] leading-relaxed text-muted">{body}</p>
             </Reveal>
           ))}
         </div>
@@ -193,13 +193,13 @@ export default function Home() {
       */}
       <section className="overflow-hidden border-b border-ink/10 bg-surface pb-4 pt-16 sm:pt-20">
         <div className="mx-auto max-w-[1600px] px-4 text-center sm:px-6 lg:px-10">
-          <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+          <div className="font-body text-[11px] uppercase tracking-[0.2em] text-muted">
             Featured
           </div>
           <h2 className="mt-3 font-grotesk text-[26px] uppercase leading-[1.05] text-ink sm:text-[34px]">
             Featured products
           </h2>
-          <p className="mx-auto mt-4 max-w-[44ch] font-mono text-[12px] leading-relaxed text-muted">
+          <p className="mx-auto mt-4 max-w-[44ch] font-body text-[12px] leading-relaxed text-muted">
             Our pick of the {config.country} store, priced in {config.currency.code}. Scroll to turn
             the shelf, or pick one up.
           </p>
@@ -248,13 +248,13 @@ export default function Home() {
         <CategoryCarousel
           intro={
             <div>
-              <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+              <div className="mb-3 font-body text-[11px] uppercase tracking-[0.2em] text-muted">
                 Browse by type
               </div>
               <h2 className="font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[40px] lg:text-[52px]">
                 Departments
               </h2>
-              <p className="mt-5 max-w-[32rem] font-mono text-[12px] leading-relaxed text-muted">
+              <p className="mt-5 max-w-[32rem] font-body text-[12px] leading-relaxed text-muted">
                 Figures first, then everything that surrounds them. All five stocked and priced for
                 {' '}{config.country} — pick a card, or jump straight to a department below.
               </p>
@@ -275,7 +275,7 @@ export default function Home() {
         <div className="mx-auto max-w-[1600px] px-4 py-16 sm:px-6 lg:px-10">
           <div className="mb-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+              <div className="mb-3 font-body text-[11px] uppercase tracking-[0.2em] text-muted">
                 What customers say
               </div>
               <h2 className="font-grotesk text-[26px] uppercase leading-none text-ink sm:text-[34px]">
@@ -324,10 +324,10 @@ export default function Home() {
                   showCount={false}
                   className="mb-4"
                 />
-                <blockquote className="flex-1 font-mono text-[12px] leading-relaxed text-ink/80">
+                <blockquote className="flex-1 font-body text-[12px] leading-relaxed text-ink/80">
                   “{review.quote}”
                 </blockquote>
-                <figcaption className="mt-5 font-mono text-[11px] uppercase text-muted">
+                <figcaption className="mt-5 font-body text-[11px] uppercase text-muted">
                   {review.name} · <span className="text-accent/70">{review.place}</span>
                 </figcaption>
               </figure>
@@ -349,13 +349,13 @@ export default function Home() {
       <section className="mx-auto max-w-[1600px] px-4 pb-24 sm:px-6 lg:px-10">
         <div className="grid gap-4 lg:grid-cols-[1.15fr_1fr]">
           <Reveal className="rounded-[28px] border border-ink/[0.07] bg-surface p-8 shadow-card sm:p-12">
-            <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted">
+            <div className="font-body text-[11px] uppercase tracking-[0.2em] text-muted">
               Why shop with us
             </div>
             <h2 className="mt-3 max-w-[16ch] font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[40px]">
               Collect with confidence
             </h2>
-            <p className="mt-5 max-w-[52ch] font-mono text-[12px] leading-relaxed text-muted">
+            <p className="mt-5 max-w-[52ch] font-body text-[12px] leading-relaxed text-muted">
               Every figure is cast, hand-painted and numbered underneath. Editions are small and we
               do not reissue them, so what you buy stays what you bought.
             </p>
@@ -369,9 +369,9 @@ export default function Home() {
                 <div key={stat.label}>
                   <dt className="font-grotesk text-[30px] leading-none text-ink sm:text-[38px]">
                     {stat.value}
-                    <span className="ml-1 font-mono text-[11px] uppercase text-muted">{stat.unit}</span>
+                    <span className="ml-1 font-body text-[11px] uppercase text-muted">{stat.unit}</span>
                   </dt>
-                  <dd className="mt-2 font-mono text-[11px] uppercase leading-snug text-muted">
+                  <dd className="mt-2 font-body text-[11px] uppercase leading-snug text-muted">
                     {stat.label}
                   </dd>
                 </div>
@@ -408,7 +408,7 @@ export default function Home() {
                       <div className="font-grotesk text-[16px] uppercase leading-tight text-ink transition-colors group-hover:text-accent">
                         {category.label}
                       </div>
-                      <p className="mt-1.5 max-w-[34ch] font-mono text-[11px] leading-relaxed text-muted">
+                      <p className="mt-1.5 max-w-[34ch] font-body text-[11px] leading-relaxed text-muted">
                         {category.blurb}
                       </p>
                     </div>
@@ -436,7 +436,7 @@ export default function Home() {
             <h2 className="mx-auto max-w-[18ch] font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[44px] lg:text-[56px]">
               Start your collection
             </h2>
-            <p className="mx-auto mt-5 max-w-[46ch] font-mono text-[12px] leading-relaxed text-muted">
+            <p className="mx-auto mt-5 max-w-[46ch] font-body text-[12px] leading-relaxed text-muted">
               Shipped from {config.country} in {config.currency.code}
               {threshold !== null ? `, free over ${formatThreshold(threshold, config)}` : ''}.
               {` ${config.policy.returnsDays}-day returns.`}

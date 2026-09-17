@@ -24,8 +24,21 @@
 
   body {
     margin: 0;
+    /* Body copy was the system monospace stack, which on Windows means
+       Consolas — it read as a terminal rather than a shop. The default
+       lives here as well as on the layout, so /admin and anything
+       rendered outside a storefront inherit it too. */
+    font-family:
+      Inter,
+      system-ui,
+      -apple-system,
+      'Segoe UI',
+      sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Inter's default figures are proportional, so columns of prices
+       would not line up the way the monospace ones did. */
+    font-variant-numeric: tabular-nums;
   }
 
   /* Visible, on-brand focus ring for keyboard users only. */

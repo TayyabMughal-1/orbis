@@ -83,7 +83,7 @@ function StoreLayout() {
               the app resolves against it, which is how one line retints
               the whole store. */}
           <div
-            className="relative flex min-h-screen flex-col overflow-x-hidden bg-background font-mono text-ink"
+            className="relative flex min-h-screen flex-col overflow-x-hidden bg-background font-body text-ink"
             style={{ '--accent': REGIONS[region].theme.accent } as CSSProperties}
           >
             <a

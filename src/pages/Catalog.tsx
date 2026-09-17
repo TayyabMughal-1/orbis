@@ -112,7 +112,7 @@ export default function Catalog() {
         noindex={Boolean(search)}
         jsonLd={schema}
       />
-      <nav className="mb-6 flex items-center gap-2 font-mono text-[11px] uppercase text-muted">
+      <nav className="mb-6 flex items-center gap-2 font-body text-[11px] uppercase text-muted">
         <Link to={href('/')} className="hover:text-ink">
           {config.storeName}
         </Link>
@@ -133,11 +133,11 @@ export default function Catalog() {
           <h1 className="font-grotesk text-[34px] uppercase leading-none text-ink sm:text-[46px]">
             {title}
           </h1>
-          <p className="mt-3 max-w-lg font-mono text-[12px] leading-relaxed text-muted">
+          <p className="mt-3 max-w-lg font-body text-[12px] leading-relaxed text-muted">
             {active ? active.blurb : `Every piece we ship to ${config.country}, priced in ${config.currency.code}.`}
           </p>
         </div>
-        <div className="font-mono text-[11px] uppercase text-muted">
+        <div className="font-body text-[11px] uppercase text-muted">
           {state.data ? `${state.data.length} product${state.data.length === 1 ? '' : 's'}` : '—'}
         </div>
       </div>
@@ -146,7 +146,7 @@ export default function Catalog() {
       <div className="mb-4 flex flex-wrap gap-2">
         <Link
           to={href('/shop')}
-          className={`rounded-full border px-4 py-2 font-mono text-[11px] uppercase transition-colors ${
+          className={`rounded-full border px-4 py-2 font-body text-[11px] uppercase transition-colors ${
             !active ? 'border-accent/50 bg-accent/10 text-accent' : 'border-ink/15 text-muted hover:border-ink/35'
           }`}
         >
@@ -156,7 +156,7 @@ export default function Catalog() {
           <Link
             key={cat.id}
             to={href(`/shop/${cat.id}`)}
-            className={`rounded-full border px-4 py-2 font-mono text-[11px] uppercase transition-colors ${
+            className={`rounded-full border px-4 py-2 font-body text-[11px] uppercase transition-colors ${
               active?.id === cat.id
                 ? 'border-accent/50 bg-accent/10 text-accent'
                 : 'border-ink/15 text-muted hover:border-ink/35'
@@ -169,12 +169,12 @@ export default function Catalog() {
 
       {/* sort + stock */}
       <div className="mb-10 flex flex-wrap items-center gap-3 border-y border-ink/10 py-3">
-        <label className="flex items-center gap-2 font-mono text-[11px] uppercase text-muted">
+        <label className="flex items-center gap-2 font-body text-[11px] uppercase text-muted">
           Sort
           <select
             value={sort}
             onChange={(e) => updateParam('sort', e.target.value)}
-            className="rounded-full border border-ink/15 bg-ink/5 px-3 py-1.5 font-mono text-[11px] text-ink outline-none focus:border-ink/40"
+            className="rounded-full border border-ink/15 bg-ink/5 px-3 py-1.5 font-body text-[11px] text-ink outline-none focus:border-ink/40"
           >
             {SORTS.map((s) => (
               <option key={s.id} value={s.id} className="bg-background">
@@ -184,7 +184,7 @@ export default function Catalog() {
           </select>
         </label>
 
-        <label className="flex cursor-pointer items-center gap-2 font-mono text-[11px] uppercase text-muted">
+        <label className="flex cursor-pointer items-center gap-2 font-body text-[11px] uppercase text-muted">
           <input
             type="checkbox"
             checked={inStockOnly}
@@ -198,7 +198,7 @@ export default function Catalog() {
           <button
             type="button"
             onClick={() => updateParam('q', null)}
-            className="ml-auto rounded-full border border-ink/15 px-3 py-1.5 font-mono text-[11px] uppercase text-muted hover:border-ink/35"
+            className="ml-auto rounded-full border border-ink/15 px-3 py-1.5 font-body text-[11px] uppercase text-muted hover:border-ink/35"
           >
             Clear “{search}” ×
           </button>
@@ -232,7 +232,7 @@ export default function Catalog() {
               ? 'Closest things we have'
               : 'What people are buying instead'}
           </h2>
-          <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">
+          <p className="mt-2 font-body text-[11px] leading-relaxed text-muted">
             {suggestions.relatedReason === 'partial'
               ? `Nothing matches “${search}” exactly, but these share part of it.`
               : `We do not stock anything matching “${search}” yet. These are our best sellers.`}

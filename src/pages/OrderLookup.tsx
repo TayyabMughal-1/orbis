@@ -52,7 +52,7 @@ export default function OrderLookup() {
       <h1 className="font-grotesk text-[34px] uppercase leading-none text-ink sm:text-[44px]">
         Track an order
       </h1>
-      <p className="mt-3 max-w-xl font-mono text-[12px] leading-relaxed text-muted">
+      <p className="mt-3 max-w-xl font-body text-[12px] leading-relaxed text-muted">
         Orders live in the store they were placed in — a {config.country} order will not appear in the
         other two.
       </p>
@@ -61,7 +61,7 @@ export default function OrderLookup() {
       <form onSubmit={findByNumber} className="mt-8">
         <label
           htmlFor="order-number"
-          className="mb-2 block font-mono text-[10px] uppercase tracking-wide text-muted"
+          className="mb-2 block font-body text-[10px] uppercase tracking-wide text-muted"
         >
           Order number
         </label>
@@ -73,7 +73,7 @@ export default function OrderLookup() {
               value={number}
               onChange={(e) => setNumber(e.target.value.toUpperCase())}
               placeholder={`ORB-${config.countryCode}-XXXXXX`}
-              className="w-full bg-transparent py-3 font-mono text-[13px] text-ink outline-none placeholder:text-muted"
+              className="w-full bg-transparent py-3 font-body text-[13px] text-ink outline-none placeholder:text-muted"
             />
           </div>
           <button
@@ -90,7 +90,7 @@ export default function OrderLookup() {
       <form onSubmit={findByEmail} className="mt-8 border-t border-ink/10 pt-8">
         <label
           htmlFor="order-email"
-          className="mb-2 block font-mono text-[10px] uppercase tracking-wide text-muted"
+          className="mb-2 block font-body text-[10px] uppercase tracking-wide text-muted"
         >
           Or list every order for an email address
         </label>
@@ -103,7 +103,7 @@ export default function OrderLookup() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full bg-transparent py-3 font-mono text-[13px] text-ink outline-none placeholder:text-muted"
+              className="w-full bg-transparent py-3 font-body text-[13px] text-ink outline-none placeholder:text-muted"
             />
           </div>
           <button
@@ -114,13 +114,13 @@ export default function OrderLookup() {
             {loading ? 'Looking…' : 'List orders'}
           </button>
         </div>
-        <p className="mt-2 font-mono text-[10px] leading-relaxed text-muted">
+        <p className="mt-2 font-body text-[10px] leading-relaxed text-muted">
           We only ever list orders for the address they were placed with.
         </p>
       </form>
 
       {error && (
-        <p className="mt-6 rounded-[12px] border border-red-400/30 bg-red-500/10 p-3 font-mono text-[11px] text-red-200">
+        <p className="mt-6 rounded-[12px] border border-red-400/30 bg-red-500/10 p-3 font-body text-[11px] text-red-200">
           {error}
         </p>
       )}
@@ -156,13 +156,13 @@ export default function OrderLookup() {
                 >
                   <div>
                     <div className="font-grotesk text-[13px] uppercase text-ink">{order.number}</div>
-                    <div className="mt-1 font-mono text-[11px] text-muted">
+                    <div className="mt-1 font-body text-[11px] text-muted">
                       {new Date(order.placedAt).toLocaleDateString(config.locale, { dateStyle: 'medium' })} ·{' '}
                       {order.lines.length} item{order.lines.length === 1 ? '' : 's'} ·{' '}
                       {order.paymentMethodLabel}
                     </div>
                   </div>
-                  <div className="font-mono text-[13px] text-accent">
+                  <div className="font-body text-[13px] text-accent">
                     {formatMoney(order.totals.total, config, false)}
                   </div>
                 </Link>

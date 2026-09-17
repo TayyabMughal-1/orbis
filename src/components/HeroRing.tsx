@@ -202,7 +202,7 @@ export default function HeroRing({ products }: { products: Product[] }) {
                 </div>
                 <Price
                   amount={Math.min(...product.variants.map((v) => v.price[region]))}
-                  className="mt-1 block font-mono text-[11px] text-accent"
+                  className="mt-1 block font-body text-[11px] text-accent"
                 />
               </div>
             </Link>

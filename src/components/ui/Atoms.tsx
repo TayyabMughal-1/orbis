@@ -31,7 +31,7 @@ export function QuantityStepper({
       >
         <Minus size={14} strokeWidth={2} />
       </button>
-      <span className={`${box} w-8 text-center font-mono tabular-nums text-ink`}>{value}</span>
+      <span className={`${box} w-8 text-center font-body tabular-nums text-ink`}>{value}</span>
       <button
         type="button"
         aria-label="Increase quantity"
@@ -88,7 +88,7 @@ export function Stars({
           ))}
         </span>
       </span>
-      <span className="font-mono text-[10px] text-muted">
+      <span className="font-body text-[10px] text-muted">
         {rating.average.toFixed(1)}
         {showCount && <span className="text-muted"> ({rating.count})</span>}
       </span>
@@ -104,7 +104,7 @@ export function Pill({ children, tone = 'default' }: { children: ReactNode; tone
   }
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide ${tones[tone]}`}
+      className={`inline-flex items-center rounded-full border px-2.5 py-1 font-body text-[10px] uppercase tracking-wide ${tones[tone]}`}
     >
       {children}
     </span>
@@ -143,7 +143,7 @@ export function EmptyState({
   return (
     <div className="rounded-[20px] border border-ink/10 bg-ink/[0.02] px-6 py-14 text-center">
       <h3 className="font-grotesk text-[16px] uppercase text-ink">{title}</h3>
-      <p className="mx-auto mt-3 max-w-md font-mono text-[12px] leading-relaxed text-muted">{body}</p>
+      <p className="mx-auto mt-3 max-w-md font-body text-[12px] leading-relaxed text-muted">{body}</p>
       {action && <div className="mt-6">{action}</div>}
     </div>
   )
@@ -152,12 +152,12 @@ export function EmptyState({
 export function ErrorState({ message, onRetry }: { message: string; onRetry?: () => void }) {
   return (
     <div className="rounded-[20px] border border-red-400/25 bg-red-500/5 px-6 py-10 text-center">
-      <p className="font-mono text-[12px] leading-relaxed text-red-200">{message}</p>
+      <p className="font-body text-[12px] leading-relaxed text-red-200">{message}</p>
       {onRetry && (
         <button
           type="button"
           onClick={onRetry}
-          className="mt-4 font-mono text-[11px] uppercase text-accent underline underline-offset-4"
+          className="mt-4 font-body text-[11px] uppercase text-accent underline underline-offset-4"
         >
           Try again
         </button>
@@ -181,7 +181,7 @@ export function SectionHeading({
     <div className="mb-10 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
       <div className="relative">
         {eyebrow && (
-          <div className="mb-3 font-mono text-[11px] uppercase tracking-[0.2em] text-muted">{eyebrow}</div>
+          <div className="mb-3 font-body text-[11px] uppercase tracking-[0.2em] text-muted">{eyebrow}</div>
         )}
         <h2 className="font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[40px] lg:text-[52px]">
           {title}

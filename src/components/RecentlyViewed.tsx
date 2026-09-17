@@ -45,7 +45,7 @@ export default function RecentlyViewed({ excludeId }: { excludeId?: string }) {
               <div className="mt-2.5 truncate font-grotesk text-[11px] uppercase text-ink group-hover:text-accent">
                 {product.name}
               </div>
-              <Price amount={from} className="font-mono text-[11px] text-muted" />
+              <Price amount={from} className="font-body text-[11px] text-muted" />
             </Link>
           )
         })}

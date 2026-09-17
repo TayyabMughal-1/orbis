@@ -380,11 +380,11 @@ export default function CategoryCarousel({ intro }: { intro?: React.ReactNode })
             <div className="font-grotesk text-[14px] uppercase tracking-wide text-accent">
               {activeCategory.label}
             </div>
-            <p className="mt-1.5 max-w-[32rem] font-mono text-[12px] leading-relaxed text-muted">
+            <p className="mt-1.5 max-w-[32rem] font-body text-[12px] leading-relaxed text-muted">
               {activeCategory.blurb}
             </p>
             {activeStats && (
-              <div className="mt-2 font-mono text-[11px] uppercase text-muted">
+              <div className="mt-2 font-body text-[11px] uppercase text-muted">
                 {activeStats.count} product{activeStats.count === 1 ? '' : 's'}
                 {activeStats.from != null && <> · from {formatMoney(activeStats.from, config, true)}</>}
               </div>
@@ -403,7 +403,7 @@ export default function CategoryCarousel({ intro }: { intro?: React.ReactNode })
               onMouseEnter={() => goTo(i)}
               onFocus={() => goTo(i)}
               aria-current={active === i ? 'true' : undefined}
-              className={`group flex items-center gap-1.5 rounded-full border px-4 py-2 font-mono text-[11px] uppercase transition-colors ${
+              className={`group flex items-center gap-1.5 rounded-full border px-4 py-2 font-body text-[11px] uppercase transition-colors ${
                 active === i
                   ? 'border-accent/50 bg-accent/10 text-accent'
                   : 'border-white/15 text-muted hover:border-white/35 hover:text-ink'

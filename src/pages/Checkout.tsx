@@ -168,7 +168,7 @@ export default function Checkout() {
         <h1 className="font-grotesk text-[34px] uppercase leading-none text-ink sm:text-[44px]">
           Checkout
         </h1>
-        <p className="mt-3 inline-flex items-center gap-2 font-mono text-[12px] uppercase text-muted">
+        <p className="mt-3 inline-flex items-center gap-2 font-body text-[12px] uppercase text-muted">
           <Flag code={config.code} className="h-3 w-[18px]" />
           <span>
             {config.country} store · paying in {config.currency.code}
@@ -263,13 +263,13 @@ export default function Checkout() {
                 placeholder={config.address.postalPlaceholder}
               />
               <div className="flex items-end">
-                <div className="w-full rounded-[12px] border border-ink/10 bg-ink/[0.02] px-3 py-2.5 font-mono text-[12px] text-muted">
+                <div className="w-full rounded-[12px] border border-ink/10 bg-ink/[0.02] px-3 py-2.5 font-body text-[12px] text-muted">
                   Country · {config.country}
                 </div>
               </div>
             </div>
             {config.code === 'us' && form.region && (
-              <p className="mt-3 font-mono text-[10px] uppercase text-muted">
+              <p className="mt-3 font-body text-[10px] uppercase text-muted">
                 Sales tax for {form.region} is applied to this order.
               </p>
             )}
@@ -299,9 +299,9 @@ export default function Checkout() {
                     <span className="block font-grotesk text-[12px] uppercase text-ink">
                       {option.label}
                     </span>
-                    <span className="block font-mono text-[11px] text-muted">{option.eta}</span>
+                    <span className="block font-body text-[11px] text-muted">{option.eta}</span>
                   </span>
-                  <span className="font-mono text-[12px] text-accent">
+                  <span className="font-body text-[12px] text-accent">
                     {option.amount === 0 ? 'Free' : formatMoney(option.amount, config, false)}
                   </span>
                 </label>
@@ -334,10 +334,10 @@ export default function Checkout() {
                     <span className="block font-grotesk text-[12px] uppercase text-ink">
                       {method.label}
                     </span>
-                    <span className="block font-mono text-[11px] text-muted">{method.description}</span>
+                    <span className="block font-body text-[11px] text-muted">{method.description}</span>
                   </span>
                   {method.surcharge ? (
-                    <span className="font-mono text-[11px] text-amber-300">
+                    <span className="font-body text-[11px] text-amber-300">
                       + {formatMoney(method.surcharge, config, false)}
                     </span>
                   ) : null}
@@ -347,7 +347,7 @@ export default function Checkout() {
 
             <div className="mt-4 flex gap-2.5 rounded-[14px] border border-ink/12 bg-ink/[0.02] p-4">
               <Lock size={14} className="mt-0.5 flex-none text-muted" />
-              <p className="font-mono text-[10px] leading-relaxed text-muted">
+              <p className="font-body text-[10px] leading-relaxed text-muted">
                 {selectedPayment.offline ? (
                   <>
                     No payment is taken now — you pay on delivery. We will confirm the order by email
@@ -379,7 +379,7 @@ export default function Checkout() {
                 <li key={variant.id} className="flex items-center gap-3">
                   <div className="relative h-14 w-14 flex-none overflow-hidden rounded-[10px] bg-surface">
                     <Media item={product.media[0]} autoPlay={false} />
-                    <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ink/90 px-1 font-mono text-[10px] font-bold text-ink">
+                    <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ink/90 px-1 font-body text-[10px] font-bold text-ink">
                       {line.quantity}
                     </span>
                   </div>
@@ -387,9 +387,9 @@ export default function Checkout() {
                     <div className="truncate font-grotesk text-[11px] uppercase text-ink">
                       {product.name}
                     </div>
-                    <div className="truncate font-mono text-[10px] text-muted">{variant.label}</div>
+                    <div className="truncate font-body text-[10px] text-muted">{variant.label}</div>
                   </div>
-                  <div className="flex-none font-mono text-[12px] text-ink">
+                  <div className="flex-none font-body text-[12px] text-ink">
                     {formatMoney(lineTotal, config, false)}
                   </div>
                 </li>
@@ -416,7 +416,7 @@ export default function Checkout() {
             {submitError && (
               <div className="mt-4 flex gap-2 rounded-[12px] border border-red-400/30 bg-red-500/10 p-3">
                 <AlertCircle size={14} className="mt-0.5 flex-none text-red-300" />
-                <p className="font-mono text-[11px] leading-relaxed text-red-200">{submitError}</p>
+                <p className="font-body text-[11px] leading-relaxed text-red-200">{submitError}</p>
               </div>
             )}
 
@@ -432,7 +432,7 @@ export default function Checkout() {
                   : `Pay ${quote.data ? formatMoney(quote.data.totals.total, config, false) : ''}`}
             </button>
 
-            <p className="mt-3 text-center font-mono text-[10px] leading-relaxed text-muted">
+            <p className="mt-3 text-center font-body text-[10px] leading-relaxed text-muted">
               By placing this order you agree to our terms. {config.policy.returnsDays}-day returns ·{' '}
               {config.taxNote}
             </p>
@@ -455,7 +455,7 @@ function newIdempotencyKey(): string {
 function Legend({ step, title }: { step: number; title: string }) {
   return (
     <div className="mb-5 flex items-center gap-3">
-      <span className="flex h-6 w-6 items-center justify-center rounded-full border border-ink/20 font-mono text-[11px] text-ink/80">
+      <span className="flex h-6 w-6 items-center justify-center rounded-full border border-ink/20 font-body text-[11px] text-ink/80">
         {step}
       </span>
       <h2 className="font-grotesk text-[15px] uppercase text-ink">{title}</h2>
@@ -486,7 +486,7 @@ function Field({
 }) {
   return (
     <label className="block" data-error={Boolean(error)}>
-      <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wide text-muted">
+      <span className="mb-1.5 block font-body text-[10px] uppercase tracking-wide text-muted">
         {label}
       </span>
       <span
@@ -495,7 +495,7 @@ function Field({
         }`}
       >
         {prefix && (
-          <span className="pl-3 font-mono text-[12px] text-muted">{prefix}</span>
+          <span className="pl-3 font-body text-[12px] text-muted">{prefix}</span>
         )}
         <input
           type={type}
@@ -503,13 +503,13 @@ function Field({
           onChange={(e) => onChange(e.target.value)}
           autoComplete={autoComplete}
           placeholder={placeholder}
-          className="w-full bg-transparent px-3 py-2.5 font-mono text-[12px] text-ink outline-none placeholder:text-muted"
+          className="w-full bg-transparent px-3 py-2.5 font-body text-[12px] text-ink outline-none placeholder:text-muted"
         />
       </span>
       {error ? (
-        <span className="mt-1.5 block font-mono text-[10px] text-red-300">{error}</span>
+        <span className="mt-1.5 block font-body text-[10px] text-red-300">{error}</span>
       ) : hint ? (
-        <span className="mt-1.5 block font-mono text-[10px] text-muted">{hint}</span>
+        <span className="mt-1.5 block font-body text-[10px] text-muted">{hint}</span>
       ) : null}
     </label>
   )
@@ -532,13 +532,13 @@ function SelectField({
 }) {
   return (
     <label className="block" data-error={Boolean(error)}>
-      <span className="mb-1.5 block font-mono text-[10px] uppercase tracking-wide text-muted">
+      <span className="mb-1.5 block font-body text-[10px] uppercase tracking-wide text-muted">
         {label}
       </span>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full rounded-[12px] border bg-ink/5 px-3 py-2.5 font-mono text-[12px] text-ink outline-none transition-colors focus:border-ink/45 ${
+        className={`w-full rounded-[12px] border bg-ink/5 px-3 py-2.5 font-body text-[12px] text-ink outline-none transition-colors focus:border-ink/45 ${
           error ? 'border-red-400/60' : 'border-ink/15'
         }`}
       >
@@ -551,7 +551,7 @@ function SelectField({
           </option>
         ))}
       </select>
-      {error && <span className="mt-1.5 block font-mono text-[10px] text-red-300">{error}</span>}
+      {error && <span className="mt-1.5 block font-body text-[10px] text-red-300">{error}</span>}
     </label>
   )
 }

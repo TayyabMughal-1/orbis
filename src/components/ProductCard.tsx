@@ -90,15 +90,15 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.name}
         </h3>
         {product.rating && <Stars rating={product.rating} className="mt-1.5" />}
-        <p className="mt-1.5 font-mono text-[11px] leading-relaxed text-muted">{product.tagline}</p>
+        <p className="mt-1.5 font-body text-[11px] leading-relaxed text-muted">{product.tagline}</p>
 
         <div className="mt-4 flex items-end justify-between">
           <div>
-            {varies && <span className="mr-1 font-mono text-[10px] uppercase text-muted">From</span>}
-            <Price amount={from} className="font-mono text-[15px] text-accent" />
+            {varies && <span className="mr-1 font-body text-[10px] uppercase text-muted">From</span>}
+            <Price amount={from} className="font-body text-[15px] text-accent" />
           </div>
           {config.taxIncludedInPrice && (
-            <span className="font-mono text-[9px] uppercase text-muted">Incl. {config.taxLabel}</span>
+            <span className="font-body text-[9px] uppercase text-muted">Incl. {config.taxLabel}</span>
           )}
         </div>
       </div>

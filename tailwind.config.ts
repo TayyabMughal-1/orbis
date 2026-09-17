@@ -29,6 +29,10 @@ export default {
         neon: '#B9FF3C',
       },
       fontFamily: {
+        // Body copy. Named for the job rather than the face, so swapping
+        // the typeface is this line and nothing else — the 237 places
+        // that set it say font-body, not the name of a font.
+        body: ['Inter', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
         grotesk: ['Anton', 'sans-serif'],
         condiment: ['Condiment', 'cursive'],
         jetbrains: ['"JetBrains Mono"', 'ui-monospace', 'monospace'],

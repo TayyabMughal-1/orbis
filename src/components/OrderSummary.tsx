@@ -15,7 +15,7 @@ export function TotalsRows({ totals, shippingPending }: { totals: OrderTotals; s
   const money = (n: number) => formatMoney(n, config, false)
 
   return (
-    <dl className="space-y-2.5 font-mono text-[12px]">
+    <dl className="space-y-2.5 font-body text-[12px]">
       <Row label="Subtotal" value={money(totals.subtotal)} />
 
       {totals.discount > 0 && (
@@ -49,7 +49,7 @@ export function TotalsRows({ totals, shippingPending }: { totals: OrderTotals; s
           <dd className="text-accent">{money(totals.total)}</dd>
         </div>
         {totals.taxIncluded > 0 && (
-          <p className="mt-1.5 text-right font-mono text-[10px] uppercase text-muted">
+          <p className="mt-1.5 text-right font-body text-[10px] uppercase text-muted">
             Includes {money(totals.taxIncluded)} {totals.taxLabel} at{' '}
             {formatPercent(totals.taxRate, config.locale)}
           </p>
@@ -96,8 +96,8 @@ export function PromoField({
       <div className="flex items-center gap-2 rounded-[12px] border border-accent/35 bg-accent/[0.07] px-3 py-2.5">
         <Tag size={13} className="flex-none text-accent" />
         <div className="min-w-0 flex-1">
-          <div className="font-mono text-[11px] uppercase text-accent">{code}</div>
-          <div className="truncate font-mono text-[10px] text-muted">{appliedLabel}</div>
+          <div className="font-body text-[11px] uppercase text-accent">{code}</div>
+          <div className="truncate font-body text-[10px] text-muted">{appliedLabel}</div>
         </div>
         <button
           type="button"
@@ -118,17 +118,17 @@ export function PromoField({
           value={draft}
           onChange={(e) => setDraft(e.target.value.toUpperCase())}
           placeholder="Promo code"
-          className="min-w-0 flex-1 rounded-[12px] border border-ink/15 bg-ink/5 px-3 py-2.5 font-mono text-[12px] uppercase text-ink outline-none placeholder:text-muted focus:border-ink/40"
+          className="min-w-0 flex-1 rounded-[12px] border border-ink/15 bg-ink/5 px-3 py-2.5 font-body text-[12px] uppercase text-ink outline-none placeholder:text-muted focus:border-ink/40"
         />
         <button
           type="submit"
           disabled={busy || !draft.trim()}
-          className="flex-none rounded-[12px] border border-ink/20 px-4 py-2.5 font-mono text-[11px] uppercase text-ink transition-colors hover:border-ink/45 disabled:opacity-35"
+          className="flex-none rounded-[12px] border border-ink/20 px-4 py-2.5 font-body text-[11px] uppercase text-ink transition-colors hover:border-ink/45 disabled:opacity-35"
         >
           {busy ? '…' : 'Apply'}
         </button>
       </div>
-      {error && <p className="mt-2 font-mono text-[10px] text-amber-300">{error}</p>}
+      {error && <p className="mt-2 font-body text-[10px] text-amber-300">{error}</p>}
     </form>
   )
 }
