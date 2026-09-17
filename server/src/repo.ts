@@ -154,6 +154,8 @@ export type ListFilter = {
   search?: string
   sort?: 'featured' | 'price-asc' | 'price-desc' | 'name'
   inStockOnly?: boolean
+  /** Only goods shipped from the region's own warehouse, or only imports. */
+  origin?: 'local' | 'import'
   limit?: number
 }
 
@@ -164,6 +166,11 @@ export async function listProducts(filter: ListFilter): Promise<Product[]> {
   if (filter.category && filter.category !== 'all') {
     params.push(filter.category)
     clauses.push(`p.category = $${params.length}`)
+  }
+
+  if (filter.origin) {
+    params.push(filter.origin)
+    clauses.push(`p.origin = $${params.length}`)
   }
 
   if (filter.search?.trim()) {

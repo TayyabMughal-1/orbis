@@ -104,6 +104,8 @@ export type ListQuery = {
   search?: string
   inStockOnly?: boolean
   limit?: number
+  /** Only local stock, or only imports. */
+  origin?: 'local' | 'import'
 }
 
 function lowestPrice(product: Product, region: RegionCode): number {
@@ -111,11 +113,13 @@ function lowestPrice(product: Product, region: RegionCode): number {
 }
 
 export async function listProducts(query: ListQuery): Promise<Product[]> {
-  const { region, category = 'all', sort = 'featured', search, inStockOnly, limit } = query
+  const { region, category = 'all', sort = 'featured', search, inStockOnly, origin, limit } = query
 
   let rows = PRODUCTS.map(withLiveStock)
 
   if (category !== 'all') rows = rows.filter((prod) => prod.category === category)
+
+  if (origin) rows = rows.filter((prod) => (prod.origin ?? 'local') === origin)
 
   if (search && search.trim()) {
     const needle = search.trim().toLowerCase()

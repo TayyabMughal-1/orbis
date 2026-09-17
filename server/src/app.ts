@@ -231,6 +231,11 @@ app.get(
       search: (req.query.search as string | undefined) ?? undefined,
       sort: sort as 'featured' | 'price-asc' | 'price-desc' | 'name',
       inStockOnly: req.query.inStockOnly === 'true' || req.query.inStockOnly === '1',
+      // ?from=local or ?from=import. Anything else is no filter at all
+      // rather than an error — a stray value should show the catalogue,
+      // not a 400.
+      origin:
+        req.query.from === 'import' ? 'import' : req.query.from === 'local' ? 'local' : undefined,
       limit: limitParam,
     })
 

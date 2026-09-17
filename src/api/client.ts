@@ -112,6 +112,7 @@ const httpApi: StoreApi = {
         sort: q.sort,
         search: q.search,
         inStockOnly: q.inStockOnly,
+        from: q.origin,
         limit: q.limit,
       })}`,
     ),

@@ -9,6 +9,7 @@ import { formatThreshold } from '../lib/money'
 import ProductCard from '../components/ProductCard'
 import CategoryCarousel from '../components/CategoryCarousel'
 import HeroRing from '../components/HeroRing'
+import SourcingChoice from '../components/SourcingChoice'
 import LazyVideo from '../components/ui/LazyVideo'
 import Reveal, { RevealGroup } from '../components/ui/Reveal'
 import { ErrorState, ProductGridSkeleton, SectionHeading, Stars } from '../components/ui/Atoms'
@@ -179,6 +180,11 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      {/* --------------------------------------------- where it ships from */}
+      {/* Renders nothing outside a store that sells both, so the US and
+          UAE home pages are unchanged. */}
+      <SourcingChoice products={featured.data ?? []} />
 
       {/* ------------------------------------------ featured products */}
       {/*

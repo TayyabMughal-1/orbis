@@ -27,13 +27,15 @@ export default function Catalog() {
   const search = params.get('q') ?? ''
   const sort = (params.get('sort') as SortKey) ?? 'featured'
   const inStockOnly = params.get('stock') === '1'
+  const fromParam = params.get('from')
+  const origin = fromParam === 'import' || fromParam === 'local' ? fromParam : undefined
 
   const active = CATEGORIES.find((c) => c.id === category)
   const categoryFilter: Category | 'all' = active ? active.id : 'all'
 
   const state = useAsync(
-    () => api.listProducts({ region, category: categoryFilter, sort, search, inStockOnly }),
-    [region, categoryFilter, sort, search, inStockOnly],
+    () => api.listProducts({ region, category: categoryFilter, sort, search, inStockOnly, origin }),
+    [region, categoryFilter, sort, search, inStockOnly, origin],
   )
 
   // A shop that answers "no results" and stops has lost the sale. When a
@@ -64,7 +66,14 @@ export default function Catalog() {
     setParams(next, { replace: true })
   }
 
-  const title = active ? active.label : search ? `“${search}”` : 'Everything'
+  // A filtered view that still calls itself "Everything" is just wrong.
+  const originTitle =
+    origin === 'import'
+      ? `From ${config.importShipping?.from ?? 'abroad'}`
+      : origin === 'local'
+        ? `From ${config.country}`
+        : null
+  const title = active ? active.label : search ? `“${search}”` : (originTitle ?? 'Everything')
   const path = active ? `/shop/${active.id}` : '/shop'
 
   // A search results page is useful to a shopper but not something a
