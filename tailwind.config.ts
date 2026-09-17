@@ -17,9 +17,13 @@ export default {
         // Secondary text. A real token rather than ink/60, so quiet text
         // keeps a guaranteed 5.95:1 instead of drifting with opacity.
         muted: '#5A6478',
-        // Links, prices, active states. Dark enough to read as text on
-        // white (5.18:1), unlike the fill below.
-        accent: '#2F7D00',
+        // Links, prices, active states. A CSS variable rather than a fixed
+        // hex, because each storefront retints it — see regions/config.ts.
+        // <alpha-value> keeps the opacity modifiers working, so
+        // text-accent/40 still means what it says.
+        accent: 'rgb(var(--accent) / <alpha-value>)',
+        /** The default, used before a region has been resolved. */
+        'accent-base': '#2F7D00',
         // The brand fill. Only ever a background, always with ink on top
         // (15.4:1). As text on white it would be illegible.
         neon: '#B9FF3C',

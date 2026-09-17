@@ -13,6 +13,7 @@ import LazyVideo from '../components/ui/LazyVideo'
 import Reveal, { RevealGroup } from '../components/ui/Reveal'
 import { ErrorState, ProductGridSkeleton, SectionHeading, Stars } from '../components/ui/Atoms'
 import { Seo, absoluteUrl, graph, organizationSchema } from '../lib/seo'
+import Flag from '../components/ui/Flag'
 
 export default function Home() {
   const { region, config, href } = useRegion()
@@ -82,7 +83,7 @@ export default function Home() {
         <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1600px] flex-col justify-center px-4 py-24 sm:px-6 lg:px-10">
           <div className="max-w-[820px]">
             <div className="animate-fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-ink/20 bg-ink/5 px-4 py-2 font-mono text-[11px] uppercase tracking-[0.15em] text-ink/80">
-              <span aria-hidden="true">{config.flag}</span>
+              <Flag code={config.code} className="h-3.5 w-5" />
               {config.hero.eyebrow}
             </div>
 
@@ -107,6 +108,17 @@ export default function Home() {
             >
               small runs only
             </div>
+
+            {/* The line each store greets you in. Arabic and Urdu welcomes
+                transliterated rather than set in script: the page is in
+                English and the fonts loaded here carry no Arabic glyphs,
+                so the real thing would render as boxes. */}
+            <p
+              className="animate-fade-up mt-4 font-mono text-[11px] uppercase tracking-[0.14em] text-accent"
+              style={{ animationDelay: '170ms' }}
+            >
+              {config.theme.greeting}
+            </p>
 
             <p
               className="animate-fade-up mt-7 max-w-md font-mono text-[13px] uppercase leading-relaxed text-muted sm:mt-8"

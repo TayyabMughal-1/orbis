@@ -4,6 +4,7 @@ import { CATEGORIES } from '../api/db'
 import Newsletter from './Newsletter'
 import { useRegion } from '../regions/RegionContext'
 import { REGION_LIST } from '../regions/config'
+import Flag from './ui/Flag'
 
 /**
  * The footer is where a storefront proves it is a real business in a
@@ -125,7 +126,7 @@ export default function Footer() {
                   : 'border-ink/15 text-muted hover:border-ink/35 hover:text-ink'
               }`}
             >
-              <span aria-hidden="true">{r.flag}</span> {r.country} · {r.currency.code}
+              <Flag code={r.code} className="h-3 w-[18px]" /> {r.country} · {r.currency.code}
             </button>
           ))}
         </div>

@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import type { CSSProperties } from 'react'
 import { Navigate, Outlet, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import { DEFAULT_REGION, isRegionCode, REGIONS, type RegionCode } from './regions/config'
 import { detectRegionSync } from './regions/detect'
@@ -76,7 +77,15 @@ function StoreLayout() {
     <RegionProvider region={region}>
       <ToastProvider>
         <CartProvider>
-          <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background font-mono text-ink">
+          {/* --accent is set here rather than on <html>, so it is scoped
+              to a storefront: the dashboard and the region gate keep the
+              default. Every text-accent, bg-accent and border-accent in
+              the app resolves against it, which is how one line retints
+              the whole store. */}
+          <div
+            className="relative flex min-h-screen flex-col overflow-x-hidden bg-background font-mono text-ink"
+            style={{ '--accent': REGIONS[region].theme.accent } as CSSProperties}
+          >
             <a
               href="#main"
               className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-neon focus:px-5 focus:py-2.5 focus:font-grotesk focus:text-[12px] focus:uppercase focus:text-ink"

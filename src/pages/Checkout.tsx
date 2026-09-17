@@ -13,6 +13,7 @@ import { PromoField, TotalsRows } from '../components/OrderSummary'
 import { EmptyState } from '../components/ui/Atoms'
 import { Seo } from '../lib/seo'
 import type { Address } from '../types'
+import Flag from '../components/ui/Flag'
 
 type FormState = Omit<Address, 'countryCode'>
 type Errors = Partial<Record<keyof FormState, string>>
@@ -168,7 +169,7 @@ export default function Checkout() {
           Checkout
         </h1>
         <p className="mt-3 font-mono text-[12px] uppercase text-muted">
-          <span aria-hidden="true">{config.flag}</span> {config.country} store · paying in{' '}
+          <Flag code={config.code} className="h-3 w-[18px]" /> {config.country} store · paying in{' '}
           {config.currency.code}
         </p>
       </div>

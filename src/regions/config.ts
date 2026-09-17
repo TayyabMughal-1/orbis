@@ -88,6 +88,26 @@ export type RegionConfig = {
   policy: { returnsDays: number; warrantyMonths: number; dutiesNote: string }
   /** Merchandising copy that differs by market. */
   hero: { eyebrow: string; promo: string }
+  /**
+   * How this storefront looks and sounds.
+   *
+   * accent retints the whole UI: it is written to --accent and every
+   * text-accent, bg-accent and border-accent in the app follows it. All
+   * three clear 4.5:1 against white in both directions, because the
+   * accent is link and price colour as well as a button fill.
+   *
+   * motif is a decorative fill drawn behind the hero badge — a geometric
+   * star for the Gulf, block stripes for the States, a truck-art bloom
+   * for Pakistan. Decoration only; nothing reads it for meaning.
+   */
+  theme: {
+    /** Space-separated RGB channels, for rgb(var(--accent) / alpha). */
+    accent: string
+    accentHex: string
+    motif: 'stripes' | 'geometric' | 'bloom'
+    /** One line in the local register, under the hero copy. */
+    greeting: string
+  }
 }
 
 const US_STATE_TAX: Record<string, number> = {
@@ -183,6 +203,14 @@ export const REGIONS: Record<RegionCode, RegionConfig> = {
       dutiesNote: 'Ships from our Nevada warehouse. No customs charges on domestic orders.',
     },
     hero: { eyebrow: 'Shipping across all 50 states', promo: 'Free standard shipping over $150' },
+    theme: {
+      // Federal navy — restrained, reads as institutional rather than
+      // patriotic-kitsch. 11.27:1 on white.
+      accent: '27 58 107',
+      accentHex: '#1B3A6B',
+      motif: 'stripes',
+      greeting: 'Shipped from the States, coast to coast.',
+    },
   },
 
   // ------------------------------------------------------------- UAE
@@ -233,6 +261,14 @@ export const REGIONS: Record<RegionCode, RegionConfig> = {
       dutiesNote: 'Ships from our Jebel Ali warehouse. Duties and VAT are already settled — nothing to pay on delivery.',
     },
     hero: { eyebrow: 'Delivering to all 7 emirates', promo: 'Free delivery over AED 400 · Tabby available' },
+    theme: {
+      // Desert gold. Gulf retail leans gold and sand rather than the
+      // flag's red and green, which belong on the flag. 5.05:1 on white.
+      accent: '138 106 31',
+      accentHex: '#8A6A1F',
+      motif: 'geometric',
+      greeting: 'Ahlan wa sahlan — delivered across the Emirates.',
+    },
   },
 
   // -------------------------------------------------------- PAKISTAN
@@ -283,6 +319,14 @@ export const REGIONS: Record<RegionCode, RegionConfig> = {
       dutiesNote: 'Ships from our Lahore warehouse. Cash on delivery available nationwide.',
     },
     hero: { eyebrow: 'Nationwide delivery, cash on delivery welcome', promo: 'Free delivery over Rs 25,000' },
+    theme: {
+      // A lighter take on the flag green, so it still reads as text on
+      // white at 6.61:1 where the flag's own #01411C goes almost black.
+      accent: '19 107 51',
+      accentHex: '#136B33',
+      motif: 'bloom',
+      greeting: 'Khush aamdeed — delivered nationwide, pay on delivery.',
+    },
   },
 }
 

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Check, ChevronDown, Globe } from 'lucide-react'
 import { REGION_LIST } from '../regions/config'
 import { useRegion } from '../regions/RegionContext'
+import Flag from './ui/Flag'
 
 /**
  * Moves the visitor between the three storefronts. Everything downstream
@@ -39,12 +40,7 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
         aria-expanded={open}
         className="flex items-center gap-2 rounded-full border border-ink/15 bg-ink/5 px-3 py-2 font-mono text-[11px] uppercase text-ink transition-colors hover:border-ink/30"
       >
-        {/* Windows has no country-flag glyphs and falls back to the
-            letters "AE"/"PK" — which is exactly the country code, so
-            showing both would read as a stutter. Show one. */}
-        <span aria-hidden="true" className="text-[14px] leading-none">
-          {config.flag}
-        </span>
+        <Flag code={config.code} className="h-3.5 w-5" />
         <span className="text-muted">{config.currency.code}</span>
         <span className="sr-only">Change store. Currently {config.country}.</span>
         <ChevronDown size={13} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -76,7 +72,7 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
                 }`}
               >
                 <span aria-hidden="true" className="text-[18px] leading-none">
-                  {r.flag}
+                  <Flag code={r.code} className="h-3.5 w-5" />
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-grotesk text-[12px] uppercase text-ink">
