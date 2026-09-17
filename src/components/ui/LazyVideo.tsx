@@ -100,8 +100,16 @@ export default function LazyVideo({ src, className = '', eager = false, poster, 
     return () => observer.disconnect()
   }, [eager])
 
+  // The inner video is absolute, so the wrapper has to establish a
+  // containing block — but only add `relative` when the caller has not
+  // already positioned it. Tailwind emits .relative after .absolute, so a
+  // hardcoded `relative` wins over an `absolute` passed in through
+  // className regardless of the order they appear in the string, which
+  // silently stopped the hero video from filling its section.
+  const positioned = /(?:^|\s)(?:absolute|fixed|sticky|relative)(?:\s|$)/.test(className)
+
   return (
-    <div ref={holder} className={`relative overflow-hidden ${className}`}>
+    <div ref={holder} className={`${positioned ? '' : 'relative'} overflow-hidden ${className}`}>
       {fallback}
       {load && (
         <video
