@@ -22,7 +22,7 @@ export default function Flag({
 }) {
   const shared = {
     viewBox: '0 0 30 20',
-    className: `${className} flex-none rounded-[2px] ring-1 ring-ink/15`,
+    className: `${className} inline-block flex-none align-middle rounded-[2px] ring-1 ring-ink/15`,
     role: 'img' as const,
     'aria-hidden': true,
   }

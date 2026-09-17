@@ -71,9 +71,7 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
                   active ? 'bg-ink/[0.07]' : 'hover:bg-ink/5'
                 }`}
               >
-                <span aria-hidden="true" className="text-[18px] leading-none">
-                  <Flag code={r.code} className="h-3.5 w-5" />
-                </span>
+                <Flag code={r.code} className="h-3.5 w-5" />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-grotesk text-[12px] uppercase text-ink">
                     {r.country}

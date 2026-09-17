@@ -120,13 +120,16 @@ export default function Footer() {
               type="button"
               onClick={() => setRegion(r.code)}
               disabled={r.code === region}
-              className={`rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase transition-colors ${
+              className={`inline-flex items-center gap-2 rounded-full border px-3 py-1.5 font-mono text-[11px] uppercase transition-colors ${
                 r.code === region
                   ? 'border-accent/40 bg-accent/10 text-accent'
                   : 'border-ink/15 text-muted hover:border-ink/35 hover:text-ink'
               }`}
             >
-              <Flag code={r.code} className="h-3 w-[18px]" /> {r.country} · {r.currency.code}
+              <Flag code={r.code} className="h-3 w-[18px]" />
+              <span>
+                {r.country} · {r.currency.code}
+              </span>
             </button>
           ))}
         </div>

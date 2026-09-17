@@ -168,9 +168,11 @@ export default function Checkout() {
         <h1 className="font-grotesk text-[34px] uppercase leading-none text-ink sm:text-[44px]">
           Checkout
         </h1>
-        <p className="mt-3 font-mono text-[12px] uppercase text-muted">
-          <Flag code={config.code} className="h-3 w-[18px]" /> {config.country} store · paying in{' '}
-          {config.currency.code}
+        <p className="mt-3 inline-flex items-center gap-2 font-mono text-[12px] uppercase text-muted">
+          <Flag code={config.code} className="h-3 w-[18px]" />
+          <span>
+            {config.country} store · paying in {config.currency.code}
+          </span>
         </p>
       </div>
 
