@@ -26,6 +26,7 @@ import { getProductBySlug, listProducts } from './repo.js'
 import { stats } from './db.js'
 import { REGION_CODES, isRegionCode, type RegionCode } from '../../src/regions/config.js'
 import { asOptionalString, asRegion, asString } from './validate.js'
+import { signUpload, uploadsConfigured } from './uploads.js'
 
 // ---------------------------------------------------------------------
 // The admin API.
@@ -379,4 +380,26 @@ admin.delete(
     await deleteCollection(asString(req.params.id, 'id', 80))
     res.json({ ok: true })
   }),
+)
+
+// ------------------------------------------------------------- uploads
+
+/**
+ * A signature the dashboard uses to post a file straight to Cloudinary.
+ *
+ * Behind requireAdmin like everything else here, so a signature is only
+ * ever minted for somebody already signed in.
+ */
+admin.get(
+  '/uploads/signature',
+  route(async (_req, res) => {
+    res.set('Cache-Control', 'no-store')
+    res.json(signUpload())
+  }),
+)
+
+/** Lets the media editor show an upload button, or explain its absence. */
+admin.get(
+  '/uploads/status',
+  route(async (_req, res) => res.json({ configured: uploadsConfigured() })),
 )

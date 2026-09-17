@@ -8,7 +8,8 @@ import { CATEGORIES } from '../api/db'
 import { REGIONS, REGION_CODES, type RegionCode } from '../regions/config'
 import { formatMoney, minorPerMajor } from '../lib/money'
 import { AdminButton, AdminHeading, Banner, Field, inputClass } from './AdminShell'
-import type { Product, Variant } from '../types'
+import MediaEditor from './MediaEditor'
+import type { MediaItem, Product, Variant } from '../types'
 
 // ---------------------------------------------------------------------
 // Products.
@@ -237,7 +238,7 @@ export function AdminProductEditor() {
     if (categories.some((c) => c.id === form.category)) return
     set('category')(categories[0].id)
   }, [taxonomy.data, form.category])
-  const [media, setMedia] = useState<unknown[]>([{ kind: 'render', shape: 'orb', hue: 210 }])
+  const [media, setMedia] = useState<MediaItem[]>([{ kind: 'render', shape: 'orb', hue: 210 }])
   const [specs, setSpecs] = useState<{ label: string; value: string }[]>([])
   const [variants, setVariants] = useState<VariantDraft[]>([blankVariant()])
 
@@ -389,6 +390,11 @@ export function AdminProductEditor() {
         {/* Collections are a checklist, not a select: a product can be in
             any number of them, and the empty state has to say where they
             come from or this reads as broken rather than unconfigured. */}
+        <Field label="Images and video">
+          <MediaEditor media={media} onChange={setMedia} />
+        </Field>
+
+
         <Field label="Ships from">
           <select
             className={inputClass}

@@ -20,6 +20,18 @@ export default function Media({
     return <div className={`bg-ink/5 ${className}`} />
   }
 
+  if (item.kind === 'image') {
+    return (
+      <img
+        src={item.src}
+        alt={item.alt ?? ''}
+        loading="lazy"
+        decoding="async"
+        className={`h-full w-full object-cover ${className}`}
+      />
+    )
+  }
+
   if (item.kind === 'video') {
     // Off-screen cards cost nothing until they scroll in. A grid of
     // twenty products would otherwise start twenty downloads at once.

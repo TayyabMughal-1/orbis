@@ -286,6 +286,62 @@ export const adminApi = {
   deleteCollection: (id: string) =>
     request<{ ok: true }>(`/admin/collections/${encodeURIComponent(id)}`, json('DELETE')),
 
+  uploadStatus: () => request<{ configured: boolean }>('/admin/uploads/status'),
+
+  /**
+   * Uploads straight from the browser to Cloudinary.
+   *
+   * The file never touches our API: it asks for a signature, then posts
+   * the bytes to Cloudinary directly. A 40MB video would not fit through
+   * a serverless function's request body, and streaming it through one
+   * would buy nothing — Cloudinary is already the thing that will serve
+   * it.
+   */
+  async upload(file: File, onProgress?: (percent: number) => void): Promise<string> {
+    const sig = await request<{
+      cloudName: string
+      apiKey: string
+      timestamp: number
+      signature: string
+      folder: string
+    }>('/admin/uploads/signature')
+
+    const form = new FormData()
+    form.append('file', file)
+    form.append('api_key', sig.apiKey)
+    form.append('timestamp', String(sig.timestamp))
+    form.append('signature', sig.signature)
+    // Every signed parameter has to be sent back unchanged or Cloudinary
+    // rejects it, so folder is not optional here.
+    form.append('folder', sig.folder)
+
+    // XHR rather than fetch, purely for upload progress — fetch still has
+    // no way to report it, and a video upload with no feedback looks
+    // broken.
+    return new Promise<string>((resolve, reject) => {
+      const xhr = new XMLHttpRequest()
+      // 'auto' lets one endpoint take both stills and video.
+      xhr.open('POST', `https://api.cloudinary.com/v1_1/${sig.cloudName}/auto/upload`)
+      xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100))
+      }
+      xhr.onload = () => {
+        try {
+          const body = JSON.parse(xhr.responseText) as {
+            secure_url?: string
+            error?: { message?: string }
+          }
+          if (xhr.status >= 200 && xhr.status < 300 && body.secure_url) resolve(body.secure_url)
+          else reject(new Error(body.error?.message ?? `Upload failed (${xhr.status}).`))
+        } catch {
+          reject(new Error('Cloudinary returned something unreadable.'))
+        }
+      }
+      xhr.onerror = () => reject(new Error('Could not reach Cloudinary.'))
+      xhr.send(form)
+    })
+  },
+
   getSettings: (region: RegionCode) => request<RegionSettings>(`/admin/settings/${region}`),
   putSettings: (region: RegionCode, settings: RegionSettings) =>
     request<RegionSettings>(`/admin/settings/${region}`, json('PUT', settings)),

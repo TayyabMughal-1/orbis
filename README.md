@@ -397,6 +397,9 @@ In Project → Settings → Environment Variables:
 | `ADMIN_NAME` | display name, default `Administrator` | optional |
 | `VITE_SITE_URL` | `https://your-domain.com` | canonicals, hreflang, sitemap |
 | `CORS_ORIGINS` | only if the API is called cross-origin | optional |
+| `CLOUDINARY_CLOUD_NAME` | from the Cloudinary dashboard | optional — enables uploads |
+| `CLOUDINARY_API_KEY` | same place | optional |
+| `CLOUDINARY_API_SECRET` | same place — **server only, never `VITE_`** | optional |
 
 `VITE_SITE_URL` is read at **build** time, so changing it needs a redeploy.
 `DATABASE_URL`, `ADMIN_EMAIL` and `ADMIN_PASSWORD_HASH` are read at request time.
@@ -410,6 +413,34 @@ reason (`PGPOOL_MAX`, default 3).
 TLS is on, but the certificate chain is not verified, because Supabase presents a
 CA this client has no root for. Set `PGSSL_STRICT=1` to demand a verifiable chain
 when pointing at a Postgres whose CA the runtime already trusts.
+
+### Product images
+
+The dashboard can either take a file or a URL. Uploads need three values
+from **Cloudinary → Settings → API Keys**, set on the server:
+
+```
+CLOUDINARY_CLOUD_NAME=your-cloud-name
+CLOUDINARY_API_KEY=123456789012345
+CLOUDINARY_API_SECRET=...
+```
+
+None of them may carry a `VITE_` prefix. Anything prefixed that way is
+compiled into the browser bundle, and the secret is what stops strangers
+uploading to your account.
+
+The file does not pass through this API. The dashboard asks it for a
+signature, then posts the bytes straight to Cloudinary — which is the
+only reason a 40MB video works at all, since a serverless function would
+have to hold the whole thing in memory inside a fifteen-second budget.
+
+Signed rather than an unsigned preset on purpose: an unsigned preset is a
+public string that lets anyone who reads the JavaScript upload to your
+account until you delete it. A signature is minted per upload, only for a
+signed-in admin, and is scoped to the `orbis/products` folder.
+
+Leave them unset and the upload button explains itself; pasting a URL
+still works.
 
 Set `ADMIN_PASSWORD_HASH` rather than `ADMIN_PASSWORD` — the hash is what the
 server compares against, and the plaintext then exists nowhere. Without either,

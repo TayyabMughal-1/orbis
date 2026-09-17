@@ -10,7 +10,10 @@ export type StockByRegion = Record<RegionCode, number>
 export type Category = 'figures' | 'homeware' | 'lighting' | 'apparel' | 'prints'
 
 export type MediaItem =
+  /** A photograph. src is an absolute URL — Cloudinary, or anywhere. */
+  | { kind: 'image'; src: string; alt?: string }
   | { kind: 'video'; src: string }
+  /** Drawn in the browser from a shape and a hue. Costs no request. */
   | { kind: 'render'; shape: VisualShape; hue: number; accent?: number }
 
 export type VisualShape = 'orb' | 'ring' | 'monolith' | 'prism' | 'wave' | 'grid'
