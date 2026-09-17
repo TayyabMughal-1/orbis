@@ -82,19 +82,19 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-r from-background/65 via-background/10 to-transparent lg:from-background/50 lg:via-transparent" />
 
         <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-[1600px] flex-col justify-center px-4 py-24 sm:px-6 lg:px-10">
-          <div className="max-w-[820px]">
+          <div className="max-w-[1000px]">
             <div className="animate-fade-up mb-5 inline-flex items-center gap-2 rounded-full border border-ink/20 bg-ink/5 px-4 py-2 font-body text-[11px] uppercase tracking-[0.15em] text-ink/80">
               <Flag code={config.code} className="h-3.5 w-5" />
               {config.hero.eyebrow}
             </div>
 
             <h1
-              className="animate-fade-up font-grotesk text-[42px] uppercase leading-[1.02] text-ink sm:text-[64px] md:text-[78px] lg:text-[92px]"
+              className="animate-fade-up font-grotesk text-[34px] uppercase leading-[1.02] text-ink sm:text-[52px] md:text-[62px] lg:text-[74px]"
               style={{ animationDelay: '90ms' }}
             >
               Meet Orbis
               <br />
-              take him home
+              Deliver stars at your home
             </h1>
 
             {/* In flow, on the same left edge as everything else. It used to
