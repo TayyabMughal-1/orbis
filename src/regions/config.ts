@@ -85,7 +85,7 @@ export type RegionConfig = {
   address: AddressFormat
   support: { email: string; phone: string; hours: string }
   entity: { name: string; addressLines: string[]; registration: string }
-  policy: { returnsDays: number; warrantyMonths: number; dutiesNote: string }
+  policy: { returnsDays: number; dutiesNote: string }
   /** Merchandising copy that differs by market. */
   hero: { eyebrow: string; promo: string }
   /**
@@ -199,7 +199,6 @@ export const REGIONS: Record<RegionCode, RegionConfig> = {
     },
     policy: {
       returnsDays: 30,
-      warrantyMonths: 24,
       dutiesNote: 'Ships from our Nevada warehouse. No customs charges on domestic orders.',
     },
     hero: { eyebrow: 'Shipping across all 50 states', promo: 'Free standard shipping over $150' },
@@ -257,7 +256,6 @@ export const REGIONS: Record<RegionCode, RegionConfig> = {
     },
     policy: {
       returnsDays: 14,
-      warrantyMonths: 24,
       dutiesNote: 'Ships from our Jebel Ali warehouse. Duties and VAT are already settled — nothing to pay on delivery.',
     },
     hero: { eyebrow: 'Delivering to all 7 emirates', promo: 'Free delivery over AED 400 · Tabby available' },
@@ -315,7 +313,6 @@ export const REGIONS: Record<RegionCode, RegionConfig> = {
     },
     policy: {
       returnsDays: 7,
-      warrantyMonths: 12,
       dutiesNote: 'Ships from our Lahore warehouse. Cash on delivery available nationwide.',
     },
     hero: { eyebrow: 'Nationwide delivery, cash on delivery welcome', promo: 'Free delivery over Rs 25,000' },

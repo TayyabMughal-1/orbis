@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight, CreditCard, RotateCcw, ShieldCheck, Truck } from 'lucide-react'
+import { ArrowRight, CreditCard, RotateCcw, Truck } from 'lucide-react'
 import { api } from '../api/client'
 import { CATEGORIES, VIDEOS } from '../api/db'
 import { useAsync } from '../lib/useAsync'
@@ -150,7 +150,7 @@ export default function Home() {
 
       {/* ------------------------------- region-specific value props */}
       <section className="border-y border-ink/10 bg-ink/[0.02]">
-        <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-px px-4 sm:px-6 lg:grid-cols-4 lg:px-10">
+        <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-px px-4 sm:px-6 lg:grid-cols-3 lg:px-10">
           {[
             {
               icon: Truck,
@@ -169,11 +169,6 @@ export default function Home() {
                 .slice(0, 3)
                 .map((m) => m.label)
                 .join(' · '),
-            },
-            {
-              icon: ShieldCheck,
-              title: `${config.policy.warrantyMonths}-month warranty`,
-              body: config.taxNote,
             },
           ].map(({ icon: Icon, title, body }, i) => (
             <Reveal key={title} delay={i * 80} className="px-2 py-8 sm:px-4 lg:px-6">
@@ -365,10 +360,9 @@ export default function Home() {
               do not reissue them, so what you buy stays what you bought.
             </p>
 
-            <dl className="mt-9 grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-4">
+            <dl className="mt-9 grid grid-cols-2 gap-x-6 gap-y-7 sm:grid-cols-3">
               {[
                 { value: config.policy.returnsDays, unit: 'day', label: 'Free returns' },
-                { value: config.policy.warrantyMonths, unit: 'month', label: 'Warranty' },
                 { value: config.shipping.length, unit: 'options', label: 'Delivery speeds' },
                 { value: config.paymentMethods.length, unit: 'ways', label: 'To pay' },
               ].map((stat) => (

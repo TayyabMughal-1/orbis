@@ -72,7 +72,6 @@ export default function Footer() {
             </h3>
             <ul className="mt-4 space-y-2 font-mono text-[12px] text-muted">
               <li>{config.policy.returnsDays}-day returns</li>
-              <li>{config.policy.warrantyMonths}-month warranty</li>
               <li>{config.taxNote}</li>
               <li>
                 <Link to={href('/orders')} className="hover:text-accent">

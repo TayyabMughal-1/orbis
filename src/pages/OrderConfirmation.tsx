@@ -193,7 +193,7 @@ export default function OrderConfirmation() {
               </p>
             )}
             <p className="mt-5 font-mono text-[10px] leading-relaxed text-muted">
-              {config.policy.returnsDays}-day returns · {config.policy.warrantyMonths}-month warranty ·{' '}
+              {config.policy.returnsDays}-day returns ·{' '}
               {config.entity.name} · {config.entity.registration}
             </p>
           </div>

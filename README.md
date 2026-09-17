@@ -42,7 +42,7 @@ route hard-codes a country.
 | Payment           | Card, PayPal, Apple Pay, Affirm | Card, Apple Pay, Tabby, Tamara, Cash on delivery | Cash on delivery, Easypaisa, JazzCash, Card, Bank transfer |
 | Address           | State + ZIP (`94107`)        | Emirate + optional PO Box         | Province + postal code (`54000`)      |
 | Phone             | `+1` 10 digits               | `+971` `5XXXXXXXX`                | `+92` `3XXXXXXXXX`                    |
-| Returns / warranty| 30 days / 24 months          | 14 days / 24 months               | 7 days / 12 months                    |
+| Returns           | 30 days                      | 14 days                           | 7 days                                |
 | Legal entity      | Orbis Store Inc.             | Orbis Store Trading L.L.C.        | Orbis Store (Pvt.) Ltd.               |
 
 Two consequences worth knowing:

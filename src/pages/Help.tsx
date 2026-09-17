@@ -56,7 +56,7 @@ function buildFaq(config: RegionConfig): { q: string; a: string }[] {
     },
     {
       q: 'Can I return something?',
-      a: `Yes — you have ${config.policy.returnsDays} days from delivery, as long as the item is unused and in its original packaging. Email ${config.support.email} with your order number and we will arrange the collection. Everything is covered by a ${config.policy.warrantyMonths}-month warranty against manufacturing faults.`,
+      a: `Yes — you have ${config.policy.returnsDays} days from delivery, as long as the item is unused and in its original packaging. Email ${config.support.email} with your order number and we will arrange the collection.`,
     },
     {
       q: 'Why are prices different from your other stores?',

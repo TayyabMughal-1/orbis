@@ -449,7 +449,7 @@ function ProductBody({ product }: { product: Product }) {
             />
             <Line
               icon={ShieldCheck}
-              title={`${config.policy.warrantyMonths}-month warranty`}
+              title="Ways to pay"
               body={`Pay with ${config.paymentMethods.slice(0, 3).map((m) => m.label).join(', ')}.`}
             />
           </div>
