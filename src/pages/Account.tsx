@@ -22,7 +22,7 @@ import { formatMoney } from '../lib/money'
 // ---------------------------------------------------------------------
 
 const field =
-  'w-full rounded-[12px] border border-ink/15 bg-background px-4 py-3 font-body text-[13px] text-ink outline-none transition-colors focus:border-accent'
+  'w-full rounded-[12px] border border-ink/15 bg-background px-4 py-3 font-body text-[15px] text-ink outline-none transition-colors focus:border-accent'
 
 export default function Account() {
   const { region, href } = useRegion()
@@ -55,7 +55,7 @@ export default function Account() {
       />
       <div className="mx-auto max-w-[1100px] px-4 py-16 sm:px-6 lg:px-10">
         {checking ? (
-          <p className="font-body text-[12px] text-muted">Checking your session…</p>
+          <p className="font-body text-[14px] text-muted">Checking your session…</p>
         ) : customer ? (
           <SignedIn
             customer={customer}
@@ -110,7 +110,7 @@ function SignInOrRegister({
       <h1 className="font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[38px]">
         {mode === 'in' ? 'Sign in' : 'Create an account'}
       </h1>
-      <p className="mt-3 font-body text-[12px] leading-relaxed text-muted">
+      <p className="mt-3 font-body text-[14px] leading-relaxed text-muted">
         {mode === 'in'
           ? 'To see everything you have ordered, in every store.'
           : 'Orders you have already placed with this email will appear straight away.'}
@@ -146,7 +146,7 @@ function SignInOrRegister({
         />
 
         {error && (
-          <p className="rounded-[10px] border border-red-500/25 bg-red-50 p-3 font-body text-[11px] leading-relaxed text-red-700">
+          <p className="rounded-[10px] border border-red-500/25 bg-red-50 p-3 font-body text-[13px] leading-relaxed text-red-700">
             {error}
           </p>
         )}
@@ -154,7 +154,7 @@ function SignInOrRegister({
         <button
           type="submit"
           disabled={busy}
-          className="press mt-1 rounded-full bg-ink py-3.5 font-grotesk text-[13px] uppercase text-background disabled:opacity-40"
+          className="press mt-1 rounded-full bg-ink py-3.5 font-grotesk text-[15px] uppercase text-background disabled:opacity-40"
         >
           {busy ? 'One moment…' : mode === 'in' ? 'Sign in' : 'Create account'}
         </button>
@@ -166,7 +166,7 @@ function SignInOrRegister({
           setMode(mode === 'in' ? 'up' : 'in')
           setError(null)
         }}
-        className="mt-5 font-body text-[11px] text-muted underline hover:text-ink"
+        className="mt-5 font-body text-[13px] text-muted underline hover:text-ink"
       >
         {mode === 'in' ? 'No account yet? Create one' : 'Already have an account? Sign in'}
       </button>
@@ -190,20 +190,20 @@ function SignedIn({
     <>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <div className="font-body text-[11px] uppercase tracking-[0.2em] text-muted">
+          <div className="font-body text-[13px] uppercase tracking-[0.2em] text-muted">
             Your account
           </div>
           <h1 className="mt-2 font-grotesk text-[30px] uppercase leading-[1.05] text-ink sm:text-[38px]">
             {customer.name || customer.email}
           </h1>
           {customer.name && (
-            <p className="mt-1 font-body text-[12px] text-muted">{customer.email}</p>
+            <p className="mt-1 font-body text-[14px] text-muted">{customer.email}</p>
           )}
         </div>
         <button
           type="button"
           onClick={onSignOut}
-          className="press inline-flex items-center gap-2 rounded-full border border-ink/20 px-5 py-2.5 font-grotesk text-[12px] uppercase text-ink transition-colors hover:border-ink/45"
+          className="press inline-flex items-center gap-2 rounded-full border border-ink/20 px-5 py-2.5 font-grotesk text-[14px] uppercase text-ink transition-colors hover:border-ink/45"
         >
           <LogOut size={14} /> Sign out
         </button>
@@ -211,7 +211,7 @@ function SignedIn({
 
       <h2 className="mt-12 font-grotesk text-[16px] uppercase text-ink">Purchase history</h2>
 
-      {orders.loading && <p className="mt-4 font-body text-[12px] text-muted">Loading…</p>}
+      {orders.loading && <p className="mt-4 font-body text-[14px] text-muted">Loading…</p>}
       {orders.error && (
         <div className="mt-4">
           <ErrorState message={orders.error} onRetry={orders.reload} />
@@ -221,13 +221,13 @@ function SignedIn({
       {orders.data && orders.data.length === 0 && (
         <div className="mt-6 rounded-[18px] border border-ink/[0.07] bg-surface p-8 text-center">
           <Package size={20} className="mx-auto text-muted" strokeWidth={1.6} />
-          <p className="mt-3 font-body text-[12px] leading-relaxed text-muted">
+          <p className="mt-3 font-body text-[14px] leading-relaxed text-muted">
             Nothing here yet. Anything you order with{' '}
             <span className="text-ink">{customer.email}</span> will show up on this page.
           </p>
           <Link
             to={shopHref}
-            className="press mt-5 inline-block rounded-full bg-neon px-6 py-2.5 font-grotesk text-[12px] uppercase text-ink"
+            className="press mt-5 inline-block rounded-full bg-neon px-6 py-2.5 font-grotesk text-[14px] uppercase text-ink"
           >
             Start shopping
           </Link>
@@ -249,11 +249,11 @@ function SignedIn({
                   <div>
                     <Link
                       to={`/${order.region}/order/${order.number}`}
-                      className="font-grotesk text-[13px] uppercase text-ink hover:text-accent"
+                      className="font-grotesk text-[15px] uppercase text-ink hover:text-accent"
                     >
                       {order.number}
                     </Link>
-                    <div className="mt-1 font-body text-[11px] text-muted">
+                    <div className="mt-1 font-body text-[13px] text-muted">
                       {new Date(order.placedAt).toLocaleDateString(config.locale, {
                         day: 'numeric',
                         month: 'short',
@@ -272,12 +272,12 @@ function SignedIn({
                     <div className="font-body text-[14px] text-ink">
                       {formatMoney(order.totals.total, config)}
                     </div>
-                    <div className="mt-1 font-body text-[10px] uppercase tracking-wide text-muted">
+                    <div className="mt-1 font-body text-[12px] uppercase tracking-wide text-muted">
                       {order.status}
                     </div>
                   </div>
                 </div>
-                <div className="mt-3 truncate font-body text-[11px] text-muted">
+                <div className="mt-3 truncate font-body text-[13px] text-muted">
                   {order.lines.map((l) => l.productName).join(' · ')}
                 </div>
               </li>

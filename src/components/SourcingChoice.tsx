@@ -132,11 +132,11 @@ function Card({
         {code ? (
           <Flag code={code} className="h-3 w-[18px]" />
         ) : (
-          <span className="rounded-[2px] bg-white/20 px-1.5 py-0.5 font-body text-[9px] font-semibold tracking-wide text-white">
+          <span className="rounded-[2px] bg-white/20 px-1.5 py-0.5 font-body text-[11px] font-semibold tracking-wide text-white">
             CN
           </span>
         )}
-        <span className="font-body text-[11px] uppercase tracking-[0.16em] text-white/75">
+        <span className="font-body text-[13px] uppercase tracking-[0.16em] text-white/75">
           {eyebrow}
         </span>
         <ArrowRight
@@ -149,7 +149,7 @@ function Card({
         {title}
       </h3>
 
-      <p className="relative mt-3 max-w-[42ch] font-body text-[12px] leading-relaxed text-white/75">
+      <p className="relative mt-3 max-w-[42ch] font-body text-[14px] leading-relaxed text-white/75">
         {body}
       </p>
 
@@ -157,7 +157,7 @@ function Card({
         {pills.map((pill) => (
           <span
             key={pill}
-            className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 font-body text-[11px] text-white/90 backdrop-blur-sm"
+            className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 font-body text-[13px] text-white/90 backdrop-blur-sm"
           >
             {pill}
           </span>
@@ -165,11 +165,11 @@ function Card({
       </div>
 
       <div className="relative mt-auto pt-7">
-        <span className="inline-flex items-center gap-2 font-grotesk text-[13px] uppercase text-white">
+        <span className="inline-flex items-center gap-2 font-grotesk text-[15px] uppercase text-white">
           {cta}
           <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
         </span>
-        <div className="mt-2 font-body text-[10px] uppercase tracking-wide text-white/55">
+        <div className="mt-2 font-body text-[12px] uppercase tracking-wide text-white/55">
           {footnote}
         </div>
       </div>

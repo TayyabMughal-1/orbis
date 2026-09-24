@@ -125,7 +125,7 @@ export function AdminPromos() {
               const on = draft.regions.includes(region)
               return (
                 <div key={region} className="rounded-[10px] border border-ink/10 p-3">
-                  <label className="flex cursor-pointer items-center gap-2 font-body text-[11px] uppercase text-ink/80">
+                  <label className="flex cursor-pointer items-center gap-2 font-body text-[13px] uppercase text-ink/80">
                     <input
                       type="checkbox"
                       checked={on}
@@ -179,7 +179,7 @@ export function AdminPromos() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse">
             <thead>
-              <tr className="border-b border-ink/10 text-left font-body text-[10px] uppercase tracking-wide text-muted">
+              <tr className="border-b border-ink/10 text-left font-body text-[12px] uppercase tracking-wide text-muted">
                 <th className="py-2 pr-4">Code</th>
                 <th className="py-2 pr-4">Discount</th>
                 <th className="py-2 pr-4">Stores</th>
@@ -195,17 +195,17 @@ export function AdminPromos() {
                     <button
                       type="button"
                       onClick={() => setDraft(promo)}
-                      className="font-grotesk text-[13px] uppercase text-ink hover:text-accent"
+                      className="font-grotesk text-[15px] uppercase text-ink hover:text-accent"
                     >
                       {promo.code}
                     </button>
-                    <div className="mt-0.5 font-body text-[10px] text-muted">{promo.label}</div>
+                    <div className="mt-0.5 font-body text-[12px] text-muted">{promo.label}</div>
                   </td>
-                  <td className="py-3 pr-4 font-body text-[12px] text-accent">{promo.percentOff}%</td>
-                  <td className="py-3 pr-4 font-body text-[11px] uppercase text-muted">
+                  <td className="py-3 pr-4 font-body text-[14px] text-accent">{promo.percentOff}%</td>
+                  <td className="py-3 pr-4 font-body text-[13px] uppercase text-muted">
                     {promo.regions.join(', ')}
                   </td>
-                  <td className="py-3 pr-4 font-body text-[11px] text-muted">
+                  <td className="py-3 pr-4 font-body text-[13px] text-muted">
                     {promo.regions
                       .map((r) =>
                         promo.minSubtotal[r]
@@ -214,7 +214,7 @@ export function AdminPromos() {
                       )
                       .join(' / ')}
                   </td>
-                  <td className="py-3 pr-4 font-body text-[11px]">
+                  <td className="py-3 pr-4 font-body text-[13px]">
                     <span className={promo.active ? 'text-accent' : 'text-muted'}>
                       {promo.active ? 'Live' : 'Paused'}
                     </span>
@@ -233,7 +233,7 @@ export function AdminPromos() {
               ))}
               {promos.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="py-6 font-body text-[11px] text-muted">
+                  <td colSpan={6} className="py-6 font-body text-[13px] text-muted">
                     No promo codes yet.
                   </td>
                 </tr>
@@ -283,11 +283,11 @@ export function AdminOrders() {
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <div className="font-grotesk text-[14px] uppercase text-ink">{order.number}</div>
-                    <div className="mt-1 font-body text-[11px] text-muted">
+                    <div className="mt-1 font-body text-[13px] text-muted">
                       {new Date(order.placedAt).toLocaleString(config.locale)} · {order.address.fullName} ·{' '}
                       {order.email}
                     </div>
-                    <div className="mt-1 font-body text-[11px] text-muted">
+                    <div className="mt-1 font-body text-[13px] text-muted">
                       {order.address.city}, {order.address.region}, {config.country} · {order.shipping.label}
                     </div>
                   </div>
@@ -295,7 +295,7 @@ export function AdminOrders() {
                     <div className="font-body text-[15px] text-accent">
                       {formatMoney(order.totals.total, config, false)}
                     </div>
-                    <div className="mt-1 font-body text-[10px] uppercase text-muted">
+                    <div className="mt-1 font-body text-[12px] uppercase text-muted">
                       {order.paymentMethodLabel}
                     </div>
                   </div>
@@ -303,7 +303,7 @@ export function AdminOrders() {
 
                 <ul className="mt-3 border-t border-ink/10 pt-3">
                   {order.lines.map((line) => (
-                    <li key={line.sku} className="flex justify-between font-body text-[11px] text-muted">
+                    <li key={line.sku} className="flex justify-between font-body text-[13px] text-muted">
                       <span>
                         {line.quantity} × {line.productName}{' '}
                         <span className="text-muted">({line.variantLabel})</span>
@@ -345,7 +345,7 @@ export function AdminOrders() {
             )
           })}
           {orders.length === 0 && (
-            <p className="font-body text-[12px] text-muted">No orders yet.</p>
+            <p className="font-body text-[14px] text-muted">No orders yet.</p>
           )}
         </div>
       )}
@@ -428,7 +428,7 @@ export function AdminSettings() {
             key={r}
             type="button"
             onClick={() => setRegion(r)}
-            className={`rounded-full border px-4 py-2 font-body text-[11px] uppercase transition-colors ${
+            className={`rounded-full border px-4 py-2 font-body text-[13px] uppercase transition-colors ${
               r === region
                 ? 'border-accent/50 bg-accent/10 text-accent'
                 : 'border-ink/15 text-muted hover:border-ink/35'

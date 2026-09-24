@@ -38,7 +38,7 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="flex items-center gap-2 rounded-full border border-ink/15 bg-ink/5 px-3 py-2 font-body text-[11px] uppercase text-ink transition-colors hover:border-ink/30"
+        className="flex items-center gap-2 rounded-full border border-ink/15 bg-ink/5 px-3 py-2 font-body text-[13px] uppercase text-ink transition-colors hover:border-ink/30"
       >
         <Flag code={config.code} className="h-3.5 w-5" />
         <span className="text-muted">{config.currency.code}</span>
@@ -51,7 +51,7 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
           role="listbox"
           className="animate-scale-in absolute right-0 z-50 mt-2 w-[268px] origin-top-right overflow-hidden rounded-[16px] border border-ink/15 bg-background shadow-2xl shadow-black/60"
         >
-          <div className="flex items-center gap-2 border-b border-ink/10 px-4 py-3 font-body text-[10px] uppercase tracking-[0.15em] text-muted">
+          <div className="flex items-center gap-2 border-b border-ink/10 px-4 py-3 font-body text-[12px] uppercase tracking-[0.15em] text-muted">
             <Globe size={12} />
             Choose your store
           </div>
@@ -73,10 +73,10 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
               >
                 <Flag code={r.code} className="h-3.5 w-5" />
                 <span className="min-w-0 flex-1">
-                  <span className="block truncate font-grotesk text-[12px] uppercase text-ink">
+                  <span className="block truncate font-grotesk text-[14px] uppercase text-ink">
                     {r.country}
                   </span>
-                  <span className="block font-body text-[10px] uppercase text-muted">
+                  <span className="block font-body text-[12px] uppercase text-muted">
                     Prices in {r.currency.code} · {r.taxLabel}
                   </span>
                 </span>
@@ -84,7 +84,7 @@ export default function RegionSwitcher({ compact = false }: { compact?: boolean 
               </button>
             )
           })}
-          <p className="border-t border-ink/10 px-4 py-3 font-body text-[10px] leading-relaxed text-muted">
+          <p className="border-t border-ink/10 px-4 py-3 font-body text-[12px] leading-relaxed text-muted">
             Each store has its own prices, delivery options and payment methods. Your basket stays with
             the store you built it in.
           </p>

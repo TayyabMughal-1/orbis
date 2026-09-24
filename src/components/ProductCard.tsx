@@ -52,7 +52,7 @@ export default function ProductCard({ product }: { product: Product }) {
             and a much longer wait, so that belongs on the card rather
             than as a surprise at checkout. */}
         {product.origin === 'import' && config.importShipping && (
-          <div className="absolute right-3 top-3 rounded-full bg-ink/85 px-2.5 py-1 font-body text-[9px] font-medium uppercase tracking-wide text-background backdrop-blur">
+          <div className="absolute right-3 top-3 rounded-full bg-ink/85 px-2.5 py-1 font-body text-[11px] font-medium uppercase tracking-wide text-background backdrop-blur">
             From {config.importShipping.from}
           </div>
         )}
@@ -84,7 +84,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 <Plus size={18} strokeWidth={2.4} />
               </button>
             ) : (
-              <span className="flex h-10 items-center gap-1.5 rounded-full bg-neon px-4 font-grotesk text-[11px] uppercase text-ink shadow-lg shadow-accent/25">
+              <span className="flex h-10 items-center gap-1.5 rounded-full bg-neon px-4 font-grotesk text-[13px] uppercase text-ink shadow-lg shadow-accent/25">
                 Choose options
                 <ArrowUpRight size={14} strokeWidth={2.4} />
               </span>
@@ -98,15 +98,15 @@ export default function ProductCard({ product }: { product: Product }) {
           {product.name}
         </h3>
         {product.rating && <Stars rating={product.rating} className="mt-1.5" />}
-        <p className="mt-1.5 font-body text-[11px] leading-relaxed text-muted">{product.tagline}</p>
+        <p className="mt-1.5 font-body text-[13px] leading-relaxed text-muted">{product.tagline}</p>
 
         <div className="mt-4 flex items-end justify-between">
           <div>
-            {varies && <span className="mr-1 font-body text-[10px] uppercase text-muted">From</span>}
+            {varies && <span className="mr-1 font-body text-[12px] uppercase text-muted">From</span>}
             <Price amount={from} className="font-body text-[15px] text-accent" />
           </div>
           {config.taxIncludedInPrice && (
-            <span className="font-body text-[9px] uppercase text-muted">Incl. {config.taxLabel}</span>
+            <span className="font-body text-[11px] uppercase text-muted">Incl. {config.taxLabel}</span>
           )}
         </div>
       </div>

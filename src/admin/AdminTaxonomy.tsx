@@ -24,7 +24,7 @@ import { REGIONS, REGION_CODES, type RegionCode } from '../regions/config'
 // ---------------------------------------------------------------------
 
 const input =
-  'w-full rounded-[10px] border border-ink/15 bg-background px-3 py-2 font-body text-[12px] text-ink outline-none transition-colors focus:border-accent'
+  'w-full rounded-[10px] border border-ink/15 bg-background px-3 py-2 font-body text-[14px] text-ink outline-none transition-colors focus:border-accent'
 
 type Kind = 'category' | 'collection'
 
@@ -126,7 +126,7 @@ function Panel({
   return (
     <section className="rounded-[20px] border border-ink/[0.07] bg-background p-6 shadow-card">
       <h2 className="font-grotesk text-[16px] uppercase text-ink">{title}</h2>
-      <p className="mt-2 max-w-[46ch] font-body text-[11px] leading-relaxed text-muted">{blurb}</p>
+      <p className="mt-2 max-w-[46ch] font-body text-[13px] leading-relaxed text-muted">{blurb}</p>
 
       <form onSubmit={submit} className="mt-5 grid gap-2.5">
         <input
@@ -158,7 +158,7 @@ function Panel({
                         : [...(draft.regions ?? []), code as RegionCode],
                     })
                   }
-                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-body text-[10px] transition-colors ${
+                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-body text-[12px] transition-colors ${
                     on
                       ? 'border-accent bg-accent text-background'
                       : 'border-ink/15 text-muted hover:border-ink/35'
@@ -180,7 +180,7 @@ function Panel({
             value={draft.position ?? 0}
             onChange={(e) => setDraft({ ...draft, position: Number(e.target.value) })}
           />
-          <label className="flex items-center gap-2 font-body text-[11px] text-muted">
+          <label className="flex items-center gap-2 font-body text-[13px] text-muted">
             <input
               type="checkbox"
               className="h-3.5 w-3.5 accent-[#2F7D00]"
@@ -192,7 +192,7 @@ function Panel({
           <button
             type="submit"
             disabled={busy || !draft.label.trim()}
-            className="press ml-auto inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 font-grotesk text-[11px] uppercase text-background disabled:opacity-40"
+            className="press ml-auto inline-flex items-center gap-1.5 rounded-full bg-ink px-4 py-2 font-grotesk text-[13px] uppercase text-background disabled:opacity-40"
           >
             <Plus size={13} />
             {editing ? 'Save' : 'Add'}
@@ -204,7 +204,7 @@ function Panel({
                 setEditing(null)
                 setDraft({ label: '', body: '', position: 0, regions: [...REGION_CODES] })
               }}
-              className="font-body text-[11px] text-muted underline"
+              className="font-body text-[13px] text-muted underline"
             >
               cancel
             </button>
@@ -213,16 +213,16 @@ function Panel({
       </form>
 
       {error && (
-        <p className="mt-4 rounded-[10px] border border-red-500/25 bg-red-50 p-3 font-body text-[11px] leading-relaxed text-red-700">
+        <p className="mt-4 rounded-[10px] border border-red-500/25 bg-red-50 p-3 font-body text-[13px] leading-relaxed text-red-700">
           {error}
         </p>
       )}
 
       <div className="mt-6">
-        {rows.loading && <p className="font-body text-[11px] text-muted">Loading…</p>}
+        {rows.loading && <p className="font-body text-[13px] text-muted">Loading…</p>}
         {rows.error && <ErrorState message={rows.error} onRetry={rows.reload} />}
         {rows.data && rows.data.length === 0 && (
-          <p className="font-body text-[11px] text-muted">{emptyHint}</p>
+          <p className="font-body text-[13px] text-muted">{emptyHint}</p>
         )}
         {rows.data && rows.data.length > 0 && (
           <ul className="divide-y divide-ink/[0.07]">
@@ -234,19 +234,19 @@ function Panel({
                   className="min-w-0 flex-1 text-left"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="font-grotesk text-[12px] uppercase text-ink">{row.label}</span>
+                    <span className="font-grotesk text-[14px] uppercase text-ink">{row.label}</span>
                     {!row.active && (
-                      <span className="rounded-full bg-ink/10 px-2 py-0.5 font-body text-[9px] uppercase text-muted">
+                      <span className="rounded-full bg-ink/10 px-2 py-0.5 font-body text-[11px] uppercase text-muted">
                         paused
                       </span>
                     )}
                   </div>
-                  <div className="mt-0.5 truncate font-body text-[10px] text-muted">
+                  <div className="mt-0.5 truncate font-body text-[12px] text-muted">
                     /{row.id}
                     {row.body ? ` · ${row.body}` : ''}
                   </div>
                 </button>
-                <span className="flex items-center gap-1.5 whitespace-nowrap pt-0.5 font-body text-[10px] text-muted">
+                <span className="flex items-center gap-1.5 whitespace-nowrap pt-0.5 font-body text-[12px] text-muted">
                   {kind === 'category' &&
                     (row.regions ?? []).map((r) => (
                       <Flag key={r} code={r} className="h-2 w-3" />

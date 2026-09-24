@@ -48,7 +48,7 @@ export default function RegionNotice() {
     <div className="animate-fade-in relative z-[60] border-b border-ink/10 bg-ink/[0.04]">
       <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 sm:px-6 lg:px-10">
         <Flag code={target.code} className="h-4 w-6" />
-        <p className="font-body text-[11px] leading-relaxed text-ink/80">
+        <p className="font-body text-[13px] leading-relaxed text-ink/80">
           You are shopping the {current.country} store in {current.currency.code}. Prices, delivery and
           payment methods are different in {target.country}.
         </p>
@@ -58,7 +58,7 @@ export default function RegionNotice() {
             setRegion(suggested)
             setSuggested(null)
           }}
-          className="press rounded-full bg-neon px-4 py-1.5 font-grotesk text-[11px] uppercase text-ink"
+          className="press rounded-full bg-neon px-4 py-1.5 font-grotesk text-[13px] uppercase text-ink"
         >
           Switch to {target.currency.code}
         </button>

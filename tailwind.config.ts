@@ -15,8 +15,14 @@ export default {
         // wash (ink/[0.03]) in the UI.
         ink: '#0C1322',
         // Secondary text. A real token rather than ink/60, so quiet text
-        // keeps a guaranteed 5.95:1 instead of drifting with opacity.
-        muted: '#5A6478',
+        // keeps a guaranteed ratio instead of drifting with opacity.
+        //
+        // Darkened from #5A6478 (5.95:1). That passed AA, but passing is
+        // a floor for legibility, not a target — and most of this design
+        // sets prose at 11-13px, where a colour that merely passes reads
+        // as washed out. 7.73:1 still sits clearly below ink at 18.55:1,
+        // so the hierarchy survives.
+        muted: '#4A5365',
         // Links, prices, active states. A CSS variable rather than a fixed
         // hex, because each storefront retints it — see regions/config.ts.
         // <alpha-value> keeps the opacity modifiers working, so

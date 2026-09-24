@@ -48,17 +48,17 @@ export default function Newsletter() {
     return (
       <div className="flex items-start gap-2.5 rounded-[14px] border border-accent/30 bg-accent/[0.06] p-4">
         <Check size={15} className="mt-0.5 flex-none text-accent" strokeWidth={2.5} />
-        <p className="font-body text-[11px] leading-relaxed text-ink/80">{message}</p>
+        <p className="font-body text-[13px] leading-relaxed text-ink/80">{message}</p>
       </div>
     )
   }
 
   return (
     <form onSubmit={onSubmit} noValidate>
-      <label htmlFor="newsletter" className="block font-grotesk text-[12px] uppercase text-ink">
+      <label htmlFor="newsletter" className="block font-grotesk text-[14px] uppercase text-ink">
         10% off your first order
       </label>
-      <p className="mt-1.5 font-body text-[11px] leading-relaxed text-muted">
+      <p className="mt-1.5 font-body text-[13px] leading-relaxed text-muted">
         New drops, restocks and the odd discount. One email a month at most, and you can leave
         whenever you like.
       </p>
@@ -76,22 +76,22 @@ export default function Newsletter() {
             }}
             placeholder="you@example.com"
             autoComplete="email"
-            className="w-full bg-transparent py-2.5 font-body text-[12px] text-ink outline-none placeholder:text-muted"
+            className="w-full bg-transparent py-2.5 font-body text-[14px] text-ink outline-none placeholder:text-muted"
           />
         </div>
         <button
           type="submit"
           disabled={state === 'busy'}
-          className="press flex-none rounded-full bg-neon px-5 py-2.5 font-grotesk text-[11px] uppercase text-ink transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="press flex-none rounded-full bg-neon px-5 py-2.5 font-grotesk text-[13px] uppercase text-ink transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {state === 'busy' ? '…' : 'Join'}
         </button>
       </div>
 
       {state === 'error' && message && (
-        <p className="mt-2 font-body text-[10px] text-amber-300">{message}</p>
+        <p className="mt-2 font-body text-[12px] text-amber-300">{message}</p>
       )}
-      <p className="mt-2 font-body text-[10px] leading-relaxed text-muted">
+      <p className="mt-2 font-body text-[12px] leading-relaxed text-muted">
         By joining you agree to hear from {config.entity.name}. Unsubscribe in one click.
       </p>
     </form>

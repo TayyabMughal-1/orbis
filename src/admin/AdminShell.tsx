@@ -77,14 +77,14 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
           <div className="font-grotesk text-[22px] uppercase text-ink">
             Orbis <span className="text-muted">Store</span>
           </div>
-          <div className="mt-1 font-body text-[11px] uppercase tracking-[0.2em] text-muted">
+          <div className="mt-1 font-body text-[13px] uppercase tracking-[0.2em] text-muted">
             Dashboard
           </div>
         </div>
 
         <label
           htmlFor="admin-email"
-          className="mb-2 block font-body text-[10px] uppercase tracking-wide text-muted"
+          className="mb-2 block font-body text-[12px] uppercase tracking-wide text-muted"
         >
           Email
         </label>
@@ -100,13 +100,13 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
               setEmail(e.target.value)
               setError(null)
             }}
-            className="w-full bg-transparent py-3 font-body text-[13px] text-ink outline-none"
+            className="w-full bg-transparent py-3 font-body text-[15px] text-ink outline-none"
           />
         </div>
 
         <label
           htmlFor="admin-password"
-          className="mb-2 block font-body text-[10px] uppercase tracking-wide text-muted"
+          className="mb-2 block font-body text-[12px] uppercase tracking-wide text-muted"
         >
           Password
         </label>
@@ -121,12 +121,12 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
               setPassword(e.target.value)
               setError(null)
             }}
-            className="w-full bg-transparent py-3 font-body text-[13px] text-ink outline-none"
+            className="w-full bg-transparent py-3 font-body text-[15px] text-ink outline-none"
           />
         </div>
 
         {apiDown && (
-          <p className="mt-3 rounded-[10px] border border-amber-400/35 bg-amber-400/10 p-3 font-body text-[11px] leading-relaxed text-amber-100">
+          <p className="mt-3 rounded-[10px] border border-amber-400/35 bg-amber-400/10 p-3 font-body text-[13px] leading-relaxed text-amber-100">
             {isLocalhost ? (
               <>
                 The API is not running, so signing in cannot work yet. Start it with{' '}
@@ -147,7 +147,7 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
         )}
 
         {error && (
-          <p className="mt-3 rounded-[10px] border border-red-400/30 bg-red-500/10 p-3 font-body text-[11px] leading-relaxed text-red-200">
+          <p className="mt-3 rounded-[10px] border border-red-400/30 bg-red-500/10 p-3 font-body text-[13px] leading-relaxed text-red-200">
             {error}
           </p>
         )}
@@ -155,12 +155,12 @@ function Login({ onSignedIn }: { onSignedIn: () => void }) {
         <button
           type="submit"
           disabled={busy || !password}
-          className="press mt-5 w-full rounded-full bg-neon py-3 font-grotesk text-[13px] uppercase text-ink disabled:opacity-40"
+          className="press mt-5 w-full rounded-full bg-neon py-3 font-grotesk text-[15px] uppercase text-ink disabled:opacity-40"
         >
           {busy ? 'Checking…' : 'Sign in'}
         </button>
 
-        <p className="mt-5 font-body text-[10px] leading-relaxed text-muted">
+        <p className="mt-5 font-body text-[12px] leading-relaxed text-muted">
           Set <code className="text-muted">ADMIN_PASSWORD</code> (or{' '}
           <code className="text-muted">ADMIN_PASSWORD_HASH</code>) on the API to enable this. With
           neither set, the dashboard stays locked.
@@ -182,7 +182,7 @@ function Dashboard({ onSignOut }: { onSignOut: () => void }) {
   }
 
   const link = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 font-body text-[12px] transition-colors ${
+    `flex items-center gap-2.5 rounded-[10px] px-3 py-2.5 font-body text-[14px] transition-colors ${
       isActive ? 'bg-accent/10 text-accent' : 'text-muted hover:bg-ink/5 hover:text-ink'
     }`
 
@@ -192,7 +192,7 @@ function Dashboard({ onSignOut }: { onSignOut: () => void }) {
         <aside className="lg:w-56 lg:flex-none">
           <div className="mb-6 font-grotesk text-[16px] uppercase text-ink">
             Orbis <span className="text-muted">Store</span>
-            <div className="mt-0.5 font-body text-[10px] uppercase tracking-[0.2em] text-muted">
+            <div className="mt-0.5 font-body text-[12px] uppercase tracking-[0.2em] text-muted">
               Dashboard
             </div>
           </div>
@@ -218,14 +218,14 @@ function Dashboard({ onSignOut }: { onSignOut: () => void }) {
           <div className="mt-6 flex flex-col gap-2 border-t border-ink/10 pt-4">
             <a
               href="/"
-              className="font-body text-[11px] text-muted transition-colors hover:text-ink"
+              className="font-body text-[13px] text-muted transition-colors hover:text-ink"
             >
               ← View the shop
             </a>
             <button
               type="button"
               onClick={signOut}
-              className="flex items-center gap-2 font-body text-[11px] text-muted transition-colors hover:text-ink"
+              className="flex items-center gap-2 font-body text-[13px] text-muted transition-colors hover:text-ink"
             >
               <LogOut size={13} /> Sign out
             </button>
@@ -256,7 +256,7 @@ export function AdminHeading({
       <div>
         <h1 className="font-grotesk text-[24px] uppercase leading-none text-ink">{title}</h1>
         {subtitle && (
-          <p className="mt-2 font-body text-[11px] leading-relaxed text-muted">{subtitle}</p>
+          <p className="mt-2 font-body text-[13px] leading-relaxed text-muted">{subtitle}</p>
         )}
       </div>
       {action}
@@ -280,23 +280,23 @@ export function Field({
   return (
     <div className="block">
       <label className="block">
-        <span className="mb-1.5 block font-body text-[10px] uppercase tracking-wide text-muted">
+        <span className="mb-1.5 block font-body text-[12px] uppercase tracking-wide text-muted">
           {label}
         </span>
         {children}
       </label>
-      {hint && <span className="mt-1 block font-body text-[10px] text-muted">{hint}</span>}
+      {hint && <span className="mt-1 block font-body text-[12px] text-muted">{hint}</span>}
     </div>
   )
 }
 
 export const inputClass =
-  'w-full rounded-[10px] border border-ink/15 bg-ink/5 px-3 py-2.5 font-body text-[12px] text-ink outline-none transition-colors focus:border-ink/40 placeholder:text-muted'
+  'w-full rounded-[10px] border border-ink/15 bg-ink/5 px-3 py-2.5 font-body text-[14px] text-ink outline-none transition-colors focus:border-ink/40 placeholder:text-muted'
 
 export function Banner({ tone, children }: { tone: 'ok' | 'error'; children: ReactNode }) {
   return (
     <div
-      className={`mb-5 rounded-[12px] border p-3 font-body text-[11px] leading-relaxed ${
+      className={`mb-5 rounded-[12px] border p-3 font-body text-[13px] leading-relaxed ${
         tone === 'ok'
           ? 'border-accent/35 bg-accent/[0.07] text-ink/80'
           : 'border-red-400/30 bg-red-500/10 text-red-200'
@@ -330,7 +330,7 @@ export function AdminButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`press rounded-full px-5 py-2.5 font-grotesk text-[12px] uppercase transition-colors disabled:opacity-40 ${tones[tone]}`}
+      className={`press rounded-full px-5 py-2.5 font-grotesk text-[14px] uppercase transition-colors disabled:opacity-40 ${tones[tone]}`}
     >
       {children}
     </button>

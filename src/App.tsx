@@ -88,7 +88,7 @@ function StoreLayout() {
           >
             <a
               href="#main"
-              className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-neon focus:px-5 focus:py-2.5 focus:font-grotesk focus:text-[12px] focus:uppercase focus:text-ink"
+              className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-neon focus:px-5 focus:py-2.5 focus:font-grotesk focus:text-[14px] focus:uppercase focus:text-ink"
             >
               Skip to content
             </a>

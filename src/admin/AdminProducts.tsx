@@ -80,13 +80,13 @@ export function AdminProductList() {
       />
 
       {error && <Banner tone="error">{error}</Banner>}
-      {!products && !error && <p className="font-body text-[12px] text-muted">Loading…</p>}
+      {!products && !error && <p className="font-body text-[14px] text-muted">Loading…</p>}
 
       {products && (
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse">
             <thead>
-              <tr className="border-b border-ink/10 text-left font-body text-[10px] uppercase tracking-wide text-muted">
+              <tr className="border-b border-ink/10 text-left font-body text-[12px] uppercase tracking-wide text-muted">
                 <th className="py-2 pr-4">Product</th>
                 <th className="py-2 pr-4">Department</th>
                 <th className="py-2 pr-4">Variants</th>
@@ -110,22 +110,22 @@ export function AdminProductList() {
                     <td className="py-3 pr-4">
                       <Link
                         to={`/admin/products/${product.slug}`}
-                        className="font-grotesk text-[13px] uppercase text-ink hover:text-accent"
+                        className="font-grotesk text-[15px] uppercase text-ink hover:text-accent"
                       >
                         {product.name}
                       </Link>
-                      <div className="mt-0.5 font-body text-[10px] text-muted">/{product.slug}</div>
+                      <div className="mt-0.5 font-body text-[12px] text-muted">/{product.slug}</div>
                     </td>
-                    <td className="py-3 pr-4 font-body text-[11px] capitalize text-muted">
+                    <td className="py-3 pr-4 font-body text-[13px] capitalize text-muted">
                       {product.category}
                     </td>
-                    <td className="py-3 pr-4 font-body text-[11px] text-muted">
+                    <td className="py-3 pr-4 font-body text-[13px] text-muted">
                       {product.variants.length}
                     </td>
                     {REGION_CODES.map((r) => {
                       const stock = stockFor(r)
                       return (
-                        <td key={r} className="py-3 pr-4 font-body text-[11px]">
+                        <td key={r} className="py-3 pr-4 font-body text-[13px]">
                           <span className="text-ink/80">
                             {formatMoney(fromPrice(r), REGIONS[r], true)}
                           </span>
@@ -345,7 +345,7 @@ export function AdminProductEditor() {
     }
   }
 
-  if (loading) return <p className="font-body text-[12px] text-muted">Loading…</p>
+  if (loading) return <p className="font-body text-[14px] text-muted">Loading…</p>
 
   return (
     <>
@@ -409,7 +409,7 @@ export function AdminProductEditor() {
                       prev.includes(code) ? prev.filter((r) => r !== code) : [...prev, code],
                     )
                   }
-                  className={`press inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-body text-[11px] transition-colors ${
+                  className={`press inline-flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-body text-[13px] transition-colors ${
                     on
                       ? 'border-accent bg-accent text-background'
                       : 'border-ink/15 text-muted hover:border-ink/35 hover:text-ink'
@@ -422,7 +422,7 @@ export function AdminProductEditor() {
             })}
           </div>
           {regions.length === 0 && (
-            <p className="mt-2 font-body text-[11px] text-red-700">
+            <p className="mt-2 font-body text-[13px] text-red-700">
               Pick at least one store, or this product will not appear anywhere.
             </p>
           )}
@@ -450,9 +450,9 @@ export function AdminProductEditor() {
         </Field>
 
         <Field label="Collections">
-          {taxonomy.loading && <p className="font-body text-[11px] text-muted">Loading…</p>}
+          {taxonomy.loading && <p className="font-body text-[13px] text-muted">Loading…</p>}
           {taxonomy.data && taxonomy.data[1].length === 0 && (
-            <p className="font-body text-[11px] leading-relaxed text-muted">
+            <p className="font-body text-[13px] leading-relaxed text-muted">
               None yet — create one on the Collections screen and it appears here.
             </p>
           )}
@@ -470,7 +470,7 @@ export function AdminProductEditor() {
                         prev.includes(c.id) ? prev.filter((x) => x !== c.id) : [...prev, c.id],
                       )
                     }
-                    className={`press rounded-full border px-3.5 py-1.5 font-body text-[11px] transition-colors ${
+                    className={`press rounded-full border px-3.5 py-1.5 font-body text-[13px] transition-colors ${
                       on
                         ? 'border-accent bg-accent text-background'
                         : 'border-ink/15 text-muted hover:border-ink/35 hover:text-ink'
@@ -541,7 +541,7 @@ export function AdminProductEditor() {
             </span>
           </AdminButton>
         </div>
-        <p className="mb-4 font-body text-[11px] leading-relaxed text-muted">
+        <p className="mb-4 font-body text-[13px] leading-relaxed text-muted">
           Each store is priced separately — there is no exchange rate. Enter prices the way a customer
           reads them ({REGIONS.us.currency.symbol}289.00, AED 1060.00, Rs 79900).
         </p>
@@ -601,7 +601,7 @@ export function AdminProductEditor() {
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {REGION_CODES.map((region) => (
                   <div key={region} className="rounded-[10px] border border-ink/10 p-3">
-                    <div className="mb-2 font-body text-[10px] uppercase tracking-wide text-muted">
+                    <div className="mb-2 font-body text-[12px] uppercase tracking-wide text-muted">
                       {REGIONS[region].country} · {REGIONS[region].currency.code}
                     </div>
                     <div className="grid grid-cols-2 gap-2">
@@ -649,7 +649,7 @@ export function AdminProductEditor() {
                         setVariants((vs) => vs.filter((_, i) => i !== index))
                       }
                     }}
-                    className="font-body text-[10px] uppercase text-muted hover:text-red-300"
+                    className="font-body text-[12px] uppercase text-muted hover:text-red-300"
                   >
                     Remove variant
                   </button>
@@ -703,7 +703,7 @@ export function AdminProductEditor() {
             </div>
           ))}
           {specs.length === 0 && (
-            <p className="font-body text-[11px] text-muted">No specifications yet.</p>
+            <p className="font-body text-[13px] text-muted">No specifications yet.</p>
           )}
         </div>
       </div>

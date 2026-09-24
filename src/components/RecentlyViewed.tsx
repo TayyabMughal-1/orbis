@@ -42,10 +42,10 @@ export default function RecentlyViewed({ excludeId }: { excludeId?: string }) {
                   className="transition-transform duration-500 group-hover:scale-105"
                 />
               </div>
-              <div className="mt-2.5 truncate font-grotesk text-[11px] uppercase text-ink group-hover:text-accent">
+              <div className="mt-2.5 truncate font-grotesk text-[13px] uppercase text-ink group-hover:text-accent">
                 {product.name}
               </div>
-              <Price amount={from} className="font-body text-[11px] text-muted" />
+              <Price amount={from} className="font-body text-[13px] text-muted" />
             </Link>
           )
         })}

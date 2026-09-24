@@ -36,7 +36,7 @@ export default function CartPage() {
           action={
             <Link
               to={href('/shop')}
-              className="inline-flex items-center gap-2 rounded-full bg-neon px-7 py-3 font-grotesk text-[12px] uppercase text-ink"
+              className="inline-flex items-center gap-2 rounded-full bg-neon px-7 py-3 font-grotesk text-[14px] uppercase text-ink"
             >
               Browse the collection <ArrowRight size={15} />
             </Link>
@@ -61,7 +61,7 @@ export default function CartPage() {
         <button
           type="button"
           onClick={clear}
-          className="flex items-center gap-1.5 font-body text-[11px] uppercase text-muted hover:text-ink"
+          className="flex items-center gap-1.5 font-body text-[13px] uppercase text-muted hover:text-ink"
         >
           <Trash2 size={13} /> Empty cart
         </button>
@@ -87,11 +87,11 @@ export default function CartPage() {
                   >
                     {product.name}
                   </Link>
-                  <div className="mt-1 font-body text-[11px] uppercase text-muted">
+                  <div className="mt-1 font-body text-[13px] uppercase text-muted">
                     {variant.label} · {variant.sku}
                   </div>
                   {stock <= 5 && (
-                    <div className="mt-1 font-body text-[10px] uppercase text-amber-300/80">
+                    <div className="mt-1 font-body text-[12px] uppercase text-amber-300/80">
                       Only {stock} left
                     </div>
                   )}
@@ -105,7 +105,7 @@ export default function CartPage() {
                     <button
                       type="button"
                       onClick={() => remove(variant.id)}
-                      className="font-body text-[11px] uppercase text-muted underline underline-offset-2 hover:text-ink"
+                      className="font-body text-[13px] uppercase text-muted underline underline-offset-2 hover:text-ink"
                     >
                       Remove
                     </button>
@@ -115,7 +115,7 @@ export default function CartPage() {
                 <div className="flex-none text-right">
                   <Price amount={lineTotal} className="font-body text-[15px] text-accent" compact={false} />
                   {line.quantity > 1 && (
-                    <div className="mt-1 font-body text-[10px] text-muted">
+                    <div className="mt-1 font-body text-[12px] text-muted">
                       <Price amount={unitPrice} compact={false} /> each
                     </div>
                   )}
@@ -126,7 +126,7 @@ export default function CartPage() {
 
           <Link
             to={href('/shop')}
-            className="mt-6 inline-flex items-center gap-2 font-body text-[11px] uppercase text-muted hover:text-ink"
+            className="mt-6 inline-flex items-center gap-2 font-body text-[13px] uppercase text-muted hover:text-ink"
           >
             ← Continue shopping
           </Link>
@@ -137,7 +137,7 @@ export default function CartPage() {
           <div className="rounded-[20px] border border-ink/10 bg-ink/[0.02] p-6">
             <h2 className="mb-5 font-grotesk text-[14px] uppercase text-ink">
               Summary
-              <span className="ml-2 font-body text-[11px] normal-case text-muted">
+              <span className="ml-2 font-body text-[13px] normal-case text-muted">
                 {count} item{count === 1 ? '' : 's'}
               </span>
             </h2>
@@ -161,12 +161,12 @@ export default function CartPage() {
 
             <Link
               to={href('/checkout')}
-              className="press mt-6 flex items-center justify-center gap-2 rounded-full bg-neon py-3.5 font-grotesk text-[13px] uppercase text-ink transition-opacity hover:opacity-90"
+              className="press mt-6 flex items-center justify-center gap-2 rounded-full bg-neon py-3.5 font-grotesk text-[15px] uppercase text-ink transition-opacity hover:opacity-90"
             >
               Checkout <ArrowRight size={15} />
             </Link>
 
-            <p className="mt-4 font-body text-[10px] leading-relaxed text-muted">
+            <p className="mt-4 font-body text-[12px] leading-relaxed text-muted">
               {config.taxNote}. Delivery is chosen at checkout — {config.shipping.length} options for{' '}
               {config.country}. Pay by{' '}
               {config.paymentMethods

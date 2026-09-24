@@ -111,7 +111,7 @@ export default function Help() {
           <h1 className="font-grotesk text-[34px] uppercase leading-none text-ink sm:text-[46px]">
             Help
           </h1>
-          <p className="mt-4 max-w-lg font-body text-[12px] leading-relaxed text-muted">
+          <p className="mt-4 max-w-lg font-body text-[14px] leading-relaxed text-muted">
             Everything below is specific to the {config.country} store — delivery, payment,{' '}
             {config.taxLabel} and returns all work differently in our other markets.
           </p>
@@ -143,7 +143,7 @@ export default function Help() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="pb-6 pr-8 font-body text-[12px] leading-relaxed text-muted">
+                    <p className="pb-6 pr-8 font-body text-[14px] leading-relaxed text-muted">
                       {item.a}
                     </p>
                   </div>
@@ -168,7 +168,7 @@ export default function Help() {
           <div className="mt-8 text-center">
             <Link
               to={href('/shop')}
-              className="press inline-flex rounded-full bg-neon px-7 py-3 font-grotesk text-[12px] uppercase text-ink"
+              className="press inline-flex rounded-full bg-neon px-7 py-3 font-grotesk text-[14px] uppercase text-ink"
             >
               Back to the shop
             </Link>
@@ -193,8 +193,8 @@ function Contact({
   const body = (
     <>
       <Icon size={16} className="mb-3 text-accent" strokeWidth={1.7} />
-      <div className="font-body text-[10px] uppercase tracking-wide text-muted">{label}</div>
-      <div className="mt-1 font-body text-[12px] text-ink">{value}</div>
+      <div className="font-body text-[12px] uppercase tracking-wide text-muted">{label}</div>
+      <div className="mt-1 font-body text-[14px] text-ink">{value}</div>
     </>
   )
   const className =

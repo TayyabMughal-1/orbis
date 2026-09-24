@@ -105,9 +105,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             </span>
 
             <div className="min-w-0 flex-1">
-              <p className="font-grotesk text-[12px] uppercase text-ink">{toast.message}</p>
+              <p className="font-grotesk text-[14px] uppercase text-ink">{toast.message}</p>
               {toast.detail && (
-                <p className="mt-0.5 truncate font-body text-[11px] text-muted">{toast.detail}</p>
+                <p className="mt-0.5 truncate font-body text-[13px] text-muted">{toast.detail}</p>
               )}
               {toast.action && (
                 <button
@@ -116,7 +116,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                     toast.action?.onClick()
                     dismiss(toast.id)
                   }}
-                  className="mt-2 font-body text-[11px] uppercase text-accent underline underline-offset-4"
+                  className="mt-2 font-body text-[13px] uppercase text-accent underline underline-offset-4"
                 >
                   {toast.action.label}
                 </button>
